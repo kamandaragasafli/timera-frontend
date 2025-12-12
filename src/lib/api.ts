@@ -1,16 +1,9 @@
 import axios from 'axios';
 
-// Default API URL based on environment
-// Production: Use production backend URL
-// Development: Use localhost
-const getDefaultApiUrl = () => {
-  if (process.env.NODE_ENV === 'production') {
-    return 'https://api.timera.az/api';
-  }
-  return 'http://127.0.0.1:8000/api';
-};
-
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || getDefaultApiUrl();
+// Default API URL - localhost for development
+// For production server, set NEXT_PUBLIC_API_URL environment variable or uncomment below:
+// export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.timera.az/api';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
 
 // Debug: Log API base URL (only in development)
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
