@@ -351,6 +351,7 @@ export default function AdCreatorPage() {
           throw apiError;
         }
       }
+      }
 
     } catch (err: any) {
       console.error('Ad creative error:', err);
