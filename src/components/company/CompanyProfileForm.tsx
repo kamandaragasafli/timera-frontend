@@ -401,36 +401,87 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
 
       // Prepare data for submission
       if (logoFile) {
+        console.log('[DEBUG] 🎯 Logo upload process started');
+        console.log('[DEBUG] Logo file details:', {
+          name: logoFile.name,
+          size: logoFile.size,
+          type: logoFile.type,
+          lastModified: new Date(logoFile.lastModified).toISOString()
+        });
+        
         // Use FormData when logo is present
         const formData = new FormData();
+        
+        console.log('[DEBUG] Creating FormData...');
+        console.log('[DEBUG] processedData keys:', Object.keys(processedData));
         
         // Append all fields
         Object.keys(processedData).forEach(key => {
           const value = processedData[key];
           if (value !== null && value !== undefined) {
             if (Array.isArray(value)) {
-              formData.append(key, JSON.stringify(value));
+              const jsonValue = JSON.stringify(value);
+              formData.append(key, jsonValue);
+              console.log(`[DEBUG] Appended ${key} (array): ${jsonValue.substring(0, 100)}...`);
             } else if (typeof value === 'object') {
-              formData.append(key, JSON.stringify(value));
+              const jsonValue = JSON.stringify(value);
+              formData.append(key, jsonValue);
+              console.log(`[DEBUG] Appended ${key} (object): ${jsonValue.substring(0, 100)}...`);
             } else {
               formData.append(key, String(value));
+              console.log(`[DEBUG] Appended ${key} (string): ${String(value).substring(0, 100)}`);
             }
           }
         });
         
         // Append logo file
+        console.log('[DEBUG] Appending logo file to FormData...');
         formData.append('logo', logoFile, logoFile.name);
+        console.log('[DEBUG] ✅ Logo file appended');
         
+        // Verify FormData contents
+        console.log('[DEBUG] FormData entries:');
+        for (const [key, value] of formData.entries()) {
+          if (value instanceof File) {
+            console.log(`[DEBUG]   - ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+          } else {
+            console.log(`[DEBUG]   - ${key}: ${String(value).substring(0, 100)}`);
+          }
+        }
+        
+        const method = existingProfile ? 'PATCH' : 'POST';
+        const url = '/auth/company-profile/';
+        console.log(`[DEBUG] Sending ${method} request to ${url}`);
+        console.log('[DEBUG] Request headers: Content-Type=multipart/form-data');
+        
+        try {
         if (existingProfile) {
-          await api.patch('/auth/company-profile/', formData, {
+            console.log('[DEBUG] Updating existing profile...');
+            const response = await api.patch(url, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
           });
+            console.log('[DEBUG] ✅ Response received:', {
+              status: response.status,
+              data: response.data
+            });
           setSuccess('Şirkət profili və loqo uğurla yeniləndi!');
         } else {
-          await api.post('/auth/company-profile/', formData, {
+            console.log('[DEBUG] Creating new profile...');
+            const response = await api.post(url, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
           });
+            console.log('[DEBUG] ✅ Response received:', {
+              status: response.status,
+              data: response.data
+            });
           setSuccess('Şirkət profili və loqo uğurla yaradıldı!');
+          }
+        } catch (uploadError: any) {
+          console.error('[DEBUG] ❌ Upload error:', uploadError);
+          console.error('[DEBUG] Error response:', uploadError.response);
+          console.error('[DEBUG] Error data:', uploadError.response?.data);
+          console.error('[DEBUG] Error status:', uploadError.response?.status);
+          throw uploadError;
         }
       } else {
         // No logo, use regular JSON

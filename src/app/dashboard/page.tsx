@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authAPI } from '@/lib/api';
 import { usePostGeneration } from '@/contexts/PostGenerationContext';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -16,6 +17,7 @@ export default function DashboardPage() {
   const [hasCompanyProfile, setHasCompanyProfile] = useState(false);
   const router = useRouter();
   const { hasActiveGeneration, generatedPosts } = usePostGeneration();
+  const t = useTranslation();
 
   useEffect(() => {
     loadStats();
@@ -41,8 +43,8 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout 
-      title={`Welcome back, ${user?.first_name}!`}
-      description="Manage your social media presence with AI-powered tools"
+      title={t.dashboard.welcomeBack.replace('{name}', user?.first_name || '')}
+      description={t.dashboard.description}
     >
         <div className="space-y-6">
           {/* Pending Posts Notification */}
@@ -51,17 +53,17 @@ export default function DashboardPage() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <span className="mr-2">⏳</span>
-                  Posts Waiting for Approval
+                  {t.dashboard.postsWaiting}
                 </CardTitle>
                 <CardDescription>
-                  You have {generatedPosts.filter(p => p.status === 'pending_approval').length} AI-generated posts waiting for your review
+                  {t.dashboard.postsWaitingDesc.replace('{count}', generatedPosts.filter(p => p.status === 'pending_approval').length.toString())}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Link href="/ai-content-generator">
                   <Button size="lg" className="w-full md:w-auto" variant="outline">
                     <span className="mr-2">✅</span>
-                    Review & Approve Posts
+                    {t.dashboard.reviewApprove}
                   </Button>
                 </Link>
               </CardContent>
@@ -74,17 +76,17 @@ export default function DashboardPage() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <span className="mr-2">🚀</span>
-                  Get Started with AI Content Generation
+                  {t.dashboard.getStarted}
                 </CardTitle>
                 <CardDescription>
-                  Set up your company profile to generate 10 engaging posts in Azerbaijani language
+                  {t.dashboard.getStartedDesc}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Link href="/ai-content-generator">
                   <Button size="lg" className="w-full md:w-auto">
                     <span className="mr-2">✨</span>
-                    Start AI Content Generator
+                    {t.dashboard.startGenerator}
                   </Button>
                 </Link>
               </CardContent>
@@ -95,39 +97,39 @@ export default function DashboardPage() {
           {/* Quick Stats */}
           <Card>
             <CardHeader>
-              <CardTitle>Posts Created</CardTitle>
-              <CardDescription>Total posts in your account</CardDescription>
+              <CardTitle>{t.dashboard.postsCreated}</CardTitle>
+              <CardDescription>{t.dashboard.postsCreatedDesc}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{stats?.total_posts || 0}</div>
               <p className="text-sm text-muted-foreground">
-                {stats?.ai_generated_posts || 0} AI generated
+                {stats?.ai_generated_posts || 0} {t.dashboard.aiGenerated}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Pending Approval</CardTitle>
-              <CardDescription>Posts waiting for review</CardDescription>
+              <CardTitle>{t.dashboard.pendingApproval}</CardTitle>
+              <CardDescription>{t.dashboard.pendingApprovalDesc}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-yellow-600">{stats?.pending_approval || 0}</div>
               <p className="text-sm text-muted-foreground">
-                {stats?.approved_posts || 0} approved
+                {stats?.approved_posts || 0} {t.dashboard.approved}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Scheduled Posts</CardTitle>
-              <CardDescription>Posts ready to publish</CardDescription>
+              <CardTitle>{t.dashboard.scheduledPosts}</CardTitle>
+              <CardDescription>{t.dashboard.scheduledPostsDesc}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{stats?.scheduled_posts || 0}</div>
               <p className="text-sm text-muted-foreground">
-                {stats?.published_posts || 0} published
+                {stats?.published_posts || 0} {t.dashboard.published}
               </p>
             </CardContent>
           </Card>
@@ -135,33 +137,33 @@ export default function DashboardPage() {
           {/* Quick Actions */}
           <Card className="md:col-span-2 lg:col-span-3">
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Get started with these common tasks</CardDescription>
+              <CardTitle>{t.dashboard.quickActions}</CardTitle>
+              <CardDescription>{t.dashboard.quickActionsDesc}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Link href="/ai-content-generator">
                   <Button className="h-20 flex flex-col items-center justify-center w-full">
                     <span className="text-lg mb-1">🚀</span>
-                    AI Content Generator
+                    {t.sidebar.aiContentGenerator}
                   </Button>
                 </Link>
                 <Link href="/posts">
                   <Button variant="outline" className="h-20 flex flex-col items-center justify-center w-full">
                     <span className="text-lg mb-1">📝</span>
-                    Create New Post
+                    {t.dashboard.createNewPost}
                   </Button>
                 </Link>
                 <Link href="/social-accounts">
                   <Button variant="outline" className="h-20 flex flex-col items-center justify-center w-full">
                     <span className="text-lg mb-1">🔗</span>
-                    Connect Social Account
+                    {t.dashboard.connectSocial}
                   </Button>
                 </Link>
                 <Link href="/calendar">
                   <Button variant="outline" className="h-20 flex flex-col items-center justify-center w-full">
                     <span className="text-lg mb-1">📅</span>
-                    View Calendar
+                    {t.dashboard.viewCalendar}
                   </Button>
                 </Link>
               </div>
@@ -171,25 +173,25 @@ export default function DashboardPage() {
           {/* User Info */}
           <Card className="md:col-span-2 lg:col-span-3">
             <CardHeader>
-              <CardTitle>Account Information</CardTitle>
+              <CardTitle>{t.dashboard.accountInfo}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Email</p>
+                  <p className="text-sm font-medium text-gray-500">{t.dashboard.email}</p>
                   <p className="text-lg">{user?.email}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Company</p>
-                  <p className="text-lg">{user?.company_name || 'Not specified'}</p>
+                  <p className="text-sm font-medium text-gray-500">{t.dashboard.company}</p>
+                  <p className="text-lg">{user?.company_name || t.dashboard.notSpecified}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Plan</p>
+                  <p className="text-sm font-medium text-gray-500">{t.dashboard.plan}</p>
                   <p className="text-lg capitalize">{user?.subscription_plan}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Email Verified</p>
-                  <p className="text-lg">{user?.is_email_verified ? '✅ Verified' : '❌ Not verified'}</p>
+                  <p className="text-sm font-medium text-gray-500">{t.dashboard.emailVerified}</p>
+                  <p className="text-lg">{user?.is_email_verified ? t.dashboard.verified : t.dashboard.notVerified}</p>
                 </div>
               </div>
             </CardContent>

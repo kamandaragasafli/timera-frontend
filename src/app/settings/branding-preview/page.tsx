@@ -84,10 +84,12 @@ export default function BrandingPreviewPage() {
       ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Or use Unsplash for real image
+      // Use Picsum Photos for real image (Unsplash Source is deprecated)
       const baseImage = new Image();
       baseImage.crossOrigin = 'anonymous';
-      baseImage.src = 'https://source.unsplash.com/1080x1440/?business,office,professional';
+      // Picsum Photos - free, reliable random images
+      const imageId = Math.floor(Math.random() * 1000) + 1;
+      baseImage.src = `https://picsum.photos/seed/${imageId}/1080/1440`;
       
       baseImage.onload = () => {
         ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
@@ -95,7 +97,7 @@ export default function BrandingPreviewPage() {
       };
       
       baseImage.onerror = () => {
-        // If Unsplash fails, keep the gradient background
+        // If Picsum fails, keep the gradient background
         drawOverlays();
       };
     };

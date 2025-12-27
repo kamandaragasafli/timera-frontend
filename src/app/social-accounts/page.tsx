@@ -18,6 +18,7 @@ import {
   CheckCircle2,
   Youtube
 } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 // LinkedIn Icon Component
 const LinkedInIcon = ({ className }: { className?: string }) => (
@@ -60,6 +61,7 @@ export default function SocialAccountsPage() {
   const [isConnecting, setIsConnecting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const t = useTranslation();
 
   useEffect(() => {
     loadAccounts();
@@ -72,7 +74,7 @@ export default function SocialAccountsPage() {
       setConnectedAccounts(response.data.results || response.data);
     } catch (error) {
       console.error('Failed to load accounts:', error);
-      setError('Hesabları yükləyərkən xəta baş verdi');
+      setError(t.socialAccounts.errorLoading);
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +88,7 @@ export default function SocialAccountsPage() {
       // Token yoxla
       const token = localStorage.getItem('access_token');
       if (!token) {
-        setError('❌ Giriş tələb olunur. Zəhmət olmasa, yenidən giriş edin.');
+        setError(t.socialAccounts.loginRequired);
         setIsConnecting(null);
         return;
       }
@@ -182,15 +184,15 @@ export default function SocialAccountsPage() {
   };
 
   const handleDisconnect = async (accountId: string, platform: string) => {
-    if (!confirm(`${platform} hesabını ayırmaq istədiyinizdən əminsiniz?`)) return;
+    if (!confirm(t.socialAccounts.disconnectConfirm)) return;
     
     try {
       await socialAccountsAPI.disconnectAccount(accountId);
-      setSuccess('Hesab uğurla ayrıldı');
+      setSuccess(t.socialAccounts.connected);
       loadAccounts();
     } catch (error) {
       console.error('Failed to disconnect account:', error);
-      setError('Hesabı ayırmaq mümkün olmadı');
+      setError(t.socialAccounts.errorLoading);
     }
   };
 
@@ -236,9 +238,10 @@ export default function SocialAccountsPage() {
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'Heç vaxt';
+    if (!dateString) return t.socialAccounts.never;
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('az-AZ', {
+    const locale = t.common.loading === 'Loading...' ? 'en-US' : t.common.loading === 'Yüklənir...' ? 'az-AZ' : 'ru-RU';
+    return new Intl.DateTimeFormat(locale, {
       day: '2-digit',
       month: 'long',
       year: 'numeric',
@@ -293,8 +296,8 @@ export default function SocialAccountsPage() {
 
   return (
     <DashboardLayout 
-      title="Sosial Hesablar"
-      description="Sosial media hesablarınızı əlaqələndirin və idarə edin"
+      title={t.socialAccounts.title}
+      description={t.socialAccounts.description}
     >
       <div className="space-y-6">
         {/* Alerts */}
@@ -315,17 +318,17 @@ export default function SocialAccountsPage() {
         {/* Connected Accounts */}
         <div>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold">Əlaqələndirilmiş Hesablar</h2>
+            <h2 className="text-xl font-semibold">{t.socialAccounts.connected}</h2>
             <Button variant="outline" onClick={loadAccounts} disabled={isLoading}>
               <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-              Yenilə
+              {t.analytics.refresh}
             </Button>
           </div>
 
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              <span className="ml-3 text-muted-foreground">Yüklənir...</span>
+              <span className="ml-3 text-muted-foreground">{t.socialAccounts.loading}</span>
             </div>
           ) : connectedAccounts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -347,7 +350,7 @@ export default function SocialAccountsPage() {
                           </div>
                         </div>
                         <Badge variant={account.is_active ? "default" : "secondary"} className="bg-green-500">
-                          {account.is_active ? "Aktiv" : "Qeyri-aktiv"}
+                          {account.is_active ? t.socialAccounts.active : t.socialAccounts.inactive}
                         </Badge>
                       </div>
                     </CardHeader>
@@ -360,12 +363,12 @@ export default function SocialAccountsPage() {
                         </div>
                         
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Son İstifadə:</span>
+                          <span className="text-muted-foreground">{t.socialAccounts.lastUsed}:</span>
                           <span className="font-medium text-xs">{formatDate(account.last_used)}</span>
                         </div>
                         
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Əlavə Edilib:</span>
+                          <span className="text-muted-foreground">{t.common.save}:</span>
                           <span className="font-medium text-xs">{formatDate(account.created_at)}</span>
                         </div>
                         
@@ -377,7 +380,7 @@ export default function SocialAccountsPage() {
                             onClick={() => handleDisconnect(account.id, platformInfo.name)}
                           >
                             <Trash2 className="w-4 h-4 mr-1" />
-                            Ayır
+                            {t.socialAccounts.disconnect}
                           </Button>
                         </div>
                       </div>
@@ -390,9 +393,9 @@ export default function SocialAccountsPage() {
             <Card className="text-center py-16">
               <CardContent>
                 <div className="text-6xl mb-4">🔗</div>
-                <h3 className="text-xl font-semibold mb-2">Hesab əlaqələndirilməyib</h3>
+                <h3 className="text-xl font-semibold mb-2">{t.socialAccounts.noAccounts}</h3>
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                  Məzmununuzu idarə etməyə başlamaq üçün sosial media hesablarınızı əlaqələndirin
+                  {t.socialAccounts.noAccountsDesc}
                 </p>
               </CardContent>
             </Card>
@@ -401,7 +404,7 @@ export default function SocialAccountsPage() {
 
         {/* Available Platforms */}
         <div>
-          <h2 className="text-xl font-semibold mb-6">Mövcud Platformalar</h2>
+          <h2 className="text-xl font-semibold mb-6">{t.socialAccounts.title}</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {availablePlatforms.map((platform) => {
@@ -418,7 +421,7 @@ export default function SocialAccountsPage() {
                           {platform.name}
                           {isConnected && (
                             <Badge variant="secondary" className="bg-green-100 text-green-700">
-                              Əlaqəli
+                              {t.socialAccounts.connected}
                             </Badge>
                           )}
                         </CardTitle>
@@ -437,17 +440,17 @@ export default function SocialAccountsPage() {
                       {isConnecting === platform.key ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Əlaqələndirilir...
+                          {t.socialAccounts.connecting}
                         </>
                       ) : isConnected ? (
                         <>
                           <CheckCircle2 className="w-4 h-4 mr-2" />
-                          Yenidən Əlaqələndir
+                          {t.socialAccounts.connect}
                         </>
                       ) : (
                         <>
                           <CheckCircle2 className="w-4 h-4 mr-2" />
-                          Əlaqələndir
+                          {t.socialAccounts.connect}
                         </>
                       )}
                     </Button>

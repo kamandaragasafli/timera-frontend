@@ -8,9 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function BrandVoicePage() {
   const [selectedVoice, setSelectedVoice] = useState(1);
+  const t = useTranslation();
 
   // Mock brand voices data
   const brandVoices = [
@@ -65,8 +67,8 @@ export default function BrandVoicePage() {
 
   return (
     <DashboardLayout 
-      title="Brand Voice"
-      description="Configure AI personality settings for consistent content generation"
+      title={t.brandVoice.title}
+      description={t.brandVoice.description}
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Brand Voices List */}

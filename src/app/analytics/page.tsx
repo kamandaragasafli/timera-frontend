@@ -29,6 +29,7 @@ import {
   RefreshCw,
   Target
 } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface InsightData {
   impressions?: number;
@@ -85,6 +86,7 @@ export default function AnalyticsPage() {
   const [accountId, setAccountId] = useState<string>('');
   const [adAccounts, setAdAccounts] = useState<AdAccount[]>([]);
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
+  const t = useTranslation();
   
   // Post Performance states
   const [postPerformances, setPostPerformances] = useState<PostPerformance[]>([]);
@@ -237,8 +239,8 @@ export default function AnalyticsPage() {
 
   return (
     <DashboardLayout 
-      title="Analytics"
-      description="Meta reklamlarınızın performansını izləyin"
+      title={t.analytics.title}
+      description={t.analytics.description}
     >
       <div className="space-y-6">
         {/* Info Card - How it works */}

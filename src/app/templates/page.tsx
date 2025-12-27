@@ -7,10 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function TemplatesPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const t = useTranslation();
 
   // Mock templates data
   const templates = [
@@ -200,8 +202,8 @@ What's your goal for this week? Share it below and let's support each other! ðŸ‘
 
   return (
     <DashboardLayout 
-      title="Content Templates"
-      description="Use pre-built templates to create consistent, engaging content"
+      title={t.templates.title}
+      description={t.templates.description}
     >
       <div className="space-y-6">
         {/* Action Bar */}

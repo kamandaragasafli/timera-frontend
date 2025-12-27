@@ -31,6 +31,8 @@ import {
   DialogPortal,
 } from '@/components/ui/dialog';
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { useTranslation } from '@/hooks/useTranslation';
+import ShareModal from '@/components/posts/ShareModal';
 
 // LinkedIn Icon Component
 const LinkedInIcon = ({ className }: { className?: string }) => (
@@ -51,6 +53,8 @@ interface Post {
   description: string;
   hashtags: string[];
   status: string;
+  image_url?: string;
+  image_url_absolute?: string;
   custom_image_url?: string;
   design_url_absolute?: string;
   design_thumbnail_absolute?: string;
@@ -72,6 +76,7 @@ export default function PostsPage() {
     approved: 0,
   });
   const [selectedImage, setSelectedImage] = useState<{ url: string; title: string } | null>(null);
+  const t = useTranslation();
 
   useEffect(() => {
     loadPosts();
@@ -112,37 +117,37 @@ export default function PostsPage() {
     switch (status) {
       case 'published':
         return { 
-          label: 'Dərc Edilib', 
+          label: t.posts.statusPublished, 
           color: 'bg-green-500 text-white', 
           icon: <CheckCircle2 className="w-3 h-3" /> 
         };
       case 'scheduled':
         return { 
-          label: 'Planlaşdırılıb', 
+          label: t.posts.statusScheduled, 
           color: 'bg-blue-500 text-white', 
           icon: <Clock className="w-3 h-3" /> 
         };
       case 'approved':
         return { 
-          label: 'Təsdiq Edilib', 
+          label: t.posts.statusApproved, 
           color: 'bg-purple-500 text-white', 
           icon: <CheckCircle2 className="w-3 h-3" /> 
         };
       case 'pending_approval':
         return { 
-          label: 'Gözləyir', 
+          label: t.posts.statusPending, 
           color: 'bg-yellow-500 text-white', 
           icon: <Clock className="w-3 h-3" /> 
         };
       case 'failed':
         return { 
-          label: 'Uğursuz', 
+          label: t.posts.statusFailed, 
           color: 'bg-red-500 text-white', 
           icon: <XCircle className="w-3 h-3" /> 
         };
       case 'draft':
         return { 
-          label: 'Qaralama', 
+          label: t.posts.statusDraft, 
           color: 'bg-gray-500 text-white', 
           icon: <Edit className="w-3 h-3" /> 
         };
@@ -158,7 +163,8 @@ export default function PostsPage() {
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('az-AZ', {
+    const locale = t.common.loading === 'Loading...' ? 'en-US' : t.common.loading === 'Yüklənir...' ? 'az-AZ' : 'ru-RU';
+    return new Intl.DateTimeFormat(locale, {
       day: '2-digit',
       month: 'long',
       year: 'numeric',
@@ -169,16 +175,18 @@ export default function PostsPage() {
 
   const [publishingPosts, setPublishingPosts] = useState<{[key: string]: {facebook?: boolean, instagram?: boolean, linkedin?: boolean}}>({});
   const [applyingBranding, setApplyingBranding] = useState<{[key: string]: boolean}>({});
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [selectedPostForShare, setSelectedPostForShare] = useState<Post | null>(null);
 
   const handlePublishToFacebook = async (postId: string) => {
     try {
       setPublishingPosts(prev => ({ ...prev, [postId]: { ...prev[postId], facebook: true } }));
       await postsAPI.publishToFacebook(postId);
-      alert('✅ Facebook-a uğurla paylaşıldı!');
+      alert(t.posts.successPublishedFacebook);
       loadPosts(); // Reload posts
     } catch (error: any) {
       console.error('Failed to publish to Facebook:', error);
-      alert(`❌ Facebook paylaşımı uğursuz oldu: ${error.response?.data?.error || error.message}`);
+      alert(`${t.posts.errorPublishFacebook}: ${error.response?.data?.error || error.message}`);
     } finally {
       setPublishingPosts(prev => ({ ...prev, [postId]: { ...prev[postId], facebook: false } }));
     }
@@ -188,11 +196,11 @@ export default function PostsPage() {
     try {
       setPublishingPosts(prev => ({ ...prev, [postId]: { ...prev[postId], instagram: true } }));
       await postsAPI.publishToInstagram(postId);
-      alert('✅ Instagram-a uğurla paylaşıldı!');
+      alert(t.posts.successPublishedInstagram);
       loadPosts(); // Reload posts
     } catch (error: any) {
       console.error('Failed to publish to Instagram:', error);
-      alert(`❌ Instagram paylaşımı uğursuz oldu: ${error.response?.data?.error || error.message}`);
+      alert(`${t.posts.errorPublishInstagram}: ${error.response?.data?.error || error.message}`);
     } finally {
       setPublishingPosts(prev => ({ ...prev, [postId]: { ...prev[postId], instagram: false } }));
     }
@@ -202,11 +210,11 @@ export default function PostsPage() {
     try {
       setPublishingPosts(prev => ({ ...prev, [postId]: { ...prev[postId], linkedin: true } }));
       await postsAPI.publishToLinkedIn(postId);
-      alert('✅ LinkedIn-ə uğurla paylaşıldı!');
+      alert(t.posts.successPublishedLinkedIn);
       loadPosts(); // Reload posts
     } catch (error: any) {
       console.error('Failed to publish to LinkedIn:', error);
-      alert(`❌ LinkedIn paylaşımı uğursuz oldu: ${error.response?.data?.error || error.message}`);
+      alert(`${t.posts.errorPublishLinkedIn}: ${error.response?.data?.error || error.message}`);
     } finally {
       setPublishingPosts(prev => ({ ...prev, [postId]: { ...prev[postId], linkedin: false } }));
     }
@@ -216,7 +224,7 @@ export default function PostsPage() {
     try {
       setApplyingBranding(prev => ({ ...prev, [postId]: true }));
       const response = await postsAPI.applyBranding(postId);
-      alert('✅ Brending uğurla tətbiq edildi!');
+      alert(t.posts.successBrandingApplied);
       loadPosts(); // Reload posts to get updated image
     } catch (error: any) {
       console.error('Failed to apply branding:', error);
@@ -224,7 +232,7 @@ export default function PostsPage() {
                           error.response?.data?.error || 
                           error.response?.data?.message ||
                           error.message || 
-                          'Brending tətbiq edilə bilmədi';
+                          t.posts.errorBranding;
       alert(`❌ ${errorMessage}`);
     } finally {
       setApplyingBranding(prev => ({ ...prev, [postId]: false }));
@@ -263,7 +271,7 @@ export default function PostsPage() {
   };
 
   const handleDelete = async (postId: string) => {
-    if (!confirm('Bu paylaşımı silmək istədiyinizdən əminsiniz?')) return;
+    if (!confirm(t.posts.deleteConfirm)) return;
     
     try {
       await postsAPI.deletePost(postId);
@@ -275,8 +283,8 @@ export default function PostsPage() {
 
   return (
     <DashboardLayout 
-      title="Paylaşımlar"
-      description="Sosial media paylaşımlarınızı idarə edin və planlaşdırın"
+      title={t.posts.title}
+      description={t.posts.description}
     >
       <div className="space-y-6">
         {/* Action Bar */}
@@ -286,7 +294,7 @@ export default function PostsPage() {
             className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
           >
             <span className="mr-2">✨</span>
-            AI ilə Yarat
+            {t.posts.createWithAI}
           </Button>
         </div>
 
@@ -297,18 +305,18 @@ export default function PostsPage() {
               <Alert className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
                 <Sparkles className="h-4 w-4 text-blue-600" />
                 <AlertDescription className="text-blue-700 dark:text-blue-300">
-                  🎨 Avtomatik brending aktivdir - Yeni AI yaradılmış şəkillərə loqonuz avtomatik əlavə ediləcək
+                  {t.posts.brandingActive} - {t.posts.brandingActiveDesc}
                 </AlertDescription>
               </Alert>
             ) : companyProfile.branding_enabled && !companyProfile.logo_url ? (
               <Alert variant="destructive">
                 <AlertDescription>
-                  ⚠️ Brending aktivdir, lakin loqo yüklənməyib. Brending işləməsi üçün{' '}
+                  {t.posts.brandingWarning}. {t.posts.brandingWarningDesc}{' '}
                   <button
                     onClick={() => router.push('/setup/company')}
                     className="underline font-semibold"
                   >
-                    loqo yükləyin
+                    {t.posts.uploadLogo}
                   </button>
                   .
                 </AlertDescription>
@@ -322,7 +330,7 @@ export default function PostsPage() {
           <Card className="border-l-4 border-l-purple-500">
             <div className="p-6">
               <div className="text-sm font-medium text-muted-foreground mb-2">
-                Ümumi Paylaşım
+                {t.posts.totalPosts}
               </div>
               <div className="text-3xl font-bold">{stats.total}</div>
             </div>
@@ -331,7 +339,7 @@ export default function PostsPage() {
           <Card className="border-l-4 border-l-green-500">
             <div className="p-6">
               <div className="text-sm font-medium text-muted-foreground mb-2">
-                Dərc Edilib
+                {t.posts.published}
               </div>
               <div className="text-3xl font-bold text-green-600">{stats.published}</div>
             </div>
@@ -340,7 +348,7 @@ export default function PostsPage() {
           <Card className="border-l-4 border-l-blue-500">
             <div className="p-6">
               <div className="text-sm font-medium text-muted-foreground mb-2">
-                Planlaşdırılıb
+                {t.posts.scheduled}
               </div>
               <div className="text-3xl font-bold text-blue-600">{stats.scheduled}</div>
             </div>
@@ -349,7 +357,7 @@ export default function PostsPage() {
           <Card className="border-l-4 border-l-purple-500">
             <div className="p-6">
               <div className="text-sm font-medium text-muted-foreground mb-2">
-                Təsdiq Edilib
+                {t.posts.approved}
               </div>
               <div className="text-3xl font-bold text-purple-600">{stats.approved}</div>
             </div>
@@ -360,29 +368,29 @@ export default function PostsPage() {
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="ml-3 text-muted-foreground">Yüklənir...</span>
+            <span className="ml-3 text-muted-foreground">{t.posts.loading}</span>
           </div>
         ) : posts.length === 0 ? (
           // Empty State
           <Card className="text-center py-16">
             <div className="text-6xl mb-4">📝</div>
-            <h3 className="text-xl font-semibold mb-2">Hələ paylaşım yoxdur</h3>
+            <h3 className="text-xl font-semibold mb-2">{t.posts.noPosts}</h3>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              İlk paylaşımınızı yaratmaq üçün AI-dan istifadə edin və ya əl ilə yazın
+              {t.posts.noPostsDesc}
             </p>
             <Button 
               onClick={() => router.push('/ai-content-generator')}
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
             >
               <span className="mr-2">✨</span>
-              AI ilə Başlayın
+              {t.posts.startWithAI}
             </Button>
           </Card>
         ) : (
           <div className="space-y-4">
             {posts.map((post) => {
               const statusInfo = getStatusInfo(post.status);
-              const imageUrl = post.custom_image_url || post.design_url_absolute || post.design_thumbnail_absolute;
+              const imageUrl = post.image_url_absolute || post.custom_image_url || post.design_url_absolute || post.design_thumbnail_absolute || post.image_url;
               
               // Debug: Log image URLs
               if (imageUrl) {
@@ -398,7 +406,7 @@ export default function PostsPage() {
                         <div 
                           className="w-48 h-48 rounded-lg overflow-hidden bg-muted relative cursor-pointer hover:opacity-90 transition-opacity"
                           onClick={() => imageUrl && setSelectedImage({ url: imageUrl, title: post.title })}
-                          title="Şəkli böyüdün"
+                          title={t.posts.clickToEnlarge}
                         >
                           {imageUrl ? (
                             <>
@@ -411,6 +419,7 @@ export default function PostsPage() {
                                   const target = e.target as HTMLImageElement;
                                   const container = target.parentElement;
                                   if (container) {
+                                    const errorText = t.posts.imageNotLoading;
                                     container.innerHTML = `
                                       <div class="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-2 p-4 bg-muted">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -418,7 +427,7 @@ export default function PostsPage() {
                                           <circle cx="8.5" cy="8.5" r="1.5"/>
                                           <polyline points="21 15 16 10 5 21"/>
                                         </svg>
-                                        <span class="text-xs text-center">Şəkil yüklənmir</span>
+                                        <span class="text-xs text-center">${errorText}</span>
                                       </div>
                                     `;
                                   }
@@ -429,7 +438,7 @@ export default function PostsPage() {
                                 <div className="absolute top-2 right-2 z-10 pointer-events-none">
                                   <Badge className="bg-green-500 text-white text-xs">
                                     <CheckCircle2 className="w-3 h-3 mr-1" />
-                                    Brendlənmiş
+                                    {t.posts.branded}
                                   </Badge>
                                 </div>
                               )}
@@ -437,7 +446,7 @@ export default function PostsPage() {
                           ) : (
                             <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-2 bg-muted">
                               <span className="text-4xl">📝</span>
-                              <span className="text-xs">Şəkil yoxdur</span>
+                              <span className="text-xs">{t.posts.noImage}</span>
                             </div>
                           )}
                         </div>
@@ -467,17 +476,17 @@ export default function PostsPage() {
                                 onClick={() => handleApplyBranding(post.id)}
                                 disabled={applyingBranding[post.id]}
                                 className="border-purple-500 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950/30"
-                                title="Loqo və slogan əlavə et"
+                                title={t.posts.applyBranding}
                               >
                                 {applyingBranding[post.id] ? (
                                   <>
                                     <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                                    Brendləndirilir...
+                                    {t.posts.applyingBranding}
                                   </>
                                 ) : (
                                   <>
                                     <Sparkles className="w-4 h-4 mr-1" />
-                                    Brendləndir
+                                    {t.posts.applyBranding}
                                   </>
                                 )}
                               </Button>
@@ -485,32 +494,25 @@ export default function PostsPage() {
                             
                             {(post.status === 'approved' || post.status === 'scheduled' || post.status === 'draft' || post.status === 'pending_approval') && (
                               <>
+                                {/* Facebook - Coming Soon (disabled) */}
                                 <Button
                                   size="sm"
-                                  onClick={() => handlePublishToFacebook(post.id)}
-                                  disabled={publishingPosts[post.id]?.facebook}
-                                  className="bg-[#1877F2] hover:bg-[#166FE5] text-white"
-                                  title="Facebook-a Paylaş"
+                                  // Backend publishing kept in code, but UI is disabled for now
+                                  disabled
+                                  className="bg-[#1877F2]/40 text-white cursor-not-allowed"
+                                  title={t.aiTools?.comingSoon || 'Coming Soon'}
                                 >
-                                  {publishingPosts[post.id]?.facebook ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                  ) : (
                                     <Facebook className="w-4 h-4" />
-                                  )}
                                 </Button>
                                 
+                                {/* Instagram - Coming Soon (disabled) */}
                                 <Button
                                   size="sm"
-                                  onClick={() => handlePublishToInstagram(post.id)}
-                                  disabled={publishingPosts[post.id]?.instagram}
-                                  className="bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90 text-white"
-                                  title="Instagram-a Paylaş"
+                                  disabled
+                                  className="bg-gradient-to-r from-[#833AB4]/40 via-[#FD1D1D]/40 to-[#F77737]/40 text-white cursor-not-allowed"
+                                  title={t.aiTools?.comingSoon || 'Coming Soon'}
                                 >
-                                  {publishingPosts[post.id]?.instagram ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                  ) : (
                                     <Instagram className="w-4 h-4" />
-                                  )}
                                 </Button>
                                 
                                 <Button
@@ -518,7 +520,7 @@ export default function PostsPage() {
                                   onClick={() => handlePublishToLinkedIn(post.id)}
                                   disabled={publishingPosts[post.id]?.linkedin}
                                   className="bg-[#0077b5] hover:bg-[#006399] text-white"
-                                  title="LinkedIn-ə Paylaş"
+                                  title={t.posts.publishToLinkedIn}
                                 >
                                   {publishingPosts[post.id]?.linkedin ? (
                                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -528,6 +530,19 @@ export default function PostsPage() {
                                 </Button>
                               </>
                             )}
+                            
+                            {/* Share Button */}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setSelectedPostForShare(post);
+                                setShareModalOpen(true);
+                              }}
+                              title={t.share?.share || 'Share'}
+                            >
+                              <Share2 className="w-4 h-4" />
+                            </Button>
                             
                             <Button
                               size="sm"
@@ -574,21 +589,21 @@ export default function PostsPage() {
                           {post.published_at && (
                             <div className="flex items-center gap-1">
                               <CheckCircle2 className="w-3 h-3" />
-                              <span>Dərc: {formatDate(post.published_at)}</span>
+                              <span>{t.posts.publishedAt}: {formatDate(post.published_at)}</span>
                             </div>
                           )}
                           
                           {post.scheduled_time && !post.published_at && (
                             <div className="flex items-center gap-1">
                               <Calendar className="w-3 h-3" />
-                              <span>Plan: {formatDate(post.scheduled_time)}</span>
+                              <span>{t.posts.scheduledAt}: {formatDate(post.scheduled_time)}</span>
                             </div>
                           )}
                           
                           {!post.published_at && !post.scheduled_time && (
                             <div className="flex items-center gap-1">
                               <Clock className="w-3 h-3" />
-                              <span>Yaradılıb: {formatDate(post.created_at)}</span>
+                              <span>{t.posts.createdAt}: {formatDate(post.created_at)}</span>
                             </div>
                           )}
                         </div>
@@ -630,7 +645,7 @@ export default function PostsPage() {
             </div>
             
             <div className="p-4 border-t bg-background text-center text-sm text-muted-foreground">
-              Bağlamaq üçün ESC basın və ya xaricə klik edin
+              {t.posts.closeModalDesc}
             </div>
 
             {/* Close button */}
@@ -639,11 +654,24 @@ export default function PostsPage() {
                 <line x1="18" y1="6" x2="6" y2="18"/>
                 <line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
-              <span className="sr-only">Bağla</span>
+              <span className="sr-only">{t.posts.closeModal}</span>
             </DialogPrimitive.Close>
           </DialogPrimitive.Content>
         </DialogPortal>
       </Dialog>
+
+      {/* Share Modal */}
+      {selectedPostForShare && (
+        <ShareModal
+          isOpen={shareModalOpen}
+          onClose={() => {
+            setShareModalOpen(false);
+            setSelectedPostForShare(null);
+          }}
+          post={selectedPostForShare}
+        />
+      )}
+
     </DashboardLayout>
   );
 }

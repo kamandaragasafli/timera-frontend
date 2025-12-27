@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { authAPI, postsAPI } from '@/lib/api';
 import { usePostGeneration } from '@/contexts/PostGenerationContext';
+import { useTranslation } from '@/hooks/useTranslation';
 
 type Step = 'company-profile' | 'generate' | 'approve' | 'complete';
 
@@ -24,6 +25,7 @@ export default function AIContentGeneratorPage() {
     hasActiveGeneration,
     clearGeneration 
   } = usePostGeneration();
+  const t = useTranslation();
 
   useEffect(() => {
     const initializeData = async () => {
@@ -122,11 +124,11 @@ export default function AIContentGeneratorPage() {
 
   if (isLoading) {
     return (
-      <DashboardLayout title="AI Məzmun Yaradıcı">
+      <DashboardLayout title={t.aiContentGenerator.title}>
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">Yüklənir...</p>
+            <p className="mt-4 text-muted-foreground">{t.aiContentGenerator.loading}</p>
           </div>
         </div>
       </DashboardLayout>
@@ -135,21 +137,21 @@ export default function AIContentGeneratorPage() {
 
   const getStepTitle = () => {
     switch (currentStep) {
-      case 'company-profile': return 'Şirkət Profili Quraşdırması';
-      case 'generate': return 'AI Məzmun Yarat';
-      case 'approve': return 'Nəzərdən Keçir və Təsdiqlə';
-      case 'complete': return 'Yaradılma Tamamlandı';
-      default: return 'AI Məzmun Yaradıcı';
+      case 'company-profile': return t.settings.companyProfile.title;
+      case 'generate': return t.aiContentGenerator.title;
+      case 'approve': return t.posts.pendingApproval;
+      case 'complete': return t.common.save;
+      default: return t.aiContentGenerator.title;
     }
   };
 
   const getStepDescription = () => {
     const postsCount = companyProfile?.posts_to_generate || 10;
     switch (currentStep) {
-      case 'company-profile': return 'Daha yaxşı AI məzmunu üçün şirkət məlumatlarınızı təyin edin';
-      case 'generate': return `AI ilə ${postsCount} cəlbedici paylaşım yaradın`;
-      case 'approve': return 'Yaradılmış məzmununuzu nəzərdən keçirin və təsdiqləyin';
-      case 'complete': return 'Məzmununuz planlaşdırmağa hazırdır';
+      case 'company-profile': return t.settings.companyProfile.description;
+      case 'generate': return t.dashboard.getStartedDesc;
+      case 'approve': return t.posts.pendingApprovalDesc;
+      case 'complete': return t.posts.scheduledPostsDesc;
       default: return '';
     }
   };
@@ -161,10 +163,10 @@ export default function AIContentGeneratorPage() {
         <div className="mb-8">
           <div className="flex items-center justify-center space-x-4 mb-6">
             {[
-              { key: 'company-profile', label: 'Şirkət Məlumatı', icon: '🏢' },
-              { key: 'generate', label: 'Yaradılma', icon: '🤖' },
-              { key: 'approve', label: 'Nəzərdən Keçirmə', icon: '✅' },
-              { key: 'complete', label: 'Tamamlandı', icon: '🎉' }
+              { key: 'company-profile', label: t.settings.companyProfile.title, icon: '🏢' },
+              { key: 'generate', label: t.aiContentGenerator.title, icon: '🤖' },
+              { key: 'approve', label: t.posts.pendingApproval, icon: '✅' },
+              { key: 'complete', label: t.common.save, icon: '🎉' }
             ].map((step, index) => {
               const isActive = currentStep === step.key;
               const isCompleted = ['company-profile', 'generate', 'approve'].indexOf(currentStep) > 
@@ -220,9 +222,9 @@ export default function AIContentGeneratorPage() {
               <Card className="max-w-2xl mx-auto">
                 <CardHeader>
                   <div className="text-6xl mb-4">🎉</div>
-                  <CardTitle className="text-2xl">Məzmun Yaradılması Tamamlandı!</CardTitle>
+                  <CardTitle className="text-2xl">{t.common.save}</CardTitle>
                   <CardDescription>
-                    AI yaratdığı paylaşımlarınız planlaşdırmağa hazırdır
+                    {t.posts.scheduledPostsDesc}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -231,34 +233,34 @@ export default function AIContentGeneratorPage() {
                       <div className="text-2xl font-bold text-green-600">
                         {generatedPosts.filter(p => p.status === 'approved').length}
                       </div>
-                      <div className="text-sm text-muted-foreground">Təsdiqləndi</div>
+                      <div className="text-sm text-muted-foreground">{t.posts.approved}</div>
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-yellow-600">
                         {generatedPosts.filter(p => p.status === 'pending_approval').length}
                       </div>
-                      <div className="text-sm text-muted-foreground">Gözləyir</div>
+                      <div className="text-sm text-muted-foreground">{t.posts.statusPending}</div>
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-red-600">
                         {generatedPosts.filter(p => p.status === 'cancelled').length}
                       </div>
-                      <div className="text-sm text-muted-foreground">Rədd Edildi</div>
+                      <div className="text-sm text-muted-foreground">{t.posts.statusFailed}</div>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-center space-x-4">
                     <Button onClick={() => router.push('/calendar')}>
                       <span className="mr-2">📅</span>
-                      Paylaşımları Planlaşdır
+                      {t.calendar.title}
                     </Button>
                     <Button variant="outline" onClick={() => router.push('/posts')}>
                       <span className="mr-2">📝</span>
-                      Bütün Paylaşımlar
+                      {t.posts.title}
                     </Button>
                     <Button variant="outline" onClick={handleStartOver}>
                       <span className="mr-2">🔄</span>
-                      Daha Çox Yarat
+                      {t.aiTools.generate}
                     </Button>
                   </div>
                 </CardContent>

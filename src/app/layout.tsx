@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { PostGenerationProvider } from "@/contexts/PostGenerationContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <LanguageProvider>
         <ThemeProvider>
           <PostGenerationProvider>
             <AuthProvider>
@@ -37,6 +39,7 @@ export default function RootLayout({
             </AuthProvider>
           </PostGenerationProvider>
         </ThemeProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

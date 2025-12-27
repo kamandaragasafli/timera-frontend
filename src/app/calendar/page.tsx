@@ -9,6 +9,7 @@ import { VisualCalendar } from '@/components/calendar/VisualCalendar';
 import { PostEditModal } from '@/components/calendar/PostEditModal';
 import { postsAPI } from '@/lib/api';
 import { Loader2, Sparkles } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface Post {
   id: string;
@@ -30,6 +31,7 @@ export default function CalendarPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [optimalTiming, setOptimalTiming] = useState<any>(null);
   const [loadingOptimal, setLoadingOptimal] = useState(false);
+  const t = useTranslation();
 
   useEffect(() => {
     loadPosts();
@@ -47,7 +49,7 @@ export default function CalendarPage() {
         const scheduledTime = post.scheduled_time ? new Date(post.scheduled_time) : null;
         return {
           id: post.id,
-          title: post.title || 'Untitled',
+          title: post.title || t.calendar.untitled,
           content: post.content,
           status: post.status,
           date: scheduledTime ? scheduledTime.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
@@ -110,7 +112,7 @@ export default function CalendarPage() {
       }
     } catch (error) {
       console.error('Failed to update post schedule:', error);
-      alert('Zamanlama yenilənərkən xəta baş verdi');
+      alert(t.common.loading); // TODO: Add proper error message
     }
   };
 
@@ -139,7 +141,7 @@ export default function CalendarPage() {
       setIsEditModalOpen(false);
     } catch (error) {
       console.error('Failed to save post:', error);
-      alert('Post yenilənərkən xəta baş verdi');
+      alert(t.common.loading); // TODO: Add proper error message
     }
   };
 
@@ -161,8 +163,8 @@ export default function CalendarPage() {
 
   return (
     <DashboardLayout 
-      title="Content Calendar"
-      description="Plan and schedule your social media content"
+      title={t.calendar.title}
+      description={t.calendar.description}
     >
       <div className="space-y-6">
         {/* Action Bar */}
@@ -198,7 +200,7 @@ export default function CalendarPage() {
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="ml-3 text-muted-foreground">Yüklənir...</span>
+            <span className="ml-3 text-muted-foreground">{t.calendar.loading}</span>
           </div>
         ) : (
           <VisualCalendar
@@ -367,10 +369,10 @@ export default function CalendarPage() {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Sparkles className="w-4 h-4 mr-2" />
-                Optimal Paylaşım Zamanları
+                {t.calendar.optimalTiming}
               </CardTitle>
               <CardDescription>
-                AI tərəfindən təklif olunan ən yaxşı paylaşım zamanları
+                {t.calendar.optimalTimingDesc}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -425,7 +427,7 @@ export default function CalendarPage() {
                 </div>
               ) : (
                 <div className="text-center py-4 text-sm text-muted-foreground">
-                  Optimal zaman məlumatları yüklənə bilmədi
+                  {t.calendar.noPostsDesc}
                 </div>
               )}
             </CardContent>

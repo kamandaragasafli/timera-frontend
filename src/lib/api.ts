@@ -174,13 +174,76 @@ export const authAPI = {
 export const postsAPI = {
   getPosts: (params?: any) => api.get('/posts/', { params }),
   getPost: (id: string) => api.get(`/posts/${id}/`),
-  createPost: (data: any) => api.post('/posts/', data),
+  createPost: async (data: any) => {
+    console.log('[DEBUG] 🎯 postsAPI.createPost() called');
+    console.log('[DEBUG] Request URL: /posts/');
+    console.log('[DEBUG] Request method: POST');
+    console.log('[DEBUG] Request data:', data);
+    console.log('[DEBUG] Data type:', typeof data);
+    console.log('[DEBUG] Data keys:', Object.keys(data || {}));
+    
+    // Log specific fields
+    const fieldsToLog = ['title', 'content', 'description', 'hashtags', 'status', 'scheduled_time', 
+                        'design_url', 'image_url', 'custom_image', 'imgly_scene'];
+    fieldsToLog.forEach(field => {
+      if (data && field in data) {
+        const value = data[field];
+        if (typeof value === 'string' && value.length > 200) {
+          console.log(`[DEBUG]   ${field}: ${value.substring(0, 200)}... (length: ${value.length})`);
+        } else if (value instanceof File) {
+          console.log(`[DEBUG]   ${field}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+        } else {
+          console.log(`[DEBUG]   ${field}:`, value);
+        }
+      }
+    });
+    
+    // Check for FormData
+    if (data instanceof FormData) {
+      console.log('[DEBUG] Data is FormData');
+      console.log('[DEBUG] FormData entries:');
+      for (const [key, value] of data.entries()) {
+        if (value instanceof File) {
+          console.log(`[DEBUG]   ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+        } else {
+          console.log(`[DEBUG]   ${key}: ${String(value).substring(0, 200)}`);
+        }
+      }
+    }
+    
+    try {
+      console.log('[DEBUG] Sending POST request to /posts/...');
+      const response = await api.post('/posts/', data);
+      console.log('[DEBUG] ✅ Response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        data: response.data
+      });
+      console.log('[DEBUG] Response data keys:', Object.keys(response.data || {}));
+      if (response.data) {
+        console.log('[DEBUG] Created post ID:', response.data.id);
+        console.log('[DEBUG] Created post status:', response.data.status);
+        console.log('[DEBUG] Created post title:', response.data.title);
+      }
+      return response;
+    } catch (error: any) {
+      console.error('[DEBUG] ❌ Error creating post:', error);
+      console.error('[DEBUG] Error response:', error.response);
+      console.error('[DEBUG] Error status:', error.response?.status);
+      console.error('[DEBUG] Error data:', error.response?.data);
+      console.error('[DEBUG] Error message:', error.message);
+      throw error;
+    }
+  },
   updatePost: (id: string, data: any) => api.patch(`/posts/${id}/`, data),
   deletePost: (id: string) => api.delete(`/posts/${id}/`),
   publishPost: (id: string) => api.post(`/posts/${id}/publish/`),
   publishToFacebook: (id: string) => api.post(`/posts/${id}/publish-facebook/`),
   publishToInstagram: (id: string) => api.post(`/posts/${id}/publish-instagram/`),
-  publishToLinkedIn: (id: string) => api.post(`/posts/${id}/publish-linkedin/`),
+  publishToLinkedIn: (id: string, companyPageId?: string) => {
+    const data = companyPageId ? { company_page_id: companyPageId } : {};
+    return api.post(`/posts/${id}/publish-linkedin/`, data);
+  },
   schedulePost: (id: string, scheduledTime: string, platforms?: string[], useOptimal?: boolean) =>
     api.post(`/posts/${id}/schedule/`, { 
       scheduled_time: scheduledTime,
@@ -377,6 +440,57 @@ export const falAIAPI = {
     enhance_prompt?: boolean;
     save_to_storage?: boolean;
   }) => api.post('/ai/fal-ai/kling-video/text-to-video/', data),
+  
+  // Product Post Creation
+  createProductPost: (formData: FormData) => api.post('/ai/product-post/', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }),
+  
+  // Create product post from URL (new function)
+  createProductPostFromUrl: (data: { product_url: string; num_images: number }) => 
+    api.post('/ai/product-post-from-url/', data),
+  
+  // Social Media Analysis
+  analyzeInstagramProfile: (data: {
+    instagram_username: string;
+    current_bio?: string;
+    followers_count: number;
+    following_count: number;
+    posts_count: number;
+    posting_frequency: string;
+    niche?: string;
+  }) => api.post('/ai/instagram-analysis/', data),
+  
+  analyzeFacebookProfile: (data: {
+    page_name: string;
+    current_about?: string;
+    followers_count: number;
+    likes_count: number;
+    posts_count: number;
+    posting_frequency: string;
+    niche?: string;
+  }) => api.post('/ai/facebook-analysis/', data),
+  
+  analyzeLinkedInProfile: (data: {
+    profile_name: string;
+    current_headline?: string;
+    followers_count: number;
+    connections_count: number;
+    posts_count: number;
+    posting_frequency: string;
+    niche?: string;
+  }) => api.post('/ai/linkedin-analysis/', data),
+  
+  getSavedProfiles: (platform?: string) => {
+    const params = platform ? { platform } : {};
+    return api.get('/ai/saved-profiles/', { params });
+  },
+  
+  analyzeProfileFromUrl: (data: {
+    url: string;
+  }) => api.post('/ai/analyze-profile/', data),
 };
 
 // Meta Ads API endpoints

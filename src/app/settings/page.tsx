@@ -11,12 +11,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { authAPI } from '@/lib/api';
+import { LanguageSelector } from '@/components/LanguageSelector';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function SettingsPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [companyProfile, setCompanyProfile] = useState<any>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const t = useTranslation();
 
   useEffect(() => {
     const fetchCompanyProfile = async () => {
@@ -35,41 +38,41 @@ export default function SettingsPage() {
 
   return (
     <DashboardLayout 
-      title="Settings"
-      description="Manage your account preferences and configuration"
+      title={t.settings.title}
+      description={t.settings.description}
     >
       <div className="max-w-4xl space-y-6">
         {/* Profile Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>Profile Information</CardTitle>
+            <CardTitle>{t.settings.profile.title}</CardTitle>
             <CardDescription>
-              Update your personal information and account details
+              {t.settings.profile.description}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName">{t.settings.profile.firstName}</Label>
                 <Input id="firstName" defaultValue={user?.first_name} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName">{t.settings.profile.lastName}</Label>
                 <Input id="lastName" defaultValue={user?.last_name} />
               </div>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.settings.profile.email}</Label>
               <Input id="email" type="email" defaultValue={user?.email} />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="company">Company Name</Label>
+              <Label htmlFor="company">{t.settings.profile.companyName}</Label>
               <Input id="company" defaultValue={user?.company_name || ''} />
             </div>
             
-            <Button>Save Changes</Button>
+            <Button>{t.settings.profile.saveChanges}</Button>
           </CardContent>
         </Card>
 
@@ -78,9 +81,9 @@ export default function SettingsPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Şirkət Profili</CardTitle>
+                <CardTitle>{t.settings.companyProfile.title}</CardTitle>
                 <CardDescription>
-                  AI məzmunu üçün şirkət məlumatlarınızı idarə edin
+                  {t.settings.companyProfile.description}
                 </CardDescription>
               </div>
               <div className="flex gap-2">
@@ -94,38 +97,38 @@ export default function SettingsPage() {
                   variant="outline" 
                   onClick={() => router.push('/setup/company')}
                 >
-                  {companyProfile ? 'Redaktə Et' : 'Yarat'}
+                  {companyProfile ? t.settings.companyProfile.edit : t.settings.companyProfile.create}
                 </Button>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             {loadingProfile ? (
-              <p className="text-sm text-muted-foreground">Yüklənir...</p>
+              <p className="text-sm text-muted-foreground">{t.settings.companyProfile.loading}</p>
             ) : companyProfile ? (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-sm text-muted-foreground">Şirkət Adı</Label>
+                    <Label className="text-sm text-muted-foreground">{t.settings.companyProfile.companyName}</Label>
                     <p className="font-medium">{companyProfile.company_name}</p>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Sənaye</Label>
+                    <Label className="text-sm text-muted-foreground">{t.settings.companyProfile.industry}</Label>
                     <p className="font-medium">{companyProfile.industry}</p>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Şirkət Ölçüsü</Label>
+                    <Label className="text-sm text-muted-foreground">{t.settings.companyProfile.companySize}</Label>
                     <p className="font-medium">{companyProfile.company_size}</p>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Üslub</Label>
+                    <Label className="text-sm text-muted-foreground">{t.settings.companyProfile.style}</Label>
                     <p className="font-medium">{companyProfile.preferred_tone}</p>
                   </div>
                 </div>
                 
                 {companyProfile.website && (
                   <div>
-                    <Label className="text-sm text-muted-foreground">Vebsayt</Label>
+                    <Label className="text-sm text-muted-foreground">{t.settings.companyProfile.website}</Label>
                     <p className="font-medium">
                       <a href={companyProfile.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                         {companyProfile.website}
@@ -136,7 +139,7 @@ export default function SettingsPage() {
                 
                 {companyProfile.business_description && (
                   <div>
-                    <Label className="text-sm text-muted-foreground">Biznes Təsviri</Label>
+                    <Label className="text-sm text-muted-foreground">{t.settings.companyProfile.businessDescription}</Label>
                     <p className="text-sm">{companyProfile.business_description}</p>
                   </div>
                 )}
@@ -144,10 +147,10 @@ export default function SettingsPage() {
             ) : (
               <div className="text-center py-6">
                 <p className="text-sm text-muted-foreground mb-4">
-                  Hələ ki şirkət profili yaradılmayıb
+                  {t.settings.companyProfile.noProfile}
                 </p>
                 <Button onClick={() => router.push('/setup/company')}>
-                  Şirkət Profili Yarat
+                  {t.settings.companyProfile.createProfile}
                 </Button>
               </div>
             )}
@@ -157,21 +160,21 @@ export default function SettingsPage() {
         {/* Account Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>Account Settings</CardTitle>
+            <CardTitle>{t.settings.account.title}</CardTitle>
             <CardDescription>
-              Manage your account preferences and security
+              {t.settings.account.description}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium">Email Verification</h4>
+                <h4 className="font-medium">{t.settings.account.emailVerification}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Verify your email address to secure your account
+                  {t.settings.account.emailVerificationDesc}
                 </p>
               </div>
               <Badge variant={user?.is_email_verified ? "default" : "secondary"}>
-                {user?.is_email_verified ? "Verified" : "Unverified"}
+                {user?.is_email_verified ? t.settings.account.verified : t.settings.account.unverified}
               </Badge>
             </div>
             
@@ -179,24 +182,45 @@ export default function SettingsPage() {
             
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium">Subscription Plan</h4>
+                <h4 className="font-medium">{t.settings.account.subscriptionPlan}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Current plan: {user?.subscription_plan || 'Free'}
+                  {t.settings.account.subscriptionPlanDesc.replace('{plan}', user?.subscription_plan || 'Free')}
                 </p>
               </div>
-              <Button variant="outline">Upgrade Plan</Button>
+              <Button variant="outline">{t.settings.account.upgradePlan}</Button>
             </div>
             
             <Separator />
             
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium">Change Password</h4>
+                <h4 className="font-medium">{t.settings.account.changePassword}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Update your account password
+                  {t.settings.account.changePasswordDesc}
                 </p>
               </div>
-              <Button variant="outline">Change Password</Button>
+              <Button variant="outline">{t.settings.account.changePassword}</Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Language Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle>{t.settings.languagePreferences.title}</CardTitle>
+            <CardDescription>
+              {t.settings.languagePreferences.description}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-medium">{t.settings.languagePreferences.interfaceLanguage}</h4>
+                <p className="text-sm text-muted-foreground">
+                  {t.settings.languagePreferences.interfaceLanguageDesc}
+                </p>
+              </div>
+              <LanguageSelector />
             </div>
           </CardContent>
         </Card>
@@ -204,17 +228,17 @@ export default function SettingsPage() {
         {/* Notification Settings */}
         <Card>
           <CardHeader>
-            <CardTitle>Notifications</CardTitle>
+            <CardTitle>{t.settings.notifications.title}</CardTitle>
             <CardDescription>
-              Configure how you want to receive notifications
+              {t.settings.notifications.description}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium">Email Notifications</h4>
+                <h4 className="font-medium">{t.settings.notifications.emailNotifications}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Receive updates about your posts and account
+                  {t.settings.notifications.emailNotificationsDesc}
                 </p>
               </div>
               <input type="checkbox" defaultChecked className="w-4 h-4" />
@@ -222,9 +246,9 @@ export default function SettingsPage() {
             
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium">Post Reminders</h4>
+                <h4 className="font-medium">{t.settings.notifications.postReminders}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Get reminded about scheduled posts
+                  {t.settings.notifications.postRemindersDesc}
                 </p>
               </div>
               <input type="checkbox" defaultChecked className="w-4 h-4" />
@@ -232,9 +256,9 @@ export default function SettingsPage() {
             
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium">Weekly Reports</h4>
+                <h4 className="font-medium">{t.settings.notifications.weeklyReports}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Receive weekly performance summaries
+                  {t.settings.notifications.weeklyReportsDesc}
                 </p>
               </div>
               <input type="checkbox" className="w-4 h-4" />
@@ -245,24 +269,24 @@ export default function SettingsPage() {
         {/* Legal */}
         <Card>
           <CardHeader>
-            <CardTitle>Qanuni Sənədlər</CardTitle>
+            <CardTitle>{t.settings.legal.title}</CardTitle>
             <CardDescription>
-              Gizlilik siyasəti və istifadə şərtləri
+              {t.settings.legal.description}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium">Gizlilik Siyasəti</h4>
+                <h4 className="font-medium">{t.settings.legal.privacyPolicy}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Məlumatlarınızın necə toplandığı və istifadə olunduğu haqqında
+                  {t.settings.legal.privacyPolicyDesc}
                 </p>
               </div>
               <Button 
                 variant="outline" 
                 onClick={() => router.push('/policy')}
               >
-                Oxu
+                {t.settings.legal.read}
               </Button>
             </div>
             
@@ -270,16 +294,16 @@ export default function SettingsPage() {
             
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium">İstifadə Şərtləri</h4>
+                <h4 className="font-medium">{t.settings.legal.termsOfService}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Platformadan istifadə qaydaları və şərtləri
+                  {t.settings.legal.termsOfServiceDesc}
                 </p>
               </div>
               <Button 
                 variant="outline" 
                 onClick={() => router.push('/terms')}
               >
-                Oxu
+                {t.settings.legal.read}
               </Button>
             </div>
           </CardContent>
@@ -288,20 +312,20 @@ export default function SettingsPage() {
         {/* Danger Zone */}
         <Card className="border-red-200">
           <CardHeader>
-            <CardTitle className="text-red-600">Danger Zone</CardTitle>
+            <CardTitle className="text-red-600">{t.settings.dangerZone.title}</CardTitle>
             <CardDescription>
-              Irreversible actions that affect your account
+              {t.settings.dangerZone.description}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium">Delete Account</h4>
+                <h4 className="font-medium">{t.settings.dangerZone.deleteAccount}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Permanently delete your account and all data
+                  {t.settings.dangerZone.deleteAccountDesc}
                 </p>
               </div>
-              <Button variant="destructive">Delete Account</Button>
+              <Button variant="destructive">{t.settings.dangerZone.deleteAccount}</Button>
             </div>
           </CardContent>
         </Card>

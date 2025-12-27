@@ -24,6 +24,7 @@ import {
   AlertCircle,
   CheckCircle2
 } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface AdAccount {
   id: string;
@@ -78,6 +79,7 @@ export default function MetaAdsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [adSets, setAdSets] = useState<AdSet[]>([]);
   const [ads, setAds] = useState<Ad[]>([]);
+  const t = useTranslation();
   
   // Action states
   const [actionLoading, setActionLoading] = useState<{[key: string]: boolean}>({});
@@ -250,8 +252,8 @@ export default function MetaAdsPage() {
 
   return (
     <DashboardLayout 
-      title="Meta Ads"
-      description="Facebook və Instagram reklam kampaniyalarınızı idarə edin"
+      title={t.metaAds.title}
+      description={t.metaAds.description}
     >
       <div className="space-y-6">
         {error && (

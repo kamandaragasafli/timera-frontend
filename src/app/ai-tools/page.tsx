@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function AIToolsPage() {
   const router = useRouter();
@@ -26,37 +27,38 @@ export default function AIToolsPage() {
   const [generatedLogo, setGeneratedLogo] = useState<string | null>(null);
   const [generatedSlogan, setGeneratedSlogan] = useState<string | null>(null);
   const [isSavingToProfile, setIsSavingToProfile] = useState(false);
+  const t = useTranslation();
 
   // Mock AI tools
   const aiTools = [
     {
       id: 1,
-      name: 'Content Generator',
-      description: 'Generate engaging posts with AI',
+      name: t.aiTools.contentGenerator,
+      description: t.aiTools.contentGeneratorDesc,
       icon: '✨',
       color: 'bg-purple-500',
       category: 'Content Creation'
     },
     {
       id: 2,
-      name: 'Hashtag Generator',
-      description: 'Find trending hashtags for your posts',
+      name: t.aiTools.hashtagGenerator,
+      description: t.aiTools.hashtagGeneratorDesc,
       icon: '#️⃣',
       color: 'bg-blue-500',
       category: 'Optimization'
     },
     {
       id: 3,
-      name: 'Caption Optimizer',
-      description: 'Improve your captions for better engagement',
+      name: t.aiTools.captionOptimizer,
+      description: t.aiTools.captionOptimizerDesc,
       icon: '📝',
       color: 'bg-green-500',
       category: 'Optimization'
     },
     {
       id: 4,
-      name: 'Image Generator',
-      description: 'Create images with AI (Coming Soon)',
+      name: t.aiTools.imageGenerator,
+      description: t.aiTools.imageGeneratorDesc,
       icon: '🎨',
       color: 'bg-pink-500',
       category: 'Visual Content',
@@ -64,42 +66,50 @@ export default function AIToolsPage() {
     },
     {
       id: 5,
-      name: 'Trend Analyzer',
-      description: 'Analyze trending topics in your industry',
+      name: t.aiTools.trendAnalyzer,
+      description: t.aiTools.trendAnalyzerDesc,
       icon: '📈',
       color: 'bg-orange-500',
       category: 'Analytics'
     },
     {
       id: 6,
-      name: 'Competitor Analysis',
-      description: 'Analyze competitor content strategies',
+      name: t.aiTools.competitorAnalysis,
+      description: t.aiTools.competitorAnalysisDesc,
       icon: '🔍',
       color: 'bg-indigo-500',
       category: 'Analytics'
     },
     {
       id: 7,
-      name: 'Logo & Slogan Generator',
-      description: 'AI ilə professional logo və slogan yaradın',
+      name: t.aiTools.logoSloganGenerator,
+      description: t.aiTools.logoSloganGeneratorDesc,
       icon: '🎯',
       color: 'bg-teal-500',
       category: 'Branding'
     },
     {
       id: 8,
-      name: 'Ad Creative Generator',
-      description: 'Create professional marketing visuals with AI',
+      name: t.aiTools.adCreativeGenerator,
+      description: t.aiTools.adCreativeGeneratorDesc,
       icon: '🎨',
       color: 'bg-violet-500',
       category: 'Visual Content'
     },
     {
       id: 9,
-      name: 'Video Generator',
-      description: 'Create professional videos with AI using Kling Video',
+      name: t.aiTools.videoGenerator,
+      description: t.aiTools.videoGeneratorDesc,
       icon: '🎬',
       color: 'bg-red-500',
+      category: 'Visual Content'
+    },
+    {
+      id: 10,
+      name: 'Məhsul Post Yaradıcı',
+      description: 'Məhsul rəsmini yükləyin, AI arxa fonu siləcək, analiz edəcək və reklam postları hazırlayacaq',
+      icon: '🛍️',
+      color: 'bg-amber-500',
       category: 'Visual Content'
     }
   ];
@@ -135,7 +145,7 @@ What's your experience with social media automation? Share your thoughts below!
 
   const handleGenerateLogo = async () => {
     if (!productName.trim() || !productDescription.trim()) {
-      alert('Zəhmət olmasa şirkət adı və təsvirini daxil edin');
+      alert(`${t.aiTools.productName} və ${t.aiTools.productDescription} daxil edin`);
       return;
     }
 
@@ -246,6 +256,9 @@ What's your experience with social media automation? Share your thoughts below!
     } else if (toolId === 9) {
       // Navigate to Video Generator
       router.push('/ai-tools/video-generator');
+    } else if (toolId === 10) {
+      // Navigate to Product Post Creator
+      router.push('/ai-tools/product-post');
     }
   };
 
@@ -350,8 +363,8 @@ What's your experience with social media automation? Share your thoughts below!
 
   return (
     <DashboardLayout 
-      title="AI Tools"
-      description="Leverage AI to create better social media content"
+      title={t.aiTools.title}
+      description={t.aiTools.description}
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content Generator */}
@@ -360,18 +373,18 @@ What's your experience with social media automation? Share your thoughts below!
             <CardHeader>
               <CardTitle className="flex items-center">
                 <span className="mr-2">✨</span>
-                AI Content Generator
+                {t.aiTools.contentGenerator}
               </CardTitle>
               <CardDescription>
-                Generate engaging social media posts with AI
+                {t.aiTools.contentGeneratorDesc}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="prompt">What would you like to post about?</Label>
+                <Label htmlFor="prompt">{t.aiTools.promptPlaceholder}</Label>
                 <Input
                   id="prompt"
-                  placeholder="e.g., Our new product launch, industry trends, company culture..."
+                  placeholder={t.aiTools.promptPlaceholder}
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                 />
@@ -386,12 +399,12 @@ What's your experience with social media automation? Share your thoughts below!
                   {isGenerating ? (
                     <>
                       <span className="mr-2">⏳</span>
-                      Generating...
+                      {t.aiTools.generating}
                     </>
                   ) : (
                     <>
                       <span className="mr-2">✨</span>
-                      Generate Content
+                      {t.aiTools.generate}
                     </>
                   )}
                 </Button>
@@ -465,7 +478,7 @@ What's your experience with social media automation? Share your thoughts below!
                       variant={tool.comingSoon ? "secondary" : "default"}
                       onClick={() => handleOpenLogoDialog(tool.id)}
                     >
-                      {tool.comingSoon ? 'Coming Soon' : 'Use Tool'}
+                      {tool.comingSoon ? t.aiTools.comingSoon : t.common.start}
                     </Button>
                   </CardContent>
                 </Card>
@@ -582,35 +595,35 @@ What's your experience with social media automation? Share your thoughts below!
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <span className="text-2xl">🎯</span>
-              Logo & Slogan Generator
+              {t.aiTools.logoSloganGenerator}
             </DialogTitle>
             <DialogDescription>
-              Şirkətiniz üçün professional logo və slogan yaradın. Sadəcə məlumatları daxil edin.
+              {t.aiTools.logoSloganGeneratorDesc}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="productName">Şirkət/Məhsul Adı *</Label>
+              <Label htmlFor="productName">{t.aiTools.productName} *</Label>
               <Input
                 id="productName"
-                placeholder="məs: Timera, TechStart Solutions"
+                placeholder={t.aiTools.productName}
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="productDescription">Təsvir *</Label>
+              <Label htmlFor="productDescription">{t.aiTools.productDescription} *</Label>
               <Textarea
                 id="productDescription"
-                placeholder="Şirkətinizi və ya məhsulunuzu təsvir edin..."
+                placeholder={t.aiTools.productDescription}
                 value={productDescription}
                 onChange={(e) => setProductDescription(e.target.value)}
                 rows={4}
               />
               <p className="text-xs text-muted-foreground">
-                Daha ətraflı təsvir, daha yaxşı logo və slogan yaradacaq
+                {t.aiTools.productDescription}
               </p>
             </div>
           </div>
@@ -667,12 +680,12 @@ What's your experience with social media automation? Share your thoughts below!
                   {isSavingToProfile ? (
                     <>
                       <span className="mr-2">⏳</span>
-                      Əlavə Edilir...
+                      {t.aiTools.saving}
                     </>
                   ) : (
                     <>
                       <span className="mr-2">✅</span>
-                      Şirkət Profilinə Əlavə Et
+                      {t.aiTools.saveToProfile}
                     </>
                   )}
                 </Button>

@@ -1,0 +1,722 @@
+'use client';
+
+import { useState } from 'react';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { falAIAPI } from '@/lib/api';
+import { Loader2, CheckCircle2, AlertTriangle, Linkedin, TrendingUp, Calendar, Target, History, ExternalLink } from 'lucide-react';
+import { useEffect } from 'react';
+
+interface HeadlineSuggestion {
+  headline: string;
+  explanation: string;
+}
+
+interface ContentStrategy {
+  content_mix: {
+    [key: string]: number;
+  };
+  post_frequency: string;
+  article_frequency: string;
+  content_pillars: string[];
+}
+
+interface TimeSlot {
+  time_range?: string;
+  best_time: string;
+  effectiveness?: string;
+}
+
+interface PostingSchedule {
+  weekdays: {
+    morning: TimeSlot | string;
+    midday: TimeSlot | string;
+    afternoon: TimeSlot | string;
+    best_time: string;
+    best_time_reason?: string;
+  };
+  top_3_best_times?: Array<{
+    time: string;
+    day_type: string;
+    effectiveness_score: string;
+    reason: string;
+  }>;
+}
+
+interface GrowthStrategy {
+  '30_day_plan': {
+    week_1: string;
+    week_2: string;
+    week_3: string;
+    week_4: string;
+  };
+  realistic_goals: {
+    followers_growth: string;
+    engagement_target: string;
+  };
+  metrics_to_track: string[];
+}
+
+interface OverallAssessment {
+  strengths: string[];
+  weaknesses: string[];
+  opportunities: string[];
+  priority_actions: string[];
+}
+
+interface AnalysisResult {
+  success: boolean;
+  profile_info: {
+    profile_name: string;
+    followers: number;
+    connections: number;
+    posts: number;
+    engagement_rate: number;
+    niche: string;
+    profile_stage: string;
+    connection_ratio: number;
+  };
+  analysis: {
+    headline_suggestions: HeadlineSuggestion[];
+    content_strategy: ContentStrategy;
+    posting_schedule: PostingSchedule;
+    engagement_tips: string[];
+    growth_strategy: GrowthStrategy;
+    overall_assessment: OverallAssessment;
+  };
+  generated_at: string;
+}
+
+const NICHE_OPTIONS = [
+  'B2B',
+  'Technology',
+  'Finance',
+  'Healthcare',
+  'Education',
+  'Consulting',
+  'Marketing',
+  'Sales',
+  'HR',
+  'Legal',
+  'Real Estate',
+  'Manufacturing',
+  'Retail',
+  'Other'
+];
+
+const POSTING_FREQUENCY_OPTIONS = [
+  { value: '1-2', label: 'Həftədə 1-2 dəfə' },
+  { value: '3-4', label: 'Həftədə 3-4 dəfə' },
+  { value: '5-7', label: 'Həftədə 5-7 dəfə' },
+  { value: 'daily', label: 'Gündə 1 dəfə' },
+  { value: '2plus', label: 'Gündə 2+ dəfə' }
+];
+
+export default function LinkedInSMMPage() {
+  const [selectedProfile, setSelectedProfile] = useState<any>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState('');
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [savedProfiles, setSavedProfiles] = useState<any[]>([]);
+  const [loadingSaved, setLoadingSaved] = useState(false);
+
+  useEffect(() => {
+    loadSavedProfiles();
+  }, []);
+
+  const loadSavedProfiles = async () => {
+    setLoadingSaved(true);
+    try {
+      const response = await falAIAPI.getSavedProfiles('linkedin');
+      setSavedProfiles(response.data.profiles || []);
+    } catch (err: any) {
+      console.error('Saved profiles yüklənə bilmədi:', err);
+    } finally {
+      setLoadingSaved(false);
+    }
+  };
+
+  const handleSelectProfile = async (profile: any) => {
+    setSelectedProfile(profile);
+    setError('');
+    setResult(null);
+    
+    if (!profile) return;
+    
+    setIsAnalyzing(true);
+
+    try {
+      const preview = profile.preview_data || {};
+      const stats = preview.stats || {};
+      
+      console.log('📊 LinkedIn profile stats:', stats);
+      
+      const followers = typeof stats.followers === 'string' 
+        ? parseInt(stats.followers.replace(/[^\d]/g, '')) || 0
+        : (stats.followers || 0);
+      const connections = typeof stats.connections === 'string'
+        ? parseInt(stats.connections.replace(/[^\d]/g, '')) || 0
+        : (stats.connections || stats.following || 0);
+      const posts = typeof stats.posts === 'string'
+        ? parseInt(stats.posts.replace(/[^\d]/g, '')) || 0
+        : (stats.posts || 0);
+      
+      console.log('📊 Parsed stats:', { followers, connections, posts });
+      
+      const response = await falAIAPI.analyzeLinkedInProfile({
+        profile_name: preview.full_name || preview.title || profile.profile_username || '',
+        current_headline: preview.headline || preview.biography || preview.description || '',
+        followers_count: followers,
+        connections_count: connections,
+        posts_count: posts,
+        posting_frequency: '3-4',
+        niche: profile.smm_analysis?.niche || ''
+      });
+      
+      setResult(response.data);
+      setIsAnalyzing(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err: any) {
+      setIsAnalyzing(false);
+      setError(err.response?.data?.error || err.message || 'Analiz xətası');
+    }
+  };
+
+  return (
+    <DashboardLayout>
+      <div className="container mx-auto py-8 px-4 max-w-7xl">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
+            <Linkedin className="h-8 w-8 text-blue-700" />
+            LinkedIn Profil SMM Analizi
+          </h1>
+          <p className="text-muted-foreground">
+            LinkedIn profil məlumatlarınızı daxil edin və AI-powered SMM tövsiyələri alın
+          </p>
+        </div>
+
+        {!result && (
+          <>
+            {loadingSaved ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-muted-foreground">Yüklənir...</p>
+                </CardContent>
+              </Card>
+            ) : savedProfiles.length > 0 ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <History className="h-5 w-5" />
+                    Saxlanılmış Profillər
+                  </CardTitle>
+                  <CardDescription>
+                    Analiz etmək istədiyiniz profili seçin
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {savedProfiles.map((profile) => {
+                      const preview = profile.preview_data || {};
+                      const stats = preview.stats || {};
+                      return (
+                        <div
+                          key={profile.id}
+                          onClick={() => handleSelectProfile(profile)}
+                          className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
+                            selectedProfile?.id === profile.id ? 'border-primary bg-primary/5' : ''
+                          }`}
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <h3 className="font-semibold text-lg">
+                              {preview.full_name || preview.title || profile.profile_username || 'Naməlum'}
+                            </h3>
+                            {selectedProfile?.id === profile.id && (
+                              <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                            {preview.headline || preview.biography || preview.description || 'Bio yoxdur'}
+                          </p>
+                          <div className="flex gap-4 text-sm">
+                            <div>
+                              <span className="text-muted-foreground">Followers: </span>
+                              <span className="font-semibold">{stats.followers || 0}</span>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Connections: </span>
+                              <span className="font-semibold">{stats.connections || stats.following || 0}</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Linkedin className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold mb-2">Saxlanılmış profil yoxdur</h3>
+                  <p className="text-muted-foreground mb-4">
+                    LinkedIn profil analizi üçün əvvəlcə profil linkini analiz edin
+                  </p>
+                  <Button
+                    onClick={() => window.location.href = '/profile-analyzer'}
+                    variant="outline"
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Profil Analizi Səhifəsinə Get
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {isAnalyzing && (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+                  <p className="text-muted-foreground">Profil analiz edilir...</p>
+                </CardContent>
+              </Card>
+            )}
+
+            {error && (
+              <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+          </>
+        )}
+
+        {result && (
+          <div className="space-y-6">
+            {/* Success Message */}
+            <Alert className="border-green-500 bg-green-50">
+              <CheckCircle2 className="h-4 w-4 text-green-600" />
+              <AlertDescription>
+                <strong>{result.profile_info.profile_name}</strong> profili uğurla analiz edildi!
+                <br />
+                <span className="text-sm text-muted-foreground">
+                  Profil mərhələsi: {result.profile_info.profile_stage}
+                </span>
+              </AlertDescription>
+            </Alert>
+
+            {/* Profile Summary */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Profil Statistikası</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <p className="text-2xl font-bold">{result.profile_info.followers.toLocaleString()}</p>
+                    <p className="text-sm text-muted-foreground">Followers</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <p className="text-2xl font-bold">{result.profile_info.connections.toLocaleString()}</p>
+                    <p className="text-sm text-muted-foreground">Connections</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <p className="text-2xl font-bold">{result.profile_info.posts}</p>
+                    <p className="text-sm text-muted-foreground">Posts</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <p className="text-2xl font-bold">{result.profile_info.engagement_rate}%</p>
+                    <p className="text-sm text-muted-foreground">Engagement</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Tabbed Content */}
+            <Tabs defaultValue="headline" className="w-full">
+              <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5">
+                <TabsTrigger value="headline">Headline</TabsTrigger>
+                <TabsTrigger value="content">Content</TabsTrigger>
+                <TabsTrigger value="schedule">Schedule</TabsTrigger>
+                <TabsTrigger value="growth">Growth</TabsTrigger>
+                <TabsTrigger value="assessment">Qiymətləndirmə</TabsTrigger>
+              </TabsList>
+
+              {/* Headline Suggestions */}
+              <TabsContent value="headline" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Headline Təklifləri</CardTitle>
+                    <CardDescription>AI-generated headline variantları</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {result.analysis.headline_suggestions?.map((suggestion, idx) => (
+                      <div key={idx} className="p-4 border rounded-lg space-y-2">
+                        <div className="flex items-start justify-between">
+                          <Badge variant="outline">Variant {idx + 1}</Badge>
+                        </div>
+                        <p className="font-medium text-lg">{suggestion.headline}</p>
+                        <p className="text-sm text-muted-foreground">{suggestion.explanation}</p>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Content Strategy */}
+              <TabsContent value="content" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Content Strategiyası</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Content Mix */}
+                    <div>
+                      <h4 className="font-semibold mb-3">Content Mix</h4>
+                      <div className="space-y-2">
+                        {Object.entries(result.analysis.content_strategy.content_mix).map(([type, percentage]) => (
+                          <div key={type} className="flex items-center gap-3">
+                            <span className="w-32 text-sm capitalize">{type}</span>
+                            <div className="flex-1 h-6 bg-muted rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-primary transition-all"
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
+                            <span className="w-12 text-sm text-right font-medium">{percentage}%</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Frequencies */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground mb-1">Post Tezliyi</p>
+                        <p className="font-semibold">{result.analysis.content_strategy.post_frequency}</p>
+                      </div>
+                      <div className="p-4 bg-muted rounded-lg">
+                        <p className="text-sm text-muted-foreground mb-1">Article Tezliyi</p>
+                        <p className="font-semibold">{result.analysis.content_strategy.article_frequency}</p>
+                      </div>
+                    </div>
+
+                    {/* Content Pillars */}
+                    <div>
+                      <h4 className="font-semibold mb-2">Content Pillars</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {result.analysis.content_strategy.content_pillars?.map((pillar, idx) => (
+                          <Badge key={idx} variant="secondary" className="text-sm py-1 px-3">
+                            {pillar}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Engagement Tips */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Engagement Artırma Tiplər</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2">
+                      {result.analysis.engagement_tips?.map((tip, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm">{tip}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Posting Schedule */}
+              <TabsContent value="schedule" className="space-y-4">
+                {/* Top 3 Best Times */}
+                {result.analysis.posting_schedule.top_3_best_times && 
+                 Array.isArray(result.analysis.posting_schedule.top_3_best_times) && 
+                 result.analysis.posting_schedule.top_3_best_times.length > 0 && (
+                  <Card className="border-2 border-primary">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-primary">
+                        <TrendingUp className="h-5 w-5" />
+                        Top 3 Ən Effektiv Paylaşım Saatları
+                      </CardTitle>
+                      <CardDescription>
+                        Bu saatlarda paylaşım etmək ən yüksək engagement və reach göstərəcək
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {result.analysis.posting_schedule.top_3_best_times.map((item: any, idx: number) => (
+                          <div key={idx} className={`p-4 rounded-lg border-2 ${
+                            idx === 0 ? 'bg-primary/10 border-primary' : 
+                            idx === 1 ? 'bg-blue-50 border-blue-300 dark:bg-blue-950/20 dark:border-blue-700' : 
+                            'bg-green-50 border-green-300 dark:bg-green-950/20 dark:border-green-700'
+                          }`}>
+                            <div className="flex items-center justify-between mb-2">
+                              <Badge variant={idx === 0 ? "default" : "secondary"} className="text-lg font-bold">
+                                #{idx + 1}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">{item?.day_type || ''}</span>
+                            </div>
+                            <p className="text-3xl font-bold mb-2">{item?.time || ''}</p>
+                            <p className="text-sm font-semibold text-primary mb-2">
+                              Effektivlik: {item?.effectiveness_score || ''}
+                            </p>
+                            <p className="text-sm text-muted-foreground">{item?.reason || ''}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Calendar className="h-5 w-5" />
+                      Ətraflı Paylaşım Cədvəli
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Weekdays */}
+                    <div>
+                      <h4 className="font-semibold mb-3">Həftə İçi</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {(() => {
+                          const getTimeSlot = (slot: any) => {
+                            if (typeof slot === 'string') {
+                              return { time_range: slot, best_time: '', effectiveness: '' };
+                            }
+                            if (slot && typeof slot === 'object') {
+                              return {
+                                time_range: slot.time_range || '',
+                                best_time: slot.best_time || '',
+                                effectiveness: slot.effectiveness || ''
+                              };
+                            }
+                            return { time_range: '', best_time: '', effectiveness: '' };
+                          };
+
+                          const morning = getTimeSlot(result.analysis.posting_schedule.weekdays.morning);
+                          const midday = getTimeSlot(result.analysis.posting_schedule.weekdays.midday);
+                          const afternoon = getTimeSlot(result.analysis.posting_schedule.weekdays.afternoon);
+                          
+                          return (
+                            <>
+                              <div className="p-4 bg-muted rounded-lg">
+                                <p className="text-sm text-muted-foreground mb-1">🌅 Səhər</p>
+                                <p className="font-semibold text-lg mb-1">
+                                  {morning.time_range || morning.best_time || ''}
+                                </p>
+                                {morning.best_time && morning.time_range && (
+                                  <p className="text-xs text-muted-foreground mb-1">
+                                    Optimal: <span className="font-medium">{morning.best_time}</span>
+                                  </p>
+                                )}
+                                {morning.effectiveness && (
+                                  <p className="text-xs text-muted-foreground italic mt-2">{morning.effectiveness}</p>
+                                )}
+                              </div>
+                              <div className="p-4 bg-muted rounded-lg">
+                                <p className="text-sm text-muted-foreground mb-1">☀️ Günorta</p>
+                                <p className="font-semibold text-lg mb-1">
+                                  {midday.time_range || midday.best_time || ''}
+                                </p>
+                                {midday.best_time && midday.time_range && (
+                                  <p className="text-xs text-muted-foreground mb-1">
+                                    Optimal: <span className="font-medium">{midday.best_time}</span>
+                                  </p>
+                                )}
+                                {midday.effectiveness && (
+                                  <p className="text-xs text-muted-foreground italic mt-2">{midday.effectiveness}</p>
+                                )}
+                              </div>
+                              <div className="p-4 bg-muted rounded-lg">
+                                <p className="text-sm text-muted-foreground mb-1">🌆 Axşam</p>
+                                <p className="font-semibold text-lg mb-1">
+                                  {afternoon.time_range || afternoon.best_time || ''}
+                                </p>
+                                {afternoon.best_time && afternoon.time_range && (
+                                  <p className="text-xs text-muted-foreground mb-1">
+                                    Optimal: <span className="font-medium">{afternoon.best_time}</span>
+                                  </p>
+                                )}
+                                {afternoon.effectiveness && (
+                                  <p className="text-xs text-muted-foreground italic mt-2">{afternoon.effectiveness}</p>
+                                )}
+                              </div>
+                              <div className="p-4 bg-primary/10 rounded-lg border-2 border-primary">
+                                <p className="text-sm text-primary mb-1 font-semibold">⭐ Ən Yaxşı Vaxt</p>
+                                <p className="font-bold text-primary text-2xl mb-2">
+                                  {result.analysis.posting_schedule.weekdays.best_time || ''}
+                                </p>
+                                {result.analysis.posting_schedule.weekdays.best_time_reason && (
+                                  <p className="text-xs text-primary/80">{result.analysis.posting_schedule.weekdays.best_time_reason}</p>
+                                )}
+                              </div>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Growth Strategy */}
+              <TabsContent value="growth" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Target className="h-5 w-5" />
+                      30 Günlük Growth Plan
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {Object.entries(result.analysis.growth_strategy['30_day_plan']).map(([week, plan]) => (
+                      <div key={week} className="p-4 border rounded-lg">
+                        <h4 className="font-semibold mb-2 capitalize">{week.replace('_', ' ')}</h4>
+                        <p className="text-sm">{plan}</p>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Realistik Hədəflər</CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 bg-muted rounded-lg">
+                      <p className="text-sm text-muted-foreground mb-1">Followers Artımı</p>
+                      <p className="text-2xl font-bold">{result.analysis.growth_strategy.realistic_goals.followers_growth}</p>
+                    </div>
+                    <div className="p-4 bg-muted rounded-lg">
+                      <p className="text-sm text-muted-foreground mb-1">Engagement Hədəfi</p>
+                      <p className="text-2xl font-bold">{result.analysis.growth_strategy.realistic_goals.engagement_target}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>İzləməli Metrics</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2">
+                      {result.analysis.growth_strategy.metrics_to_track?.map((metric, idx) => (
+                        <Badge key={idx} variant="secondary">
+                          {metric}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Overall Assessment */}
+              <TabsContent value="assessment" className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-green-600">Güclü Tərəflər</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {result.analysis.overall_assessment.strengths?.map((strength, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                            <span className="text-sm">{strength}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-orange-600">Zəif Tərəflər</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {result.analysis.overall_assessment.weaknesses?.map((weakness, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <AlertTriangle className="h-5 w-5 text-orange-500 mt-0.5 flex-shrink-0" />
+                            <span className="text-sm">{weakness}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-blue-600">Fürsətlər</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {result.analysis.overall_assessment.opportunities?.map((opportunity, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <TrendingUp className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                            <span className="text-sm">{opportunity}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-purple-600">Öncelikli Addımlar</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {result.analysis.overall_assessment.priority_actions?.map((action, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <Target className="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" />
+                            <span className="text-sm font-medium">{action}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            {/* Actions */}
+            <div className="flex gap-4">
+              <Button
+                onClick={() => {
+                  setResult(null);
+                  setSelectedProfile(null);
+                  setError('');
+                }}
+                variant="outline"
+                className="flex-1"
+                size="lg"
+              >
+                Yeni Analiz
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </DashboardLayout>
+  );
+}
+

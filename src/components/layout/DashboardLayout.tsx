@@ -7,6 +7,8 @@ import { Sidebar } from './Sidebar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { authAPI } from '@/lib/api';
+import { useTranslation } from '@/hooks/useTranslation';
+import { LanguageSelector } from '@/components/LanguageSelector';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -19,6 +21,7 @@ export function DashboardLayout({ children, title, description }: DashboardLayou
   const router = useRouter();
   const pathname = usePathname();
   const [companyProfileCheck, setCompanyProfileCheck] = useState<'loading' | 'complete' | 'incomplete'>('loading');
+  const t = useTranslation();
 
   // Check if company profile exists
   useEffect(() => {
@@ -61,7 +64,7 @@ export function DashboardLayout({ children, title, description }: DashboardLayou
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-          <p className="mt-4 text-muted-foreground">Yüklənir...</p>
+          <p className="mt-4 text-muted-foreground">{t.common.loading}</p>
         </div>
       </div>
     );
@@ -105,6 +108,9 @@ export function DashboardLayout({ children, title, description }: DashboardLayou
                 {description && (
                   <p className="text-muted-foreground mt-1">{description}</p>
                 )}
+              </div>
+              <div className="flex items-center gap-4">
+                <LanguageSelector />
               </div>
             </div>
           </header>

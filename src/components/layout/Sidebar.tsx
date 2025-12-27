@@ -18,76 +18,7 @@ import {
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePostGeneration } from '@/contexts/PostGenerationContext';
-
-// Navigation items
-const navigationItems = [
-  {
-    title: 'İdarə Paneli',
-    href: '/dashboard',
-    icon: '📊',
-    description: 'Ümumi baxış və statistika'
-  },
-  {
-    title: 'Paylaşımlar',
-    href: '/posts',
-    icon: '📝',
-    description: 'Paylaşım yarat və idarə et'
-  },
-  {
-    title: 'Təqvim',
-    href: '/calendar',
-    icon: '📅',
-    description: 'Məzmun planlaşdır'
-  },
-  {
-    title: 'AI Məzmun Yaradıcı',
-    href: '/ai-content-generator',
-    icon: '🚀',
-    description: 'Aylıq paylaşımlar yarat'
-  },
-  {
-    title: 'AI Alətlər',
-    href: '/ai-tools',
-    icon: '🤖',
-    description: 'Məzmun yaratma'
-  },
-  {
-    title: 'Sosial Hesablar',
-    href: '/social-accounts',
-    icon: '🔗',
-    description: 'Qoşulmuş platformalar'
-  },
-  {
-    title: 'Analitika',
-    href: '/analytics',
-    icon: '📈',
-    description: 'Performans məlumatları'
-  },
-  {
-    title: 'Meta Ads',
-    href: '/meta-ads',
-    icon: '📢',
-    description: 'Reklam kampaniyaları'
-  },
-  {
-    title: 'Brend Səsi',
-    href: '/brand-voice',
-    icon: '🎯',
-    description: 'AI şəxsiyyət parametrləri'
-  },
-  {
-    title: 'Şablonlar',
-    href: '/templates',
-    icon: '📋',
-    description: 'Məzmun şablonları'
-  },
-  {
-    title: 'Parametrlər',
-    href: '/settings',
-    icon: '⚙️',
-    description: 'Hesab tənzimləmələri'
-  }
-];
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface SidebarProps {
   className?: string;
@@ -98,6 +29,89 @@ export function Sidebar({ className }: SidebarProps) {
   const { user, logout } = useAuth();
   const { hasActiveGeneration, generatedPosts } = usePostGeneration();
   const [collapsed, setCollapsed] = useState(false);
+  const t = useTranslation();
+
+  // Navigation items
+  const navigationItems = [
+    {
+      title: t.sidebar.dashboard,
+      href: '/dashboard',
+      icon: '📊',
+      description: t.sidebar.dashboardDesc
+    },
+    {
+      title: t.sidebar.posts,
+      href: '/posts',
+      icon: '📝',
+      description: t.sidebar.postsDesc
+    },
+    {
+      title: t.sidebar.calendar,
+      href: '/calendar',
+      icon: '📅',
+      description: t.sidebar.calendarDesc
+    },
+    {
+      title: t.sidebar.aiContentGenerator,
+      href: '/ai-content-generator',
+      icon: '🚀',
+      description: t.sidebar.aiContentGeneratorDesc
+    },
+    {
+      title: t.sidebar.aiTools,
+      href: '/ai-tools',
+      icon: '🤖',
+      description: t.sidebar.aiToolsDesc
+    },
+    {
+      title: t.sidebar.socialAccounts,
+      href: '/social-accounts',
+      icon: '🔗',
+      description: t.sidebar.socialAccountsDesc
+    },
+    {
+      title: t.sidebar.analytics,
+      href: '/analytics',
+      icon: '📈',
+      description: t.sidebar.analyticsDesc
+    },
+    {
+      title: t.sidebar.socialMediaAnalysis,
+      href: '/social-media-analysis',
+      icon: '🔍',
+      description: t.sidebar.socialMediaAnalysisDesc
+    },
+    {
+      title: 'Profil Link Analizi',
+      href: '/profile-analyzer',
+      icon: '🔗',
+      description: 'Linkdən profil analizi'
+    },
+    {
+      title: t.sidebar.metaAds,
+      href: '/meta-ads',
+      icon: '📢',
+      description: t.sidebar.metaAdsDesc
+    },
+    {
+      title: t.sidebar.brandVoice,
+      href: '/brand-voice',
+      icon: '🎯',
+      description: t.sidebar.brandVoiceDesc
+    },
+    {
+      title: t.sidebar.templates,
+      href: '/templates',
+      icon: '📋',
+      description: t.sidebar.templatesDesc
+    },
+    {
+      title: t.sidebar.settings,
+      href: '/settings',
+      icon: '⚙️',
+      description: t.sidebar.settingsDesc
+    }
+  ];
 
   const getUserInitials = (user: any) => {
     if (user?.first_name && user?.last_name) {
@@ -159,7 +173,7 @@ export function Sidebar({ className }: SidebarProps) {
                     </div>
                     {showPendingBadge && (
                       <Badge variant="destructive" className="ml-2 text-xs">
-                        {pendingCount} Gözləyir
+                        {pendingCount} {t.sidebar.pending}
                       </Badge>
                     )}
                   </>
@@ -199,25 +213,25 @@ export function Sidebar({ className }: SidebarProps) {
               <DropdownMenuItem asChild>
                 <Link href="/settings">
                   <span className="mr-2">⚙️</span>
-                  Parametrlər
+                  {t.sidebar.settings}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/settings/profile">
                   <span className="mr-2">👤</span>
-                  Profil
+                  {t.sidebar.profile}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/settings/billing">
                   <span className="mr-2">💳</span>
-                  Ödəniş
+                  {t.sidebar.billing}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={logout} className="text-red-600">
                 <span className="mr-2">🚪</span>
-                Çıxış
+                {t.sidebar.logout}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -228,7 +242,7 @@ export function Sidebar({ className }: SidebarProps) {
                 {user?.first_name} {user?.last_name}
               </div>
               <div className="text-xs text-muted-foreground truncate">
-                {user?.company_name || 'Şəxsi Hesab'}
+                {user?.company_name || t.sidebar.personalAccount}
               </div>
             </div>
           )}
@@ -240,7 +254,7 @@ export function Sidebar({ className }: SidebarProps) {
 
         {!collapsed && (
           <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-            <span>Plan: {user?.subscription_plan || 'Pulsuz'}</span>
+            <span>{t.sidebar.plan}: {user?.subscription_plan || t.sidebar.free}</span>
           </div>
         )}
       </div>
