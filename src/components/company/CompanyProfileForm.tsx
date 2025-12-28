@@ -376,6 +376,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
 
     try {
       // Convert comma-separated strings to arrays
+      console.log('✅ Form submit - branding_enabled:', brandingEnabled);
       const processedData: any = {
         ...data,
         content_topics: data.content_topics ? data.content_topics.split(',').map(s => s.trim()).filter(s => s) : [],
@@ -543,7 +544,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
   ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6">
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">Şirkət Profili Quraşdırması</h1>
         <p className="text-muted-foreground">
@@ -1308,7 +1309,11 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
               <Switch
                 id="branding-enabled"
                 checked={brandingEnabled}
-                onCheckedChange={setBrandingEnabled}
+                onCheckedChange={(checked) => {
+                  console.log('🔘 Branding toggle clicked:', checked);
+                  setBrandingEnabled(checked);
+                }}
+                disabled={isLoading}
               />
             </div>
 

@@ -158,38 +158,40 @@ export default function AIContentGeneratorPage() {
 
   return (
     <DashboardLayout title={getStepTitle()} description={getStepDescription()}>
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Progress Steps */}
         <div className="mb-8">
-          <div className="flex items-center justify-center space-x-4 mb-6">
-            {[
-              { key: 'company-profile', label: t.settings.companyProfile.title, icon: '🏢' },
-              { key: 'generate', label: t.aiContentGenerator.title, icon: '🤖' },
-              { key: 'approve', label: t.posts.pendingApproval, icon: '✅' },
-              { key: 'complete', label: t.common.save, icon: '🎉' }
-            ].map((step, index) => {
-              const isActive = currentStep === step.key;
-              const isCompleted = ['company-profile', 'generate', 'approve'].indexOf(currentStep) > 
-                                 ['company-profile', 'generate', 'approve'].indexOf(step.key);
-              
-              return (
-                <div key={step.key} className="flex items-center">
-                  <div className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-colors ${
-                    isActive ? 'bg-primary text-primary-foreground' :
-                    isCompleted ? 'bg-green-500 text-white' :
-                    'bg-muted text-muted-foreground'
-                  }`}>
-                    <span>{step.icon}</span>
-                    <span className="text-sm font-medium">{step.label}</span>
+          <div className="flex items-center justify-center gap-2 sm:gap-3 mb-6 px-2 overflow-x-auto hide-scrollbar">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              {[
+                { key: 'company-profile', label: t.settings.companyProfile.title, icon: '🏢' },
+                { key: 'generate', label: t.aiContentGenerator.title, icon: '🤖' },
+                { key: 'approve', label: t.posts.pendingApproval, icon: '✅' },
+                { key: 'complete', label: t.common.save, icon: '🎉' }
+              ].map((step, index) => {
+                const isActive = currentStep === step.key;
+                const isCompleted = ['company-profile', 'generate', 'approve'].indexOf(currentStep) > 
+                                   ['company-profile', 'generate', 'approve'].indexOf(step.key);
+                
+                return (
+                  <div key={step.key} className="flex items-center flex-shrink-0">
+                    <div className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full transition-colors text-xs sm:text-sm whitespace-nowrap ${
+                      isActive ? 'bg-primary text-primary-foreground shadow-md' :
+                      isCompleted ? 'bg-green-500 text-white' :
+                      'bg-muted text-muted-foreground'
+                    }`}>
+                      <span>{step.icon}</span>
+                      <span className="font-medium">{step.label}</span>
+                    </div>
+                    {index < 3 && (
+                      <div className={`w-4 sm:w-6 h-0.5 mx-1 sm:mx-2 flex-shrink-0 ${
+                        isCompleted ? 'bg-green-500' : 'bg-muted'
+                      }`} />
+                    )}
                   </div>
-                  {index < 3 && (
-                    <div className={`w-8 h-0.5 mx-2 ${
-                      isCompleted ? 'bg-green-500' : 'bg-muted'
-                    }`} />
-                  )}
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -228,7 +230,7 @@ export default function AIContentGeneratorPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid grid-cols-3 gap-4 text-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                     <div>
                       <div className="text-2xl font-bold text-green-600">
                         {generatedPosts.filter(p => p.status === 'approved').length}
@@ -249,16 +251,16 @@ export default function AIContentGeneratorPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-center space-x-4">
-                    <Button onClick={() => router.push('/calendar')}>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:space-x-4">
+                    <Button onClick={() => router.push('/calendar')} className="w-full sm:w-auto">
                       <span className="mr-2">📅</span>
                       {t.calendar.title}
                     </Button>
-                    <Button variant="outline" onClick={() => router.push('/posts')}>
+                    <Button variant="outline" onClick={() => router.push('/posts')} className="w-full sm:w-auto">
                       <span className="mr-2">📝</span>
                       {t.posts.title}
                     </Button>
-                    <Button variant="outline" onClick={handleStartOver}>
+                    <Button variant="outline" onClick={handleStartOver} className="w-full sm:w-auto">
                       <span className="mr-2">🔄</span>
                       {t.aiTools.generate}
                     </Button>

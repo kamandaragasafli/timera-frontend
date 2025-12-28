@@ -276,3 +276,13 @@
 .custom-calendar .rbc-time-content::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--foreground));
 }
+
+/* Hide scrollbar for progress steps */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}

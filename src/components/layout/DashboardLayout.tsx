@@ -5,10 +5,9 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { authAPI } from '@/lib/api';
 import { useTranslation } from '@/hooks/useTranslation';
-import { LanguageSelector } from '@/components/LanguageSelector';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -82,14 +81,28 @@ export function DashboardLayout({ children, title, description }: DashboardLayou
       </div>
 
       {/* Mobile Sidebar */}
-      <div className="md:hidden">
+      <div className="md:hidden fixed top-4 left-4 z-50">
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="fixed top-4 left-4 z-50">
-              <span className="text-lg">☰</span>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="h-10 w-10 bg-background border-2 border-border shadow-lg hover:bg-accent"
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="h-6 w-6" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="p-0 w-64">
+            <SheetTitle className="sr-only">Menu</SheetTitle>
             <Sidebar />
           </SheetContent>
         </Sheet>
@@ -99,25 +112,24 @@ export function DashboardLayout({ children, title, description }: DashboardLayou
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         {(title || description) && (
-          <header className="bg-card border-b border-border px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                {title && (
-                  <h1 className="text-2xl font-bold text-foreground">{title}</h1>
-                )}
-                {description && (
-                  <p className="text-muted-foreground mt-1">{description}</p>
-                )}
-              </div>
-              <div className="flex items-center gap-4">
-                <LanguageSelector />
-              </div>
+          <header className="bg-card border-b border-border px-4 sm:px-6 py-4 md:py-5 pt-20 md:pt-4">
+            <div className="flex flex-col gap-2">
+              {title && (
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground break-words leading-tight">
+                  {title}
+                </h1>
+              )}
+              {description && (
+                <p className="text-sm sm:text-base text-muted-foreground break-words">
+                  {description}
+                </p>
+              )}
             </div>
           </header>
         )}
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-4 sm:p-6">
           {children}
         </main>
       </div>

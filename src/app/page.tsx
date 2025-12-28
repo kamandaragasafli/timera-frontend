@@ -14,7 +14,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useTranslation } from '@/hooks/useTranslation';
-import { LanguageSelector } from '@/components/LanguageSelector';
 
 export default function Home() {
   const { isAuthenticated, loading } = useAuth();
@@ -30,7 +29,7 @@ export default function Home() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['hero', 'features', 'how-it-works', 'why', 'faq', 'about', 'team'];
+      const sections = ['hero', 'features', 'how-it-works', 'why', 'faq', 'about'];
       const current = sections.find(section => {
         const element = document.getElementById(section);
         if (element) {
@@ -65,7 +64,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-950 to-purple-950">
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-blue-950/80 backdrop-blur-lg border-b border-white/10 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
               <div className="text-2xl">🧠</div>
@@ -78,7 +77,6 @@ export default function Home() {
               <a href="#about" className="text-white/80 hover:text-white transition">{t.nav.about}</a>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <LanguageSelector />
               <Link href="/auth/login">
                 <Button variant="ghost" className="text-white hover:bg-white/10 text-sm sm:text-base">
                   {t.common.login}
@@ -455,68 +453,6 @@ export default function Home() {
             </div>
           </div>
 
-          <Card className="bg-gradient-to-br from-indigo-500/10 to-pink-500/10 backdrop-blur-sm border-white/20">
-            <CardHeader>
-              <CardTitle className="text-white text-2xl mb-4">{t.about.roadmap.title}</CardTitle>
-              <CardDescription className="text-white/80 text-base leading-relaxed">
-                {t.about.roadmap.content.split('\n').map((line, i) => (
-                  <React.Fragment key={i}>
-                    {line}
-                    {i < t.about.roadmap.content.split('\n').length - 1 && <br />}
-                  </React.Fragment>
-                ))}
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
-      </section>
-
-      {/* Team Section */}
-      <section id="team" className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
-              {t.team.title}
-            </h2>
-            <p className="text-xl text-white/70">
-              {t.team.subtitle}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <Card className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-sm border-white/20 hover:scale-105 transition-transform duration-300">
-              <CardHeader>
-                <div className="text-center">
-                  <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl">
-                    👨‍💼
-                  </div>
-                  <CardTitle className="text-white text-2xl mb-2">İlkin Tanat</CardTitle>
-                  <p className="text-purple-400 font-semibold mb-4">Co-Founder & CEO</p>
-                  <CardDescription className="text-white/70 text-base">
-                    Rəqəmsal marketinq və satış strategiyaları üzrə 10+ illik təcrübə. 
-                    KOB-lar üçün effektiv kontent həlləri və bazar yönümlü strategiyalar üzrə mütəxəssisdir.
-                  </CardDescription>
-                </div>
-              </CardHeader>
-            </Card>
-
-            <Card className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 backdrop-blur-sm border-white/20 hover:scale-105 transition-transform duration-300">
-              <CardHeader>
-                <div className="text-center">
-                  <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl">
-                    👨‍💻
-                  </div>
-                  <CardTitle className="text-white text-2xl mb-2">Elvin Seyidov</CardTitle>
-                  <p className="text-blue-400 font-semibold mb-4">Co-Founder & CTO</p>
-                  <CardDescription className="text-white/70 text-base">
-                    10 ildən çox proqramlaşdırma və SaaS arxitektura təcrübəsi. 
-                    Python, Django, React və AWS üzrə dərin biliyə sahibdir. 
-                    Timera.ai-nın texniki infrastrukturunun və təhlükəsizliyinin əsas beyni.
-                  </CardDescription>
-                </div>
-              </CardHeader>
-            </Card>
-          </div>
         </div>
       </section>
 
@@ -573,7 +509,6 @@ export default function Home() {
               <h4 className="text-white font-semibold mb-4">{t.footer.company}</h4>
               <ul className="space-y-2">
                 <li><a href="#about" className="text-white/60 hover:text-white transition">{t.nav.about}</a></li>
-                <li><a href="#team" className="text-white/60 hover:text-white transition">{t.common.team}</a></li>
                 <li><Link href="/auth/register" className="text-white/60 hover:text-white transition">{t.footer.register}</Link></li>
               </ul>
             </div>

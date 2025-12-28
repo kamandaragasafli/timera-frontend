@@ -287,6 +287,8 @@ export default function ProfileAnalyzerPage() {
                             src={getProxiedImageUrl(result.preview.image) || result.preview.image}
                             alt="Profile"
                             className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                            crossOrigin="anonymous"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23ddd" width="100" height="100"/%3E%3C/svg%3E';
@@ -479,11 +481,13 @@ export default function ProfileAnalyzerPage() {
                     {result.preview.latest_posts.map((post: any, idx: number) => (
                       <Card key={post.id || idx} className="overflow-hidden hover:shadow-lg transition-shadow">
                         <div className="relative aspect-square bg-muted">
-                          {post.display_url || post.image ? (
+                          {post.display_url || post.thumbnail_url || post.image ? (
                             <img
-                              src={getProxiedImageUrl(post.display_url || post.image) || (post.display_url || post.image)}
+                              src={getProxiedImageUrl(post.thumbnail_url || post.display_url || post.image) || (post.thumbnail_url || post.display_url || post.image)}
                               alt="Post"
                               className="w-full h-full object-cover"
+                              referrerPolicy="no-referrer"
+                              crossOrigin="anonymous"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.style.display = 'none';
@@ -495,7 +499,7 @@ export default function ProfileAnalyzerPage() {
                             </div>
                           )}
                           {post.type === 'Video' && (
-                            <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
+                            <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
                               ▶ Video
                             </div>
                           )}

@@ -257,13 +257,13 @@ export default function InstagramSMMPage() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto py-8 px-4 max-w-7xl">
+      <div className="container mx-auto px-4 max-w-7xl pt-20 pb-4 md:pt-4 md:pb-8">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
-            <Instagram className="h-8 w-8" />
-            Instagram SMM Analizi
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2 flex flex-wrap items-center gap-2">
+            <Instagram className="h-6 w-6 sm:h-8 sm:w-8 flex-shrink-0" />
+            <span>Instagram SMM Analizi</span>
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground">
             Saxlanılmış profilləri seçin və AI-powered SMM tövsiyələri alın
           </p>
         </div>
@@ -307,12 +307,12 @@ export default function InstagramSMMPage() {
                           />
                         )}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="font-semibold truncate">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-semibold truncate flex-1 min-w-0">
                               {profile.full_name || profile.username || 'Unknown'}
                             </p>
                             {profile.smm_analysis?.account_type && (
-                              <Badge variant="outline" className="text-xs">
+                              <Badge variant="outline" className="text-xs flex-shrink-0">
                                 {profile.smm_analysis.account_type}
                               </Badge>
                             )}
@@ -381,8 +381,8 @@ export default function InstagramSMMPage() {
           <div className="space-y-6">
             {/* Success Message */}
             <Alert className="border-green-500 bg-green-50">
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
-              <AlertDescription>
+              <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
+              <AlertDescription className="break-words">
                 <strong>@{result.profile_info.username}</strong> profili uğurla analiz edildi!
                 <br />
                 <span className="text-sm text-muted-foreground">
@@ -397,22 +397,22 @@ export default function InstagramSMMPage() {
                 <CardTitle>Profil Statistikası</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-4 bg-muted rounded-lg">
-                    <p className="text-2xl font-bold">{result.profile_info.followers.toLocaleString()}</p>
-                    <p className="text-sm text-muted-foreground">Followers</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                  <div className="text-center p-3 sm:p-4 bg-muted rounded-lg">
+                    <p className="text-xl sm:text-2xl font-bold">{result.profile_info.followers.toLocaleString()}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">Followers</p>
                   </div>
-                  <div className="text-center p-4 bg-muted rounded-lg">
-                    <p className="text-2xl font-bold">{result.profile_info.posts}</p>
-                    <p className="text-sm text-muted-foreground">Postlar</p>
+                  <div className="text-center p-3 sm:p-4 bg-muted rounded-lg">
+                    <p className="text-xl sm:text-2xl font-bold">{result.profile_info.posts}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">Postlar</p>
                   </div>
-                  <div className="text-center p-4 bg-muted rounded-lg">
-                    <p className="text-2xl font-bold">{result.profile_info.engagement_rate}%</p>
-                    <p className="text-sm text-muted-foreground">Engagement</p>
+                  <div className="text-center p-3 sm:p-4 bg-muted rounded-lg">
+                    <p className="text-xl sm:text-2xl font-bold">{result.profile_info.engagement_rate}%</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">Engagement</p>
                   </div>
-                  <div className="text-center p-4 bg-muted rounded-lg">
-                    <p className="text-2xl font-bold">{result.profile_info.following_ratio.toFixed(2)}</p>
-                    <p className="text-sm text-muted-foreground">Following Nisbəti</p>
+                  <div className="text-center p-3 sm:p-4 bg-muted rounded-lg">
+                    <p className="text-xl sm:text-2xl font-bold">{result.profile_info.following_ratio.toFixed(2)}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1 break-words">Following Nisbəti</p>
                   </div>
                 </div>
               </CardContent>
@@ -420,16 +420,18 @@ export default function InstagramSMMPage() {
 
             {/* Tabbed Content */}
             <Tabs defaultValue="bio" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 lg:grid-cols-8">
-                <TabsTrigger value="bio">Bio</TabsTrigger>
-                <TabsTrigger value="rules">Qaydalar</TabsTrigger>
-                <TabsTrigger value="posts">Postlar</TabsTrigger>
-                <TabsTrigger value="hashtags">Hashtag</TabsTrigger>
-                <TabsTrigger value="content">Kontent</TabsTrigger>
-                <TabsTrigger value="schedule">Cədvəl</TabsTrigger>
-                <TabsTrigger value="growth">İnkişaf</TabsTrigger>
-                <TabsTrigger value="assessment">Qiymət</TabsTrigger>
-              </TabsList>
+              <div className="overflow-x-auto hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
+                <TabsList className="inline-flex w-auto md:w-full h-auto md:h-10">
+                  <TabsTrigger value="bio" className="flex-shrink-0 whitespace-nowrap">Bio</TabsTrigger>
+                  <TabsTrigger value="rules" className="flex-shrink-0 whitespace-nowrap">Qaydalar</TabsTrigger>
+                  <TabsTrigger value="posts" className="flex-shrink-0 whitespace-nowrap">Postlar</TabsTrigger>
+                  <TabsTrigger value="hashtags" className="flex-shrink-0 whitespace-nowrap">Hashtag</TabsTrigger>
+                  <TabsTrigger value="content" className="flex-shrink-0 whitespace-nowrap">Kontent</TabsTrigger>
+                  <TabsTrigger value="schedule" className="flex-shrink-0 whitespace-nowrap">Cədvəl</TabsTrigger>
+                  <TabsTrigger value="growth" className="flex-shrink-0 whitespace-nowrap">İnkişaf</TabsTrigger>
+                  <TabsTrigger value="assessment" className="flex-shrink-0 whitespace-nowrap">Qiymət</TabsTrigger>
+                </TabsList>
+              </div>
 
               {/* Bio Suggestions */}
               <TabsContent value="bio" className="space-y-4">
@@ -686,17 +688,17 @@ export default function InstagramSMMPage() {
                     {/* Content Mix */}
                     <div>
                       <h4 className="font-semibold mb-3">Kontent Qarışığı</h4>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {Object.entries(result.content_strategy.content_mix).map(([type, percentage]) => (
-                          <div key={type} className="flex items-center gap-3">
-                            <span className="w-32 text-sm capitalize">{type}</span>
-                            <div className="flex-1 h-6 bg-muted rounded-full overflow-hidden">
+                          <div key={type} className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+                            <span className="text-sm capitalize w-24 sm:w-32 flex-shrink-0">{type}</span>
+                            <div className="flex-1 w-full sm:w-auto h-6 bg-muted rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-primary transition-all"
                                 style={{ width: `${percentage}%` }}
                               />
                             </div>
-                            <span className="w-12 text-sm text-right font-medium">{percentage}%</span>
+                            <span className="text-sm text-right font-medium w-12 flex-shrink-0">{percentage}%</span>
                           </div>
                         ))}
                       </div>

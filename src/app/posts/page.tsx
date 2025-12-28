@@ -326,7 +326,7 @@ export default function PostsPage() {
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="border-l-4 border-l-purple-500">
             <div className="p-6">
               <div className="text-sm font-medium text-muted-foreground mb-2">
@@ -398,13 +398,13 @@ export default function PostsPage() {
               }
               
               return (
-                <Card key={post.id} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-transparent hover:border-l-primary">
-                  <div className="p-6">
-                    <div className="flex gap-6">
+                  <Card key={post.id} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-transparent hover:border-l-primary">
+                  <div className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                       {/* Image on Left */}
-                      <div className="flex-shrink-0 relative">
+                      <div className="flex-shrink-0 relative w-full sm:w-48">
                         <div 
-                          className="w-48 h-48 rounded-lg overflow-hidden bg-muted relative cursor-pointer hover:opacity-90 transition-opacity"
+                          className="w-full sm:w-48 h-48 rounded-lg overflow-hidden bg-muted relative cursor-pointer hover:opacity-90 transition-opacity"
                           onClick={() => imageUrl && setSelectedImage({ url: imageUrl, title: post.title })}
                           title={t.posts.clickToEnlarge}
                         >
@@ -455,9 +455,9 @@ export default function PostsPage() {
                       {/* Content on Right */}
                       <div className="flex-1 min-w-0">
                         {/* Header */}
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex-1 min-w-0 pr-4">
-                            <h3 className="text-lg font-semibold mb-1 line-clamp-1">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-lg font-semibold mb-2 line-clamp-2">
                               {post.title}
                             </h3>
                             <Badge className={`${statusInfo.color} flex items-center gap-1 w-fit`}>
@@ -467,7 +467,7 @@ export default function PostsPage() {
                           </div>
                           
                           {/* Action Buttons */}
-                          <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
                             {/* Apply Branding Button */}
                             {canApplyBranding(post) && (
                               <Button
