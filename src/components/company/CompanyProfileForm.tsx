@@ -610,11 +610,19 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
         </Alert>
       )}
 
-      <form onSubmit={(e) => {
-        console.log('🎯 Form submit event triggered');
-        console.log('📋 Form valid:', e.currentTarget.checkValidity());
-        handleSubmit(onSubmit)(e);
-      }} className="space-y-8">
+      <form onSubmit={handleSubmit(
+        (data) => {
+          console.log('✅ Form validation passed, submitting...');
+          onSubmit(data);
+        },
+        (errors) => {
+          console.error('❌ Form validation failed:', errors);
+          console.error('❌ Error fields:', Object.keys(errors));
+          Object.entries(errors).forEach(([field, error]: [string, any]) => {
+            console.error(`  - ${field}:`, error?.message || error);
+          });
+        }
+      )} className="space-y-8">
         {/* Basic Information */}
         <Card>
           <CardHeader>
@@ -1608,10 +1616,16 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
             size="lg"
             disabled={isLoading}
             className="px-8"
-            onClick={() => {
+            onClick={(e) => {
               console.log('🖱️ Button clicked');
               console.log('🔒 Button disabled:', isLoading);
               console.log('📊 Form errors:', errors);
+              console.log('📋 Form errors count:', Object.keys(errors).length);
+              
+              // Don't prevent default - let form submit handle validation
+              if (Object.keys(errors).length > 0) {
+                console.log('⚠️ Validation errors exist, form will not submit');
+              }
             }}
           >
             {isLoading ? (
