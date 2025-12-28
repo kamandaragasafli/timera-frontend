@@ -85,6 +85,17 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
   } = useForm<CompanyProfileFormData>({
     resolver: zodResolver(companyProfileSchema),
   });
+  
+  // Debug validation errors
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      console.log('❌ Form validation errors:', errors);
+      console.log('📋 Error fields:', Object.keys(errors));
+      Object.entries(errors).forEach(([field, error]) => {
+        console.log(`  - ${field}:`, error?.message);
+      });
+    }
+  }, [errors]);
 
   // Load existing profile data
   useEffect(() => {
@@ -370,9 +381,15 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
   };
 
   const onSubmit = async (data: CompanyProfileFormData) => {
+    console.log('🚀 Form submit started');
+    console.log('📝 Form data:', data);
+    console.log('⏳ isLoading before:', isLoading);
+    
     setIsLoading(true);
     setError('');
     setSuccess('');
+    
+    console.log('⏳ isLoading set to true');
 
     try {
       // Convert comma-separated strings to arrays
@@ -500,7 +517,36 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
       }, 1500);
 
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Şirkət profilini yadda saxlamaq alınmadı. Zəhmət olmasa yenidən cəhd edin.');
+      console.error('❌ Company profile submit error:', err);
+      console.error('❌ Error response:', err.response);
+      console.error('❌ Error data:', err.response?.data);
+      console.error('❌ Error status:', err.response?.status);
+      
+      let errorMessage = 'Şirkət profilini yadda saxlamaq alınmadı. Zəhmət olmasa yenidən cəhd edin.';
+      
+      if (err.response?.data) {
+        if (typeof err.response.data === 'string') {
+          errorMessage = err.response.data;
+        } else if (err.response.data.error) {
+          errorMessage = err.response.data.error;
+        } else if (err.response.data.message) {
+          errorMessage = err.response.data.message;
+        } else {
+          // Try to extract field-specific errors
+          const fieldErrors = Object.entries(err.response.data)
+            .filter(([key, value]) => Array.isArray(value) || typeof value === 'string')
+            .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
+            .join('; ');
+          
+          if (fieldErrors) {
+            errorMessage = fieldErrors;
+          }
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -564,7 +610,11 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
         </Alert>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={(e) => {
+        console.log('🎯 Form submit event triggered');
+        console.log('📋 Form valid:', e.currentTarget.checkValidity());
+        handleSubmit(onSubmit)(e);
+      }} className="space-y-8">
         {/* Basic Information */}
         <Card>
           <CardHeader>
@@ -1558,6 +1608,11 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
             size="lg"
             disabled={isLoading}
             className="px-8"
+            onClick={() => {
+              console.log('🖱️ Button clicked');
+              console.log('🔒 Button disabled:', isLoading);
+              console.log('📊 Form errors:', errors);
+            }}
           >
             {isLoading ? (
               <>
