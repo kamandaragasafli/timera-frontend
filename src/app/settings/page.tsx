@@ -13,6 +13,7 @@ import { useState, useEffect } from 'react';
 import { authAPI } from '@/lib/api';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { useTranslation } from '@/hooks/useTranslation';
+import { toast } from 'sonner';
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -20,6 +21,16 @@ export default function SettingsPage() {
   const [companyProfile, setCompanyProfile] = useState<any>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const t = useTranslation();
+
+  // Profile form state
+  const [profileData, setProfileData] = useState({
+    firstName: user?.first_name || '',
+    lastName: user?.last_name || '',
+    email: user?.email || '',
+    company: user?.company_name || ''
+  });
+  const [hasChanges, setHasChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const fetchCompanyProfile = async () => {
@@ -36,6 +47,53 @@ export default function SettingsPage() {
     fetchCompanyProfile();
   }, []);
 
+  // Update profile data when user changes
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        firstName: user.first_name || '',
+        lastName: user.last_name || '',
+        email: user.email || '',
+        company: user.company_name || ''
+      });
+    }
+  }, [user]);
+
+  const handleInputChange = (field: string, value: string) => {
+    setProfileData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    setHasChanges(true);
+  };
+
+  const handleProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+
+    try {
+      await authAPI.updateProfile({
+        first_name: profileData.firstName,
+        last_name: profileData.lastName,
+        email: profileData.email,
+        company_name: profileData.company
+      });
+
+      toast.success('Profil uğurla yeniləndi');
+      setHasChanges(false);
+      
+      // Reload page to get updated user data
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Xəta baş verdi');
+      console.error('Profile update error:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <DashboardLayout 
       title={t.settings.title}
@@ -43,38 +101,69 @@ export default function SettingsPage() {
     >
       <div className="max-w-4xl space-y-6">
         {/* Profile Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle>{t.settings.profile.title}</CardTitle>
-            <CardDescription>
-              {t.settings.profile.description}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">{t.settings.profile.firstName}</Label>
-                <Input id="firstName" defaultValue={user?.first_name} />
+        <form onSubmit={handleProfileSubmit}>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t.settings.profile.title}</CardTitle>
+              <CardDescription>
+                {t.settings.profile.description}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">{t.settings.profile.firstName}</Label>
+                  <Input 
+                    id="firstName" 
+                    value={profileData.firstName}
+                    onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">{t.settings.profile.lastName}</Label>
+                  <Input 
+                    id="lastName" 
+                    value={profileData.lastName}
+                    onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  />
+                </div>
               </div>
+              
               <div className="space-y-2">
-                <Label htmlFor="lastName">{t.settings.profile.lastName}</Label>
-                <Input id="lastName" defaultValue={user?.last_name} />
+                <Label htmlFor="email">{t.settings.profile.email}</Label>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  value={profileData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                />
               </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="email">{t.settings.profile.email}</Label>
-              <Input id="email" type="email" defaultValue={user?.email} />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="company">{t.settings.profile.companyName}</Label>
-              <Input id="company" defaultValue={user?.company_name || ''} />
-            </div>
-            
-            <Button>{t.settings.profile.saveChanges}</Button>
-          </CardContent>
-        </Card>
+              
+              <div className="space-y-2">
+                <Label htmlFor="company">{t.settings.profile.companyName}</Label>
+                <Input 
+                  id="company" 
+                  value={profileData.company}
+                  onChange={(e) => handleInputChange('company', e.target.value)}
+                />
+              </div>
+              
+              <Button 
+                type="submit" 
+                disabled={!hasChanges || isSaving}
+              >
+                {isSaving ? (
+                  <>
+                    <span className="mr-2">⏳</span>
+                    Saxlanılır...
+                  </>
+                ) : (
+                  t.settings.profile.saveChanges
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        </form>
 
         {/* Company Profile */}
         <Card>
@@ -333,6 +422,3 @@ export default function SettingsPage() {
     </DashboardLayout>
   );
 }
-
-
-
