@@ -168,23 +168,25 @@ export default function SettingsPage() {
         {/* Company Profile */}
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex-1 min-w-0">
                 <CardTitle>{t.settings.companyProfile.title}</CardTitle>
                 <CardDescription>
                   {t.settings.companyProfile.description}
                 </CardDescription>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <Button 
                   variant="outline" 
                   onClick={() => router.push('/settings/branding-preview')}
+                  className="w-full sm:w-auto"
                 >
-                  🎨 Branding Preview
+                  🎨 Brending Tənzimləmələri
                 </Button>
                 <Button 
                   variant="outline" 
                   onClick={() => router.push('/setup/company')}
+                  className="w-full sm:w-auto"
                 >
                   {companyProfile ? t.settings.companyProfile.edit : t.settings.companyProfile.create}
                 </Button>

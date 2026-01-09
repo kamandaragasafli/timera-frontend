@@ -33,7 +33,19 @@ export default function PostGenerationWizard({ onComplete, companyProfile }: Pos
 
       onComplete(response.data.posts);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Paylaşımlar yaradarkən xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.');
+      let errorMessage = 'Paylaşımlar yaradarkən xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.';
+      
+      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        errorMessage = `Paylaşımlar yaradılarkən vaxt aşımı baş verdi. ${postsCount >= 10 ? '10+ paylaşım üçün daha az sayda (5-7) paylaşım yaradın və ya bir az sonra yenidən cəhd edin.' : 'Zəhmət olmasa yenidən cəhd edin.'}`;
+      } else if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+        // Check for timeout errors
+        if (errorMessage.toLowerCase().includes('timeout')) {
+          errorMessage = `Paylaşımlar yaradılarkən vaxt aşımı baş verdi. ${postsCount >= 10 ? '10+ paylaşım üçün daha az sayda (5-7) paylaşım yaradın.' : 'Zəhmət olmasa yenidən cəhd edin.'}`;
+        }
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsGenerating(false);
     }
@@ -204,8 +216,16 @@ export default function PostGenerationWizard({ onComplete, companyProfile }: Pos
               <span>AI ilə əla məzmun yaradılır...</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Bu 30-60 saniyə çəkə bilər. Zəhmət olmasa bu səhifəni bağlamayın.
+              {postsCount >= 10 
+                ? `10+ paylaşım yaratmaq 2-5 dəqiqə çəkə bilər. Şəkillər sonradan yaradılacaq. Zəhmət olmasa bu səhifəni bağlamayın.`
+                : 'Bu 30-90 saniyə çəkə bilər. Zəhmət olmasa bu səhifəni bağlamayın.'
+              }
             </p>
+            {postsCount >= 10 && (
+              <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-2">
+                💡 İpucu: Daha sürətli nəticə üçün 5-7 paylaşım yaradın.
+              </p>
+            )}
           </div>
         )}
       </div>

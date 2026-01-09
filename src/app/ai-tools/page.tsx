@@ -45,22 +45,13 @@ export default function AIToolsPage() {
       category: 'Branding'
     },
     {
-      id: 1,
-      name: t.aiTools.contentGenerator,
-      description: t.aiTools.contentGeneratorDesc,
-      icon: '✨',
-      color: 'bg-purple-500',
-      category: 'Content Creation',
-      comingSoon: true
-    },
-    {
       id: 2,
       name: t.aiTools.hashtagGenerator,
       description: t.aiTools.hashtagGeneratorDesc,
       icon: '#️⃣',
       color: 'bg-blue-500',
       category: 'Optimization',
-      comingSoon: true
+      comingSoon: false
     },
     {
       id: 3,
@@ -69,7 +60,7 @@ export default function AIToolsPage() {
       icon: '📝',
       color: 'bg-green-500',
       category: 'Optimization',
-      comingSoon: true
+      comingSoon: false
     },
     {
       id: 4,
@@ -87,7 +78,7 @@ export default function AIToolsPage() {
       icon: '📈',
       color: 'bg-orange-500',
       category: 'Analytics',
-      comingSoon: true
+      comingSoon: false
     },
     {
       id: 6,
@@ -96,7 +87,7 @@ export default function AIToolsPage() {
       icon: '🔍',
       color: 'bg-indigo-500',
       category: 'Analytics',
-      comingSoon: true
+      comingSoon: false
     }
   ];
 
@@ -129,7 +120,19 @@ What's your experience with social media automation? Share your thoughts below!
   };
 
   const handleOpenTool = (toolId: number) => {
-    if (toolId === 7) {
+    if (toolId === 2) {
+      // Navigate to Hashtag Generator page
+      router.push('/ai-tools/hashtag-generator');
+    } else if (toolId === 3) {
+      // Navigate to Caption Optimizer page
+      router.push('/ai-tools/caption-optimizer');
+    } else if (toolId === 5) {
+      // Navigate to Trend Analyzer page
+      router.push('/ai-tools/trend-analyzer');
+    } else if (toolId === 6) {
+      // Navigate to Competitor Analysis page
+      router.push('/ai-tools/competitor-analysis');
+    } else if (toolId === 7) {
       // Navigate to Logo Generator page
       router.push('/ai-tools/logo-generator');
     } else if (toolId === 9) {

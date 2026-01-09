@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import CompanyProfileForm from '@/components/company/CompanyProfileForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { authAPI } from '@/lib/api';
 
 export default function CompanySetupPage() {
@@ -52,36 +52,14 @@ export default function CompanySetupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background relative">
-      {/* Theme Toggle - Bottom Left */}
-      <div className="fixed bottom-6 left-6 z-50">
-        <ThemeToggle />
-      </div>
-
-      {/* Header */}
-      <header className="bg-card border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">
-                {hasProfile ? 'Şirkət Profilini Yenilə' : 'Quraşdırmanı Tamamlayın'}
-              </h1>
-              <p className="text-muted-foreground">
-                {hasProfile 
-                  ? 'Daha yaxşı AI məzmunu üçün şirkət məlumatlarınızı yeniləyin'
-                  : 'Əla məzmun yaratmaq üçün bizə şirkətiniz haqqında məlumat verin'
-                }
-              </p>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Addım 1/2
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <DashboardLayout
+      title={hasProfile ? 'Şirkət Profilini Yenilə' : 'Quraşdırmanı Tamamlayın'}
+      description={hasProfile 
+        ? 'Daha yaxşı AI məzmunu üçün şirkət məlumatlarınızı yeniləyin'
+        : 'Əla məzmun yaratmaq üçün bizə şirkətiniz haqqında məlumat verin'
+      }
+    >
+      <div className="space-y-8">
         {!hasProfile && (
           <div className="mb-8">
             <Card className="bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800">
@@ -130,8 +108,8 @@ export default function CompanySetupPage() {
           onComplete={handleComplete}
           existingProfile={existingProfile}
         />
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
 

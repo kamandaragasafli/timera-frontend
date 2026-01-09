@@ -113,10 +113,25 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
 
     try {
       const response = await postsAPI.approvePosts(selectedPosts);
-      const updatedPosts = response.data.updated_posts || response.data.posts || [];
-      onPostsUpdated(updatedPosts);
+      
+      // Təsdiqlənən postları siyahıdan çıxart
+      const remainingPosts = posts.filter(post => 
+        !selectedPosts.includes(post.id)
+      );
+      
+      // Yalnız pending_approval statusunda olan postları saxla
+      const pendingPosts = remainingPosts.filter(post => post.status === 'pending_approval');
+      
+      onPostsUpdated(pendingPosts);
       setSelectedPosts([]);
-      console.log('✅ Posts approved successfully:', updatedPosts.length);
+      console.log('✅ Posts approved successfully:', selectedPosts.length);
+      
+      // Əgər bütün postlar təsdiqləndisə, posts səhifəsinə yönləndir
+      if (pendingPosts.length === 0) {
+        setTimeout(() => {
+          window.location.href = '/posts';
+        }, 1000);
+      }
     } catch (err: any) {
       console.error('❌ Error approving posts:', err);
       setError(err.response?.data?.error || 'Paylaşımlar təsdiqlənə bilmədi. Zəhmət olmasa yenidən cəhd edin.');
@@ -140,10 +155,25 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
 
     try {
       const response = await postsAPI.rejectPosts(selectedPosts);
-      const updatedPosts = response.data.updated_posts || response.data.posts || [];
-      onPostsUpdated(updatedPosts);
+      
+      // Rədd edilən postları siyahıdan çıxart
+      const remainingPosts = posts.filter(post => 
+        !selectedPosts.includes(post.id)
+      );
+      
+      // Yalnız pending_approval statusunda olan postları saxla
+      const pendingPosts = remainingPosts.filter(post => post.status === 'pending_approval');
+      
+      onPostsUpdated(pendingPosts);
       setSelectedPosts([]);
-      console.log('✅ Posts rejected successfully:', updatedPosts.length);
+      console.log('✅ Posts rejected successfully:', selectedPosts.length);
+      
+      // Əgər bütün postlar rədd edildisə, posts səhifəsinə yönləndir
+      if (pendingPosts.length === 0) {
+        setTimeout(() => {
+          window.location.href = '/posts';
+        }, 1000);
+      }
     } catch (err: any) {
       console.error('❌ Error rejecting posts:', err);
       setError(err.response?.data?.error || 'Paylaşımlar rədd edilə bilmədi. Zəhmət olmasa yenidən cəhd edin.');
@@ -476,8 +506,14 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
     }
   };
 
-  // Check if post can have branding applied
+  // Check if post can have branding applied (manual button - only show if auto-branding is disabled)
   const canApplyBranding = (post: any) => {
+    // Avtomatik branding aktivdirsə, düyməni göstərmə
+    if (companyProfile?.branding_enabled === true) {
+      // Avtomatik branding aktivdir, düyməni göstərmə
+      return false;
+    }
+    
     // Check if post has image first (most basic requirement)
     const imageUrl = post.custom_image_url || post.design_url_absolute || post.design_thumbnail_absolute || post.design_thumbnail || '';
     if (!imageUrl) {
@@ -580,10 +616,10 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
 
 
   return (
-    <div className="space-y-6 px-4 sm:px-0">
-      <div className="text-center space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-bold">Yaradılmış Paylaşımları Nəzərdən Keçirin</h1>
-        <p className="text-sm sm:text-base text-muted-foreground">
+    <div className="space-y-6 px-3 sm:px-4 lg:px-6 pt-4 sm:pt-6">
+      <div className="text-center space-y-2 px-2">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold break-words">Yaradılmış Paylaşımları Nəzərdən Keçirin</h1>
+        <p className="text-xs sm:text-sm lg:text-base text-muted-foreground px-2">
           AI yaratdığı məzmunu nəzərdən keçirin, redaktə edin və təsdiqləyin
         </p>
       </div>
@@ -595,30 +631,30 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
       )}
 
       {/* Bulk Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <span className="flex items-center">
+      <Card className="mx-2 sm:mx-0">
+        <CardHeader className="px-3 sm:px-6">
+          <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
+            <span className="flex items-center text-base sm:text-lg">
               <span className="mr-2">⚡</span>
-              Toplu Əməliyyatlar
+              <span className="break-words">Toplu Əməliyyatlar</span>
             </span>
-            <Badge variant="secondary" className="flex-shrink-0">
+            <Badge variant="secondary" className="flex-shrink-0 text-xs sm:text-sm mt-2 sm:mt-0">
               {posts.length}-dən {selectedPosts.length} seçildi
             </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:space-x-4">
+        <CardContent className="px-3 sm:px-6">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:space-x-4">
               <Button
                 variant="outline"
                 onClick={handleSelectAll}
                 size="sm"
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto text-xs sm:text-sm"
               >
                 {selectedPosts.length === posts.length ? 'Hamısının Seçimini Ləğv Et' : 'Hamısını Seç'}
               </Button>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
                 {selectedPosts.length} paylaşım seçildi
               </span>
             </div>
@@ -628,7 +664,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                 onClick={handleBulkApprove}
                 disabled={selectedPosts.length === 0 || isLoading}
                 size="sm"
-                className="flex-1 sm:flex-none"
+                className="flex-1 sm:flex-none text-xs sm:text-sm"
               >
                 <span className="mr-1">✅</span>
                 <span className="hidden sm:inline">Seçilənləri Təsdiqlə</span>
@@ -639,7 +675,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                 onClick={handleBulkReject}
                 disabled={selectedPosts.length === 0 || isLoading}
                 size="sm"
-                className="flex-1 sm:flex-none"
+                className="flex-1 sm:flex-none text-xs sm:text-sm"
               >
                 <span className="mr-1">❌</span>
                 <span className="hidden sm:inline">Seçilənləri Rədd Et</span>
@@ -651,7 +687,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
       </Card>
 
       {/* Posts Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 px-2 sm:px-0">
         {posts.map((post, index) => (
           <Card 
             key={post.id} 
@@ -744,7 +780,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                   </div>
                 )}
                 
-                {/* Image Upload and Branding Buttons */}
+                {/* Image Upload Button */}
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <input
                     type="file"
@@ -777,37 +813,13 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                       </>
                     )}
                   </Button>
-                  
-                  {/* Apply Branding Button */}
-                  {canApplyBranding(post) && !isBranded(post) && (
-                    <Button
-                      size="sm"
-                      onClick={() => handleApplyBranding(post.id)}
-                      disabled={applyingBranding[post.id]}
-                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 flex-1 sm:flex-none"
-                      title="Loqo və slogan əlavə et"
-                    >
-                      {applyingBranding[post.id] ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                          <span className="hidden sm:inline">Tətbiq olunur...</span>
-                          <span className="sm:hidden">Yüklənir...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="mr-1">🎨</span>
-                          <span className="hidden sm:inline">Brending Tətbiq Et</span>
-                          <span className="sm:hidden">Brending</span>
-                        </>
-                      )}
-                    </Button>
-                  )}
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-2">
-                <div className="flex items-center gap-2 flex-wrap">
+              <div className="space-y-2 pt-2 border-t">
+                {/* Redaktə Düymələri */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
@@ -830,6 +842,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                   </Button>
                 </div>
                 
+                {/* Təsdiq/Rədd Düymələri */}
                 <div className="flex items-center gap-2">
                   <Button
                     variant="destructive"
@@ -838,11 +851,10 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                       setSelectedPosts([post.id]);
                       handleBulkReject();
                     }}
-                    className="flex-1 sm:flex-none"
+                    className="flex-1"
                   >
                     <span className="mr-1">❌</span>
-                    <span className="hidden sm:inline">Rədd Et</span>
-                    <span className="sm:hidden">Rədd</span>
+                    <span>Rədd Et</span>
                   </Button>
                   <Button
                     size="sm"
@@ -850,11 +862,10 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                       setSelectedPosts([post.id]);
                       handleBulkApprove();
                     }}
-                    className="flex-1 sm:flex-none"
+                    className="flex-1 bg-green-600 hover:bg-green-700"
                   >
                     <span className="mr-1">✅</span>
-                    <span className="hidden sm:inline">Təsdiqlə</span>
-                    <span className="sm:hidden">OK</span>
+                    <span>Təsdiqlə</span>
                   </Button>
                 </div>
               </div>

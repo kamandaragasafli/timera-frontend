@@ -2,8 +2,8 @@ import axios from 'axios';
 
 // Default API URL - localhost for development
 // For production server, set NEXT_PUBLIC_API_URL environment variable or uncomment below:
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.timera.az/api';
-// export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+// export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.timera.az/api';
+ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
 
 // Debug: Log API base URL (only in development)
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
@@ -18,6 +18,7 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 300000, // 5 minutes default timeout (for post generation)
 });
 
 // Request interceptor to add auth token
@@ -258,7 +259,11 @@ export const postsAPI = {
   },
   
   // AI Generation endpoints
-  generatePosts: (data?: any) => api.post('/posts/generate/', data),
+  generatePosts: (data?: any) => {
+    // For 10+ posts, use longer timeout
+    const timeout = 600000; // 10 minutes for post generation
+    return api.post('/posts/generate/', data, { timeout });
+  },
   getPendingPosts: () => api.get('/posts/pending/'),
   approvePosts: (postIds: string[]) => 
     api.post('/posts/approve/', { action: 'approve', post_ids: postIds }),
@@ -322,6 +327,64 @@ export const aiAPI = {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
   },
+  
+  generateComplementaryColors: (data: {
+    primary_color: string;
+    color_palette?: string[];
+    brand_personality?: string[];
+    design_style?: string;
+  }) => api.post('/ai/generate-complementary-colors/', data),
+  
+  generateSlogan: (data: {
+    company_name: string;
+    industry?: string;
+    business_description?: string;
+    target_audience?: string;
+    unique_selling_points?: string;
+    brand_personality?: string[];
+    brand_keywords?: string[];
+  }) => api.post('/ai/generate-slogan/', data),
+  
+  generateHashtags: (data: {
+    company_name?: string;
+    industry?: string;
+    business_description?: string;
+    content?: string;
+    target_audience?: string;
+    brand_keywords?: string[];
+    num_hashtags?: number;
+  }) => api.post('/ai/generate-hashtags/', data),
+  
+  optimizeCaption: (data: {
+    caption: string;
+    content_type?: string;
+    platform?: string;
+    company_name?: string;
+    industry?: string;
+    target_audience?: string;
+    tone?: string;
+  }) => api.post('/ai/optimize-caption/', data),
+  
+  analyzeTrends: (data: {
+    company_name?: string;
+    industry: string;
+    target_audience?: string;
+    keywords?: string[];
+    region?: string;
+  }) => api.post('/ai/analyze-trends/', data),
+  
+  analyzeCompetitor: (data: {
+    competitor_url?: string;
+    competitor_name?: string;
+    your_profile?: any;
+    analysis_depth?: 'quick' | 'standard' | 'deep';
+  }) => api.post('/ai/competitor-analysis/', data),
+  
+  generateSmartPrompt: (formData: FormData) => api.post('/ai/generate-smart-prompt/', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }),
 };
 
 // Wask.co AI API endpoints for Logo & Slogan Generation

@@ -295,6 +295,70 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
     setBrandAnalysis(updated);
   };
 
+  // Generate complementary colors with AI
+  const generateComplementaryColors = async () => {
+    if (!brandAnalysis) {
+      setError('Brend təhlili məlumatı yoxdur');
+      return;
+    }
+
+    setAiLoading(prev => ({ ...prev, 'complementary_colors': true }));
+    
+    try {
+      const response = await aiAPI.generateComplementaryColors({
+        primary_color: brandAnalysis.primary_color || '#3B82F6',
+        color_palette: brandAnalysis.color_palette || [],
+        brand_personality: brandAnalysis.brand_personality || [],
+        design_style: brandAnalysis.design_style || ''
+      });
+
+      if (response.data?.complementary_colors) {
+        const updated = { ...brandAnalysis };
+        updated.complementary_colors = response.data.complementary_colors;
+        setBrandAnalysis(updated);
+        setSuccess('Tamamlayıcı rənglər uğurla yaradıldı!');
+      }
+    } catch (err: any) {
+      console.error('Error generating complementary colors:', err);
+      setError('Tamamlayıcı rəngləri yaratmaq mümkün olmadı. Zəhmət olmasa yenidən cəhd edin.');
+    } finally {
+      setAiLoading(prev => ({ ...prev, 'complementary_colors': false }));
+    }
+  };
+
+  // Generate slogan with AI
+  const generateSlogan = async () => {
+    setAiLoading(prev => ({ ...prev, 'slogan': true }));
+    
+    try {
+      const companyName = getValues('company_name');
+      if (!companyName) {
+        setError('Slogan yaratmaq üçün şirkət adı tələb olunur');
+        return;
+      }
+
+      const response = await aiAPI.generateSlogan({
+        company_name: companyName,
+        industry: getValues('industry'),
+        business_description: getValues('business_description'),
+        target_audience: getValues('target_audience'),
+        unique_selling_points: getValues('unique_selling_points'),
+        brand_personality: brandAnalysis?.brand_personality || [],
+        brand_keywords: brandAnalysis?.brand_keywords || []
+      });
+
+      if (response.data?.slogan) {
+        setValue('slogan', response.data.slogan);
+        setSuccess('Slogan uğurla yaradıldı!');
+      }
+    } catch (err: any) {
+      console.error('Error generating slogan:', err);
+      setError('Slogan yaratmaq mümkün olmadı. Zəhmət olmasa yenidən cəhd edin.');
+    } finally {
+      setAiLoading(prev => ({ ...prev, 'slogan': false }));
+    }
+  };
+
   // AI suggestion function
   const generateAISuggestion = async (fieldName: string) => {
     setAiLoading(prev => ({ ...prev, [fieldName]: true }));
@@ -590,7 +654,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
   ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 px-4 sm:px-6">
+    <div className="max-w-6xl mx-auto space-y-8">
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">Şirkət Profili Quraşdırması</h1>
         <p className="text-muted-foreground">
@@ -1294,7 +1358,23 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
               {/* Complementary Colors */}
               {brandAnalysis.complementary_colors && (
                 <div className="space-y-2">
-                  <Label>🌈 Tamamlayıcı Rənglər</Label>
+                  <div className="flex items-center justify-between">
+                    <Label>🌈 Tamamlayıcı Rənglər</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={generateComplementaryColors}
+                      disabled={aiLoading['complementary_colors'] || !brandAnalysis}
+                      className="text-xs"
+                    >
+                      {aiLoading['complementary_colors'] ? (
+                        <>⏳ AI yaradır...</>
+                      ) : (
+                        <>✨ AI ilə Yenidən Yarat</>
+                      )}
+                    </Button>
+                  </div>
                   <div className="flex items-center space-x-2 flex-wrap gap-2">
                     {brandAnalysis.complementary_colors.map((color: string, idx: number) => (
                       <div key={idx} className="flex items-center space-x-1">
@@ -1388,7 +1468,23 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
 
                 {/* Slogan Input */}
                 <div className="space-y-2">
-                  <Label htmlFor="slogan">Slogan (İstəyə bağlı)</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="slogan">Slogan (İstəyə bağlı)</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={generateSlogan}
+                      disabled={aiLoading['slogan'] || !getValues('company_name')}
+                      className="text-xs"
+                    >
+                      {aiLoading['slogan'] ? (
+                        <>⏳ AI yaradır...</>
+                      ) : (
+                        <>✨ AI ilə Yarat</>
+                      )}
+                    </Button>
+                  </div>
                   <Textarea
                     id="slogan"
                     placeholder="Məsələn: Transform Your Social Media"
