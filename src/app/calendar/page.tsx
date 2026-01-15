@@ -52,9 +52,11 @@ export default function CalendarPage() {
           title: post.title || t.calendar.untitled,
           content: post.content,
           status: post.status,
+          scheduled_time: post.scheduled_time,
           date: scheduledTime ? scheduledTime.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
           time: scheduledTime ? scheduledTime.toTimeString().slice(0, 5) : '09:00',
           platforms: post.platforms || [],
+          post_platforms: post.post_platforms || [],
           color: getStatusColor(post.status)
         };
       });

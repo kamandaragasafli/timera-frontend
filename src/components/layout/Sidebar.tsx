@@ -69,23 +69,36 @@ export function Sidebar({ className }: SidebarProps) {
       icon: '🔗',
       description: t.sidebar.socialAccountsDesc
     },
+    // Sosial Media Analizi: Mövcud sosial hesabların (Facebook, Instagram, LinkedIn) kontentini və performansını AI ilə analiz edən bölmə.
+    // Profil bio, son postlar, engagement rate, hashtag istifadəsi və s. analiz edilir və tövsiyələr verilir.
+    // {
+    //   title: t.sidebar.socialMediaAnalysis,
+    //   href: '/social-media-analysis',
+    //   icon: '🔍',
+    //   // Alt mətni gizlətmək üçün description-u boş saxlayırıq
+    //   description: ''
+    // },
+    // Profil Link Analizi: İstifadəçi profil linkini (məs. Instagram/TikTok profil URL-i) daxil edir.
+    // AI linkdən profil məlumatlarını çəkir (bio, postlar, follower sayı və s.) və detallı analiz + tövsiyələr hazırlayır.
+    // {
+    //   title: 'Profil Link Analizi',
+    //   href: '/profile-analyzer',
+    //   icon: '🔗',
+    //   // Alt mətni gizlətmək üçün description-u boş saxlayırıq
+    //   description: ''
+    // },
+    // Messages / Inbox: Customer messages from Facebook, Instagram and other channels
     {
-      title: t.sidebar.analytics,
-      href: '/analytics',
-      icon: '📈',
-      description: t.sidebar.analyticsDesc
+      title: t.sidebar.messages,
+      href: '/messages',
+      icon: '💬',
+      description: t.sidebar.messagesDesc
     },
     {
-      title: t.sidebar.socialMediaAnalysis,
-      href: '/social-media-analysis',
-      icon: '🔍',
-      description: t.sidebar.socialMediaAnalysisDesc
-    },
-    {
-      title: 'Profil Link Analizi',
-      href: '/profile-analyzer',
-      icon: '🔗',
-      description: 'Linkdən profil analizi'
+      title: t.sidebar.adsAnalytics,
+      href: '/ads-analytics',
+      icon: '📊',
+      description: t.sidebar.adsAnalyticsDesc
     },
     {
       title: t.sidebar.metaAds,
@@ -123,7 +136,7 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <div className={cn(
       "flex flex-col h-full bg-card border-r border-border",
-      collapsed ? "w-16" : "w-64",
+      collapsed ? "w-16" : "w-67", // Sidebar enini bir az azaldırıq
       "transition-all duration-300 ease-in-out",
       className
     )}>

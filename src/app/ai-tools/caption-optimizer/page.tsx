@@ -42,7 +42,7 @@ export default function CaptionOptimizerPage() {
 
   const handleOptimize = async () => {
     if (!caption.trim()) {
-      setError('Zəhmət olmasa, başlıq və ya caption daxil edin');
+      setError(t.captionOptimizer.errorCaptionRequired);
       return;
     }
 
@@ -64,11 +64,11 @@ export default function CaptionOptimizerPage() {
       if (response.data?.optimized_caption) {
         setOptimizedCaption(response.data.optimized_caption);
       } else {
-        setError('Başlıq optimallaşdırıla bilmədi. Zəhmət olmasa yenidən cəhd edin.');
+        setError(t.captionOptimizer.errorOptimizationFailed);
       }
     } catch (err: any) {
       console.error('Error optimizing caption:', err);
-      setError(err.response?.data?.error || 'Başlıq optimallaşdırıla bilmədi. Zəhmət olmasa yenidən cəhd edin.');
+      setError(err.response?.data?.error || t.captionOptimizer.errorOptimizationFailed);
     } finally {
       setIsOptimizing(false);
     }
@@ -87,15 +87,15 @@ export default function CaptionOptimizerPage() {
 
   return (
     <DashboardLayout 
-      title="Başlıq Optimizatoru"
-      description="Daha yaxşı təşviq üçün başlıqlarınızı təkmilləşdirin"
+      title={t.captionOptimizer.title}
+      description={t.captionOptimizer.description}
     >
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold">📝 Başlıq Optimizatoru</h1>
+          <h1 className="text-3xl font-bold">{t.captionOptimizer.headerTitle}</h1>
           <p className="text-muted-foreground">
-            Daha yaxşı təşviq üçün başlıqlarınızı təkmilləşdirin
+            {t.captionOptimizer.headerDescription}
           </p>
         </div>
 
@@ -108,67 +108,67 @@ export default function CaptionOptimizerPage() {
         {/* Input Section */}
         <Card>
           <CardHeader>
-            <CardTitle>Başlıq / Caption</CardTitle>
+            <CardTitle>{t.captionOptimizer.captionSectionTitle}</CardTitle>
             <CardDescription>
-              Optimallaşdırmaq istədiyiniz başlıq və ya caption-ı daxil edin
+              {t.captionOptimizer.captionSectionDesc}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="caption">Orijinal Başlıq</Label>
+              <Label htmlFor="caption">{t.captionOptimizer.originalCaptionLabel}</Label>
               <Textarea
                 id="caption"
-                placeholder="Məsələn: Yeni məhsulumuzu təqdim edirik!"
+                placeholder={t.captionOptimizer.captionPlaceholder}
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
                 className="min-h-[100px]"
               />
               <p className="text-xs text-muted-foreground">
-                {caption.length} simvol
+                {caption.length} {t.captionOptimizer.characters}
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="content-type">Məzmun Növü</Label>
+                <Label htmlFor="content-type">{t.captionOptimizer.contentTypeLabel}</Label>
                 <Select value={contentType} onValueChange={setContentType}>
                   <SelectTrigger id="content-type">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="post">Paylaşım</SelectItem>
-                    <SelectItem value="title">Başlıq</SelectItem>
-                    <SelectItem value="description">Təsvir</SelectItem>
+                    <SelectItem value="post">{t.captionOptimizer.contentTypePost}</SelectItem>
+                    <SelectItem value="title">{t.captionOptimizer.contentTypeTitle}</SelectItem>
+                    <SelectItem value="description">{t.captionOptimizer.contentTypeDescription}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="platform">Platform</Label>
+                <Label htmlFor="platform">{t.captionOptimizer.platformLabel}</Label>
                 <Select value={platform} onValueChange={setPlatform}>
                   <SelectTrigger id="platform">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="general">Ümumi</SelectItem>
-                    <SelectItem value="instagram">Instagram</SelectItem>
-                    <SelectItem value="facebook">Facebook</SelectItem>
-                    <SelectItem value="linkedin">LinkedIn</SelectItem>
+                    <SelectItem value="general">{t.captionOptimizer.platformGeneral}</SelectItem>
+                    <SelectItem value="instagram">{t.captionOptimizer.platformInstagram}</SelectItem>
+                    <SelectItem value="facebook">{t.captionOptimizer.platformFacebook}</SelectItem>
+                    <SelectItem value="linkedin">{t.captionOptimizer.platformLinkedIn}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="tone">Ton</Label>
+                <Label htmlFor="tone">{t.captionOptimizer.toneLabel}</Label>
                 <Select value={tone} onValueChange={setTone}>
                   <SelectTrigger id="tone">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="professional">Professional</SelectItem>
-                    <SelectItem value="casual">Dostcasına</SelectItem>
-                    <SelectItem value="creative">Yaradıcı</SelectItem>
-                    <SelectItem value="friendly">Dostlu</SelectItem>
+                    <SelectItem value="professional">{t.captionOptimizer.toneProfessional}</SelectItem>
+                    <SelectItem value="casual">{t.captionOptimizer.toneCasual}</SelectItem>
+                    <SelectItem value="creative">{t.captionOptimizer.toneCreative}</SelectItem>
+                    <SelectItem value="friendly">{t.captionOptimizer.toneFriendly}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -176,14 +176,14 @@ export default function CaptionOptimizerPage() {
 
             {companyProfile && (
               <div className="p-4 bg-muted rounded-lg space-y-2">
-                <p className="text-sm font-medium">Şirkət Məlumatları:</p>
+                <p className="text-sm font-medium">{t.captionOptimizer.companyInfo}</p>
                 <div className="text-sm text-muted-foreground space-y-1">
-                  <p><strong>Şirkət:</strong> {companyProfile.company_name}</p>
+                  <p><strong>{t.captionOptimizer.companyName}</strong> {companyProfile.company_name}</p>
                   {companyProfile.industry && (
-                    <p><strong>Sənaye:</strong> {companyProfile.industry}</p>
+                    <p><strong>{t.captionOptimizer.industry}</strong> {companyProfile.industry}</p>
                   )}
                   {companyProfile.preferred_tone && (
-                    <p><strong>Üstünlük Verilən Ton:</strong> {companyProfile.preferred_tone}</p>
+                    <p><strong>{t.captionOptimizer.preferredTone}</strong> {companyProfile.preferred_tone}</p>
                   )}
                 </div>
               </div>
@@ -198,12 +198,12 @@ export default function CaptionOptimizerPage() {
               {isOptimizing ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Optimallaşdırılır...
+                  {t.captionOptimizer.optimizingButton}
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4 mr-2" />
-                  Optimallaşdır
+                  {t.captionOptimizer.optimizeButton}
                 </>
               )}
             </Button>
@@ -216,9 +216,9 @@ export default function CaptionOptimizerPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Optimallaşdırılmış Başlıq</CardTitle>
+                  <CardTitle>{t.captionOptimizer.optimizedCaption}</CardTitle>
                   <CardDescription>
-                    {optimizedCaption.length} simvol ({optimizedCaption.length - caption.length > 0 ? '+' : ''}{optimizedCaption.length - caption.length} simvol dəyişiklik)
+                    {optimizedCaption.length} {t.captionOptimizer.characters} ({optimizedCaption.length - caption.length > 0 ? '+' : ''}{optimizedCaption.length - caption.length} {t.captionOptimizer.optimizedCaptionDesc})
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
@@ -230,12 +230,12 @@ export default function CaptionOptimizerPage() {
                     {copied ? (
                       <>
                         <Check className="w-4 h-4 mr-2" />
-                        Kopyalandı
+                        {t.captionOptimizer.copied}
                       </>
                     ) : (
                       <>
                         <Copy className="w-4 h-4 mr-2" />
-                        Kopyala
+                        {t.captionOptimizer.copy}
                       </>
                     )}
                   </Button>
@@ -245,7 +245,7 @@ export default function CaptionOptimizerPage() {
                     onClick={handleUseOptimized}
                   >
                     <ArrowRight className="w-4 h-4 mr-2" />
-                    İstifadə Et
+                    {t.captionOptimizer.useOptimized}
                   </Button>
                 </div>
               </div>
@@ -258,17 +258,17 @@ export default function CaptionOptimizerPage() {
               {/* Comparison */}
               <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm text-muted-foreground">Orijinal</Label>
+                  <Label className="text-sm text-muted-foreground">{t.captionOptimizer.original}</Label>
                   <div className="p-3 bg-background border rounded-lg">
                     <p className="text-sm">{caption}</p>
-                    <p className="text-xs text-muted-foreground mt-2">{caption.length} simvol</p>
+                    <p className="text-xs text-muted-foreground mt-2">{caption.length} {t.captionOptimizer.characters}</p>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm text-muted-foreground">Optimallaşdırılmış</Label>
+                  <Label className="text-sm text-muted-foreground">{t.captionOptimizer.optimized}</Label>
                   <div className="p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
                     <p className="text-sm">{optimizedCaption}</p>
-                    <p className="text-xs text-muted-foreground mt-2">{optimizedCaption.length} simvol</p>
+                    <p className="text-xs text-muted-foreground mt-2">{optimizedCaption.length} {t.captionOptimizer.characters}</p>
                   </div>
                 </div>
               </div>
@@ -279,15 +279,15 @@ export default function CaptionOptimizerPage() {
         {/* Tips */}
         <Card>
           <CardHeader>
-            <CardTitle>💡 Məsləhətlər</CardTitle>
+            <CardTitle>{t.captionOptimizer.tipsTitle}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>• Platforma uyğun başlıq seçin (Instagram, Facebook, LinkedIn)</li>
-              <li>• Ton seçimi brendinizə uyğun olmalıdır</li>
-              <li>• Qısa və cəlbedici başlıqlar daha yaxşı performans göstərir</li>
-              <li>• Call-to-action əlavə etməyi unutmayın</li>
-              <li>• Müxtəlif variantları sınayın və ən yaxşısını seçin</li>
+              <li>{t.captionOptimizer.tip1}</li>
+              <li>{t.captionOptimizer.tip2}</li>
+              <li>{t.captionOptimizer.tip3}</li>
+              <li>{t.captionOptimizer.tip4}</li>
+              <li>{t.captionOptimizer.tip5}</li>
             </ul>
           </CardContent>
         </Card>

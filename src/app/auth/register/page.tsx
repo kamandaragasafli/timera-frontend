@@ -5,8 +5,8 @@ export default function RegisterPage() {
 }
 
 export const metadata = {
-  title: 'Qeydiyyat - Timera',
-  description: 'Timera hesabınızı yaradın',
+  title: 'Sign Up - Timera',
+  description: 'Create your Timera account',
 };
 
 

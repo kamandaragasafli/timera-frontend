@@ -164,6 +164,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Clear tokens and user data
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    // Reset interface language to default (English) for next user
+    try {
+      localStorage.removeItem('language');
+      if (typeof document !== 'undefined') {
+        document.documentElement.lang = 'en';
+      }
+    } catch (e) {
+      console.warn('Could not reset language on logout:', e);
+    }
     setUser(null);
 
     // Optional: Call logout endpoint to invalidate tokens on server

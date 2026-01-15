@@ -7,6 +7,7 @@ import CompanyProfileForm from '@/components/company/CompanyProfileForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { authAPI } from '@/lib/api';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function CompanySetupPage() {
   const [hasProfile, setHasProfile] = useState(false);
@@ -14,6 +15,7 @@ export default function CompanySetupPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { user, isAuthenticated } = useAuth();
   const router = useRouter();
+  const t = useTranslation();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -45,7 +47,7 @@ export default function CompanySetupPage() {
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Yüklənir...</p>
+          <p className="mt-4 text-muted-foreground">{t.common.loading}</p>
         </div>
       </div>
     );
@@ -53,10 +55,10 @@ export default function CompanySetupPage() {
 
   return (
     <DashboardLayout
-      title={hasProfile ? 'Şirkət Profilini Yenilə' : 'Quraşdırmanı Tamamlayın'}
+      title={hasProfile ? t.companySetup.titleUpdate : t.companySetup.title}
       description={hasProfile 
-        ? 'Daha yaxşı AI məzmunu üçün şirkət məlumatlarınızı yeniləyin'
-        : 'Əla məzmun yaratmaq üçün bizə şirkətiniz haqqında məlumat verin'
+        ? t.companySetup.descriptionUpdate
+        : t.companySetup.description
       }
     >
       <div className="space-y-8">
@@ -66,7 +68,7 @@ export default function CompanySetupPage() {
               <CardHeader>
                 <CardTitle className="flex items-center text-blue-900 dark:text-blue-100">
                   <span className="mr-2">🎯</span>
-                  Bu Məlumat Niyə Lazımdır
+                  {t.companySetup.whyNeededTitle}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -74,27 +76,27 @@ export default function CompanySetupPage() {
                   <div className="flex items-start space-x-2">
                     <span className="text-lg">🤖</span>
                     <div>
-                      <h4 className="font-medium text-blue-900 dark:text-blue-100">Daha Yaxşı AI Məzmunu</h4>
+                      <h4 className="font-medium text-blue-900 dark:text-blue-100">{t.companySetup.benefit1Title}</h4>
                       <p className="text-blue-700 dark:text-blue-300">
-                        AI biznesinizə və auditoriyanıza uyğun məzmun yaradacaq
+                        {t.companySetup.benefit1Desc}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-2">
                     <span className="text-lg">🎯</span>
                     <div>
-                      <h4 className="font-medium text-blue-900 dark:text-blue-100">Hədəfli Mesajlar</h4>
+                      <h4 className="font-medium text-blue-900 dark:text-blue-100">{t.companySetup.benefit2Title}</h4>
                       <p className="text-blue-700 dark:text-blue-300">
-                        Paylaşımlar xüsusi sənayenizə və məqsədlərinizə uyğunlaşdırılacaq
+                        {t.companySetup.benefit2Desc}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-2">
                     <span className="text-lg">🌍</span>
                     <div>
-                      <h4 className="font-medium text-blue-900 dark:text-blue-100">Azərbaycan Dilində Məzmun</h4>
+                      <h4 className="font-medium text-blue-900 dark:text-blue-100">{t.companySetup.benefit3Title}</h4>
                       <p className="text-blue-700 dark:text-blue-300">
-                        Bütün məzmun mükəmməl Azərbaycan dilində yaradılacaq
+                        {t.companySetup.benefit3Desc}
                       </p>
                     </div>
                   </div>

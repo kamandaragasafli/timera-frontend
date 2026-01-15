@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,8 +12,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { postsAPI, authAPI, api, API_BASE_URL } from '@/lib/api';
 import ImglyDesignEditor from './ImglyDesignEditor';
+import FabricDesignEditor from './FabricDesignEditor';
 import { Palette, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
 import { useEffect } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface PostApprovalGridProps {
   posts: any[];
@@ -21,6 +24,8 @@ interface PostApprovalGridProps {
 }
 
 export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: PostApprovalGridProps) {
+  const router = useRouter();
+  const t = useTranslation();
   const [selectedPosts, setSelectedPosts] = useState<string[]>([]);
   const [editingPost, setEditingPost] = useState<any>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -31,6 +36,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
   const [isDesignEditorOpen, setIsDesignEditorOpen] = useState(false);
   const [companyProfile, setCompanyProfile] = useState<any>(null);
   const [applyingBranding, setApplyingBranding] = useState<{[key: string]: boolean}>({});
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Load company profile to check branding settings
   useEffect(() => {
@@ -50,6 +56,54 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
     };
     loadCompanyProfile();
   }, []);
+
+  // Auto-refresh posts to check for image updates
+  useEffect(() => {
+    // Check if any posts are missing images
+    const hasMissingImages = posts.some(post => 
+      !post.custom_image_url && !post.design_thumbnail_absolute && !post.design_thumbnail
+    );
+
+    if (!hasMissingImages) {
+      return; // No need to poll if all posts have images
+    }
+
+    console.log('🔄 Starting auto-refresh for pending images...');
+    
+    const refreshInterval = setInterval(async () => {
+      try {
+        setIsRefreshing(true);
+        const response = await postsAPI.getPendingPosts();
+        const updatedPosts = response.data.results || response.data;
+        
+        // Check if any posts got updated with images
+        const hasUpdates = updatedPosts.some((updatedPost: any) => {
+          const oldPost = posts.find(p => p.id === updatedPost.id);
+          if (!oldPost) return false;
+          
+          const hadImage = !!(oldPost.custom_image_url || oldPost.design_thumbnail_absolute || oldPost.design_thumbnail);
+          const hasImage = !!(updatedPost.custom_image_url || updatedPost.design_thumbnail_absolute || updatedPost.design_thumbnail);
+          
+          return !hadImage && hasImage; // Image was added
+        });
+        
+        if (hasUpdates) {
+          console.log('✨ Images updated! Refreshing posts...');
+          onPostsUpdated(updatedPosts);
+        }
+        
+        setIsRefreshing(false);
+      } catch (error) {
+        console.error('Auto-refresh error:', error);
+        setIsRefreshing(false);
+      }
+    }, 5000); // Check every 5 seconds
+
+    return () => {
+      clearInterval(refreshInterval);
+      console.log('🛑 Stopped auto-refresh');
+    };
+  }, [posts, onPostsUpdated]);
 
   // Posts yüklənəndə və ya yenilənəndə, hər bir post üçün avtomatik branding tətbiq et
   useEffect(() => {
@@ -100,11 +154,11 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
 
   const handleBulkApprove = async () => {
     if (selectedPosts.length === 0) {
-      alert('Zəhmət olmasa, təsdiqləmək üçün ən azı bir paylaşım seçin.');
+      alert(t.posts.pleaseSelectAtLeastOne);
       return;
     }
 
-    if (!confirm(`${selectedPosts.length} paylaşım təsdiqlənsin?`)) {
+    if (!confirm(`${selectedPosts.length} ${t.posts.confirmApprove}`)) {
       return;
     }
 
@@ -134,7 +188,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
       }
     } catch (err: any) {
       console.error('❌ Error approving posts:', err);
-      setError(err.response?.data?.error || 'Paylaşımlar təsdiqlənə bilmədi. Zəhmət olmasa yenidən cəhd edin.');
+      setError(err.response?.data?.error || t.posts.postsApproved);
     } finally {
       setIsLoading(false);
     }
@@ -142,11 +196,11 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
 
   const handleBulkReject = async () => {
     if (selectedPosts.length === 0) {
-      alert('Zəhmət olmasa, rədd etmək üçün ən azı bir paylaşım seçin.');
+      alert(t.posts.pleaseSelectAtLeastOneReject);
       return;
     }
 
-    if (!confirm(`${selectedPosts.length} paylaşım rədd edilsin?`)) {
+    if (!confirm(`${selectedPosts.length} ${t.posts.confirmReject}`)) {
       return;
     }
 
@@ -176,7 +230,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
       }
     } catch (err: any) {
       console.error('❌ Error rejecting posts:', err);
-      setError(err.response?.data?.error || 'Paylaşımlar rədd edilə bilmədi. Zəhmət olmasa yenidən cəhd edin.');
+      setError(err.response?.data?.error || t.posts.postsRejected);
     } finally {
       setIsLoading(false);
     }
@@ -206,28 +260,75 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
       onPostsUpdated(updatedPosts);
       setIsEditModalOpen(false);
     } catch (err: any) {
-      setError('Paylaşım yenilənə bilmədi. Zəhmət olmasa yenidən cəhd edin.');
+      setError(t.posts.postUpdateFailed);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleImageUpload = async (postId: string, file: File) => {
+    console.log('📤 Image upload başladı:', { postId, fileName: file.name, fileSize: file.size, fileType: file.type });
     setUploadingImage(postId);
+    setError(''); // Clear previous errors
+    
     try {
+      // File size validation (10MB limit)
+      if (file.size > 10 * 1024 * 1024) {
+        const errorMsg = `Şəkil çox böyükdür (${(file.size / 1024 / 1024).toFixed(2)}MB). Maksimum ölçü: 10MB.`;
+        console.error('❌ File too large:', file.size);
+        setError(errorMsg);
+        setUploadingImage(null);
+        return;
+      }
+      
+      console.log('🔄 API-yə request göndərilir...');
       const response = await postsAPI.uploadCustomImage(postId, file);
+      console.log('✅ API cavabı:', response.data);
       
       // Update posts list
       let updatedPost = response.data.post;
+      if (!updatedPost) {
+        console.error('❌ Response-da post yoxdur:', response.data);
+        setError('Şəkil yükləndi, amma post məlumatları yenilənmədi.');
+        setUploadingImage(null);
+        return;
+      }
+      
+      console.log('📝 Post yenilənir:', updatedPost.id);
       const updatedPosts = posts.map(post => 
         post.id === postId ? updatedPost : post
       );
       onPostsUpdated(updatedPosts);
       
       // Avtomatik branding tətbiq et
+      console.log('🎨 Avtomatik branding tətbiq olunur...');
       await applyAutoBranding(postId, updatedPost);
+      console.log('✅ Şəkil uğurla yükləndi və branding tətbiq edildi!');
     } catch (err: any) {
-      setError('Şəkil yüklənə bilmədi. Zəhmət olmasa yenidən cəhd edin.');
+      console.error('❌ Image upload xətası:', err);
+      console.error('❌ Error response:', err.response?.data);
+      console.error('❌ Error status:', err.response?.status);
+      
+      let errorMessage = t.posts.imageUploadFailed;
+      
+      if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      } else if (err.response?.status === 400) {
+        errorMessage = 'Yanlış sorğu. Şəkil faylını yoxlayın.';
+      } else if (err.response?.status === 401) {
+        errorMessage = 'Giriş tələb olunur. Zəhmət olmasa, yenidən giriş edin.';
+      } else if (err.response?.status === 404) {
+        errorMessage = 'Post tapılmadı. Zəhmət olmasa, səhifəni yeniləyin.';
+      } else if (err.response?.status === 413) {
+        errorMessage = 'Şəkil çox böyükdür. Maksimum ölçü: 10MB.';
+      } else if (err.response?.status === 500) {
+        errorMessage = 'Server xətası. Zəhmət olmasa, bir az sonra yenidən cəhd edin.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
+      alert(`❌ ${errorMessage}`);
     } finally {
       setUploadingImage(null);
     }
@@ -235,14 +336,8 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
 
   const handleOpenDesignEditor = (post: any) => {
     console.log('🖌️ Opening design editor for post:', post.id);
-    console.log('📦 Post data:', post);
-    console.log('🔍 Has imgly_scene?', !!post.imgly_scene, 'Type:', typeof post.imgly_scene);
-    if (post.imgly_scene) {
-      console.log('📊 imgly_scene length:', post.imgly_scene.length || 'N/A');
-    }
-    setDesignEditorPost(post);
-    setIsDesignEditorOpen(true);
-    console.log('✅ Design editor state updated');
+    // Navigate to new design editor page
+    router.push(`/design-editor/${post.id}`);
   };
 
   // Avtomatik branding funksiyası - şəkil yüklənəndə çağırılır
@@ -366,36 +461,36 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
       
       // Check prerequisites before calling API
       if (!companyProfile) {
-        alert('❌ Şirkət profili tapılmadı. Zəhmət olmasa, əvvəlcə şirkət məlumatlarını doldurun.');
+        alert(`❌ ${t.posts.companyProfileNotFound}`);
         return;
       }
       
       if (!companyProfile.logo_url && !companyProfile.logo && !companyProfile.logo_file) {
-        alert('❌ Şirkət loqosu tapılmadı. Əvvəlcə logo yükləyin.');
+        alert(`❌ ${t.posts.companyLogoNotFound}`);
         return;
       }
       
       if (companyProfile.branding_enabled === false) {
-        alert('❌ Brending deaktivdir. Parametrlərdə aktivləşdirin.');
+        alert(`❌ ${t.posts.brandingDisabled}`);
         return;
       }
       
       const post = posts.find(p => p.id === postId);
       if (!post) {
-        alert('❌ Post tapılmadı.');
+        alert(`❌ ${t.posts.postNotFound}`);
         return;
       }
       
       const hasImage = !!(post.custom_image_url || post.design_url_absolute || post.design_thumbnail_absolute || post.design_thumbnail);
       if (!hasImage) {
-        alert('❌ Bu postda şəkil yoxdur.');
+        alert(`❌ ${t.posts.noImageInPost}`);
         return;
       }
       
       // Call API
       const token = localStorage.getItem('access_token');
       if (!token) {
-        alert('❌ Giriş tələb olunur. Zəhmət olmasa, yenidən giriş edin.');
+        alert(`❌ ${t.posts.loginRequired}`);
         setApplyingBranding(prev => ({ ...prev, [postId]: false }));
         return;
       }
@@ -450,7 +545,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
       console.log('✅ Branding response:', data);
       
       // Success message
-      alert('✅ Brending uğurla tətbiq edildi! ✨');
+      alert(`✅ ${t.posts.brandingApplied}`);
       
       // Update posts list with branded image
       // Backend response format: { post: {...}, message: "..." } və ya { ...post data }
@@ -618,15 +713,23 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
   return (
     <div className="space-y-6 px-3 sm:px-4 lg:px-6 pt-4 sm:pt-6">
       <div className="text-center space-y-2 px-2">
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold break-words">Yaradılmış Paylaşımları Nəzərdən Keçirin</h1>
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold break-words">{t.posts.reviewGeneratedPosts}</h1>
         <p className="text-xs sm:text-sm lg:text-base text-muted-foreground px-2">
-          AI yaratdığı məzmunu nəzərdən keçirin, redaktə edin və təsdiqləyin
+          {t.posts.reviewGeneratedPostsDesc}
         </p>
+        {posts.some(post => !post.custom_image_url && !post.design_thumbnail_absolute && !post.design_thumbnail) && (
+          <div className="flex items-center justify-center space-x-2 text-xs text-blue-600 dark:text-blue-400 mt-2">
+            <div className="animate-pulse w-2 h-2 bg-blue-500 rounded-full"></div>
+            <span>{t.posts.imagesGenerating}</span>
+          </div>
+        )}
       </div>
 
       {error && (
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
+        <Alert className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+          <AlertDescription className="text-blue-700 dark:text-blue-300">
+            {error}
+          </AlertDescription>
         </Alert>
       )}
 
@@ -636,10 +739,10 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
           <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
             <span className="flex items-center text-base sm:text-lg">
               <span className="mr-2">⚡</span>
-              <span className="break-words">Toplu Əməliyyatlar</span>
+              <span className="break-words">{t.posts.bulkOperations}</span>
             </span>
             <Badge variant="secondary" className="flex-shrink-0 text-xs sm:text-sm mt-2 sm:mt-0">
-              {posts.length}-dən {selectedPosts.length} seçildi
+              {selectedPosts.length} {t.posts.selectedOf} {posts.length}
             </Badge>
           </CardTitle>
         </CardHeader>
@@ -652,10 +755,10 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                 size="sm"
                 className="w-full sm:w-auto text-xs sm:text-sm"
               >
-                {selectedPosts.length === posts.length ? 'Hamısının Seçimini Ləğv Et' : 'Hamısını Seç'}
+                {selectedPosts.length === posts.length ? t.posts.deselectAll : t.posts.selectAll}
               </Button>
               <span className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
-                {selectedPosts.length} paylaşım seçildi
+                {selectedPosts.length} {t.posts.postsSelected}
               </span>
             </div>
             
@@ -667,8 +770,8 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                 className="flex-1 sm:flex-none text-xs sm:text-sm"
               >
                 <span className="mr-1">✅</span>
-                <span className="hidden sm:inline">Seçilənləri Təsdiqlə</span>
-                <span className="sm:hidden">Təsdiqlə</span>
+                <span className="hidden sm:inline">{t.posts.approveSelected}</span>
+                <span className="sm:hidden">{t.posts.approve}</span>
               </Button>
               <Button
                 variant="destructive"
@@ -678,8 +781,8 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                 className="flex-1 sm:flex-none text-xs sm:text-sm"
               >
                 <span className="mr-1">❌</span>
-                <span className="hidden sm:inline">Seçilənləri Rədd Et</span>
-                <span className="sm:hidden">Rədd Et</span>
+                <span className="hidden sm:inline">{t.posts.rejectSelected}</span>
+                <span className="sm:hidden">{t.posts.reject}</span>
               </Button>
             </div>
           </div>
@@ -691,9 +794,22 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
         {posts.map((post, index) => (
           <Card 
             key={post.id} 
-            className={`transition-all hover:shadow-lg ${
+            className={`transition-all hover:shadow-lg cursor-pointer ${
               selectedPosts.includes(post.id) ? 'ring-2 ring-primary' : ''
             }`}
+            onClick={(e) => {
+              // Checkbox və button-lara kliklədikdə işləməsin
+              const target = e.target as HTMLElement;
+              if (target.closest('input[type="checkbox"]') || 
+                  target.closest('button') || 
+                  target.closest('a') ||
+                  target.tagName === 'BUTTON' ||
+                  target.tagName === 'INPUT' ||
+                  target.tagName === 'A') {
+                return;
+              }
+              handlePostSelect(post.id);
+            }}
           >
             <CardHeader>
               <div className="flex items-start justify-between gap-3">
@@ -707,12 +823,12 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                   <div className="flex-1 min-w-0">
                     <CardTitle className="text-lg break-words">{post.title}</CardTitle>
                     <CardDescription className="break-words">
-                      Paylaşım #{index + 1} • {post.character_count || 0} simvol
+                      {t.posts.postNumber} #{index + 1} • {post.character_count || 0} {t.posts.characters}
                     </CardDescription>
                   </div>
                 </div>
                 <Badge variant="secondary" className="bg-yellow-500 text-white flex-shrink-0">
-                  Gözləyir
+                  {t.posts.waiting}
                 </Badge>
               </div>
             </CardHeader>
@@ -748,35 +864,50 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
 
               {/* Image Section */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Paylaşım Şəkli</Label>
+                <Label className="text-sm font-medium">{t.posts.postImage}</Label>
                 {post.custom_image_url || post.design_thumbnail_absolute || post.design_thumbnail ? (
                   <div className="relative">
                     <img
                       src={post.custom_image_url || post.design_thumbnail_absolute || post.design_thumbnail}
-                      alt="Paylaşım şəkli"
+                      alt={t.posts.postImage}
                       className="w-full h-64 object-cover rounded-lg border"
                     />
                     {isBranded(post) && (
                       <div className="absolute top-2 left-2">
                         <Badge className="bg-green-500 text-white text-xs">
                           <CheckCircle2 className="w-3 h-3 mr-1" />
-                          Brendləşdirilib
+                          {t.posts.branded}
                         </Badge>
                       </div>
                     )}
                     {(post.design_thumbnail_absolute || post.design_thumbnail) && !post.custom_image_url && (
                       <div className="absolute top-2 right-2">
                         <Badge variant="secondary" className="text-xs">
-                          Yer Tutucu
+                          {t.posts.placeholder}
                         </Badge>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center">
-                    <div className="text-2xl mb-2">🖼️</div>
-                    <p className="text-sm text-muted-foreground">Şəkil yüklənməyib</p>
-                    <p className="text-xs text-muted-foreground mt-1">Paylaşımınızı daha cəlbedici etmək üçün şəkil yükləyin</p>
+                  <div className="relative w-full h-64 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-lg border overflow-hidden">
+                    {/* Skeleton Loading Animation */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center space-y-3 p-4">
+                        <div className="animate-pulse">
+                          <div className="text-4xl mb-3">🎨</div>
+                          <div className="space-y-2">
+                            <div className="h-3 w-32 bg-gray-300 dark:bg-gray-700 rounded mx-auto"></div>
+                            <div className="h-2 w-48 bg-gray-300 dark:bg-gray-700 rounded mx-auto"></div>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground">
+                          <div className="animate-spin w-3 h-3 border-2 border-primary border-t-transparent rounded-full"></div>
+                          <span>{t.posts.imageGenerating}</span>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Animated gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 dark:via-white/5 to-transparent animate-shimmer"></div>
                   </div>
                 )}
                 
@@ -802,14 +933,14 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                     {uploadingImage === post.id ? (
                       <>
                         <span className="mr-2">⏳</span>
-                        <span className="hidden sm:inline">Şəkil Yüklənir...</span>
-                        <span className="sm:hidden">Yüklənir...</span>
+                        <span className="hidden sm:inline">{t.posts.imageUploading}</span>
+                        <span className="sm:hidden">{t.posts.upload}</span>
                       </>
                     ) : (
                       <>
                         <span className="mr-2">📁</span>
-                        <span className="hidden sm:inline">Şəkil Yüklə</span>
-                        <span className="sm:hidden">Yüklə</span>
+                        <span className="hidden sm:inline">{t.posts.uploadImage}</span>
+                        <span className="sm:hidden">{t.posts.upload}</span>
                       </>
                     )}
                   </Button>
@@ -827,8 +958,8 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                     className="flex-1 sm:flex-none"
                   >
                     <span className="mr-1">✏️</span>
-                    <span className="hidden sm:inline">Redaktə Et</span>
-                    <span className="sm:hidden">Redaktə</span>
+                    <span className="hidden sm:inline">{t.posts.editPost}</span>
+                    <span className="sm:hidden">{t.posts.edit}</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -837,8 +968,8 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                     className="bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200 flex-1 sm:flex-none"
                   >
                     <Palette className="w-4 h-4 mr-1" />
-                    <span className="hidden sm:inline">Dizayn Redaktoru</span>
-                    <span className="sm:hidden">Dizayn</span>
+                    <span className="hidden sm:inline">{t.posts.designEditor}</span>
+                    <span className="sm:hidden">{t.posts.design}</span>
                   </Button>
                 </div>
                 
@@ -854,7 +985,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                     className="flex-1"
                   >
                     <span className="mr-1">❌</span>
-                    <span>Rədd Et</span>
+                    <span>{t.posts.reject}</span>
                   </Button>
                   <Button
                     size="sm"
@@ -865,7 +996,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                     className="flex-1 bg-green-600 hover:bg-green-700"
                   >
                     <span className="mr-1">✅</span>
-                    <span>Təsdiqlə</span>
+                    <span>{t.posts.approve}</span>
                   </Button>
                 </div>
               </div>
@@ -882,7 +1013,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
           size="lg"
         >
           <span className="mr-2">📅</span>
-          Təqvimə Get
+          {t.posts.goToCalendar}
         </Button>
       </div>
 
@@ -890,9 +1021,9 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Paylaşımı Redaktə Et</DialogTitle>
+            <DialogTitle>{t.posts.editPostTitle}</DialogTitle>
             <DialogDescription>
-              AI yaratdığı məzmunu ehtiyaclarınıza uyğun şəkildə dəyişdirin
+              {t.posts.editPostDesc}
             </DialogDescription>
           </DialogHeader>
 
@@ -908,7 +1039,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit-content">Paylaşım Məzmunu</Label>
+                <Label htmlFor="edit-content">{t.posts.postContent}</Label>
                 <Textarea
                   id="edit-content"
                   value={editingPost.content || ''}
@@ -921,7 +1052,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit-description">Təsvir</Label>
+                <Label htmlFor="edit-description">{t.posts.description}</Label>
                 <Textarea
                   id="edit-description"
                   value={editingPost.description || ''}
@@ -931,7 +1062,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit-hashtags">Heşteqlər</Label>
+                <Label htmlFor="edit-hashtags">{t.posts.hashtags}</Label>
                 <Input
                   id="edit-hashtags"
                   value={Array.isArray(editingPost.hashtags) ? editingPost.hashtags.join(', ') : ''}
@@ -954,7 +1085,7 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
                   onClick={handleSaveEdit}
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Yadda saxlanılır...' : 'Dəyişiklikləri Yadda Saxla'}
+                  {isLoading ? t.posts.saving : t.posts.saveChanges}
                 </Button>
               </div>
             </div>
@@ -962,15 +1093,54 @@ export default function PostApprovalGrid({ posts, onPostsUpdated, onComplete }: 
         </DialogContent>
       </Dialog>
 
-      {/* img.ly Design Editor */}
+      {/* Design Editor - Using Fabric.js (Free & Open Source) */}
       {designEditorPost && (
-        <ImglyDesignEditor
+        <FabricDesignEditor
           isOpen={isDesignEditorOpen}
+          onClose={() => {
+            console.log('Closing design editor...');
+            setIsDesignEditorOpen(false);
+            setDesignEditorPost(null);
+          }}
+          post={designEditorPost}
+          onSave={async (designDataURL) => {
+            try {
+              // Convert data URL to Blob
+              const response = await fetch(designDataURL);
+              const blob = await response.blob();
+              
+              // Create FormData and upload
+              const file = new File([blob], `design_${designEditorPost.id}.jpg`, { type: 'image/jpeg' });
+              const uploadResponse = await postsAPI.uploadCustomImage(designEditorPost.id, file);
+              
+              // Update posts list
+              const updatedPosts = posts.map(post => 
+                post.id === designEditorPost.id ? uploadResponse.data.post : post
+              );
+              onPostsUpdated(updatedPosts);
+              
+              // Apply auto branding
+              await applyAutoBranding(designEditorPost.id, uploadResponse.data.post);
+              
+              setIsDesignEditorOpen(false);
+              alert(`✅ ${t.posts.designSaved}`);
+            } catch (error) {
+              console.error('Failed to save design:', error);
+              alert(`❌ ${t.posts.designSaveFailed}`);
+            }
+          }}
+        />
+      )}
+      
+      {/* Old img.ly Design Editor (commented out for reference) */}
+      {/* {designEditorPost && (
+        <ImglyDesignEditor
+          isOpen={false}
           onClose={() => setIsDesignEditorOpen(false)}
           post={designEditorPost}
           onSave={handleSaveDesign}
         />
-      )}
+      )} */}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
@@ -9,10 +9,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { falAIAPI } from '@/lib/api';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { falAIAPI, api, API_BASE_URL } from '@/lib/api';
 import { Loader2, CheckCircle2, AlertTriangle, Image as ImageIcon, Sparkles, Link as LinkIcon, Upload } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ProductPost {
   id: string;
@@ -58,24 +60,32 @@ interface ProductAnalysis {
 
 export default function ProductPostPage() {
   const router = useRouter();
+  const t = useTranslation();
   
-  // Tab state
-  const [activeTab, setActiveTab] = useState<'upload' | 'url'>('upload');
-  
-  // Upload method states
+  // Form states
   const [productImage, setProductImage] = useState<File | null>(null);
   const [productImagePreview, setProductImagePreview] = useState<string | null>(null);
   const [productName, setProductName] = useState('');
-  const [productDescription, setProductDescription] = useState('');
-  
-  // URL method states
-  const [productUrl, setProductUrl] = useState('');
+  const [adStyle, setAdStyle] = useState('');
+  const [aspectRatio, setAspectRatio] = useState('');
   
   // Common states
   const [numImages, setNumImages] = useState(1);  // Default 1 post
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStep, setProcessingStep] = useState(0);
   const [error, setError] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  
+  // Debug: Log selectedImage state changes
+  useEffect(() => {
+    console.log('🔍 selectedImage state changed:', selectedImage);
+    if (selectedImage) {
+      console.log('✅ Modal açılmalıdır!');
+    } else {
+      console.log('❌ Modal bağlıdır');
+    }
+  }, [selectedImage]);
   const [result, setResult] = useState<{
     success: boolean;
     message: string;
@@ -102,24 +112,24 @@ export default function ProductPostPage() {
   } | null>(null);
 
   const processingSteps = [
-    'Addım 1: Şəkil Emalı - Arxa Fon Silinməsi...',
-    'Addım 2: Məhsul Analizi - Strukturlaşdırılmış Analiz...',
-    'Addım 3: Reklam Məzmunu - Hook, Body və CTA...',
-    'Addım 4: AI Prompt Yaradılması...',
-    'Addım 5: Nano Banana ilə Professional Şəkillər...',
-    'Postlar tamamlanır...',
+    t.productPost.processingStep1,
+    t.productPost.processingStep2,
+    t.productPost.processingStep3,
+    t.productPost.processingStep4,
+    t.productPost.processingStep5,
+    t.productPost.processingComplete,
   ];
   
   const processingStepsUrl = [
-    'Addım 1: Sayt məzmunu çəkilir...',
-    'Addım 2: AI ilə məhsul məlumatları analiz edilir...',
-    'Addım 3: Məhsul şəkli yüklənir...',
-    'Addım 4: Arxa fon silinir...',
-    'Addım 5: Nano Banana ilə Professional Şəkillər...',
-    'Postlar tamamlanır...',
+    t.productPost.processingStepUrl1,
+    t.productPost.processingStepUrl2,
+    t.productPost.processingStepUrl3,
+    t.productPost.processingStepUrl4,
+    t.productPost.processingStepUrl5,
+    t.productPost.processingComplete,
   ];
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setProductImage(file);
@@ -136,156 +146,468 @@ export default function ProductPostPage() {
     setError('');
     setResult(null);
     
-    if (!productImage) {
-      setError('Məhsul rəsmi seçin');
-      return;
-    }
+      if (!productImage) {
+        setError(t.productPost.errorFileRequired);
+        return;
+      }
+
+      if (!adStyle || !aspectRatio) {
+        setError(t.productPost.errorSelectAdStyle);
+        return;
+      }
 
     setIsProcessing(true);
-    setProcessingStep(0);
 
     try {
-      // Simulate progress for better UX
-      const progressInterval = setInterval(() => {
-        setProcessingStep((prev) => {
-          if (prev < processingSteps.length - 1) {
-            return prev + 1;
+      let finalImageUrl: string;
+      
+      // Şəkil file formasındadırsa, backend-ə yüklə və URL al
+      if (productImage) {
+        console.log('📤 Şəkil yüklənir backend-ə...', {
+          fileName: productImage.name,
+          fileSize: productImage.size,
+          fileType: productImage.type,
+        });
+        
+        // Backend-ə şəkili yüklə - API instance istifadə et
+        const formData = new FormData();
+        formData.append('image', productImage);
+        
+        try {
+          // FormData göndərərkən Content-Type header-ini silmək lazımdır
+          // Browser avtomatik olaraq boundary ilə təyin edəcək
+          console.log('🔄 Backend-ə request göndərilir...');
+          const uploadResponse = await api.post('/ai/upload-product-image/', formData);
+          
+          console.log('📥 Backend cavabı:', uploadResponse.data);
+
+          if (uploadResponse.data && uploadResponse.data.image_url) {
+            finalImageUrl = uploadResponse.data.image_url;
+            console.log('✅ Şəkil yükləndi, URL:', finalImageUrl);
+            
+            // URL-in düzgün olduğunu yoxla
+            if (!finalImageUrl.startsWith('http://') && !finalImageUrl.startsWith('https://')) {
+              console.warn('⚠️ URL relative görünür, absolute URL-ə çevrilir...');
+              // API_BASE_URL-dən /api hissəsini çıxarırıq çünki image URL-i artıq /media/ ilə başlayır
+              const baseUrl = API_BASE_URL.replace('/api', '');
+              finalImageUrl = `${baseUrl}${finalImageUrl}`;
+              console.log('✅ Absolute URL:', finalImageUrl);
+            }
+          } else {
+            console.error('❌ Backend cavabında image_url yoxdur:', uploadResponse.data);
+            throw new Error('Backend-dən düzgün cavab alınmadı');
           }
-          return prev;
-        });
-      }, 3000);
-
-      const formData = new FormData();
-      formData.append('product_image', productImage);
-      if (productName) {
-        formData.append('product_name', productName);
-      }
-      if (productDescription) {
-        formData.append('product_description', productDescription);
-      }
-      formData.append('num_images', numImages.toString());
-
-      const response = await falAIAPI.createProductPost(formData);
-      
-      clearInterval(progressInterval);
-      setProcessingStep(processingSteps.length - 1);
-      
-      // Debug: Check image URLs
-      console.log('Response data:', response.data);
-      if (response.data.posts) {
-        response.data.posts.forEach((post: any, idx: number) => {
-          console.log(`Post ${idx + 1} image_url:`, post.image_url);
-        });
-      }
-      
-      setResult(response.data);
-      setIsProcessing(false);
-    } catch (err: any) {
-      setIsProcessing(false);
-      setError(err.response?.data?.error || err.message || 'Xəta baş verdi');
-    }
-  };
-
-  const handleUrlSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setResult(null);
-    
-    if (!productUrl) {
-      setError('Məhsul URL-ini daxil edin');
-      return;
-    }
-    
-    // Validate URL format
-    if (!productUrl.startsWith('http://') && !productUrl.startsWith('https://')) {
-      setError('URL http:// və ya https:// ilə başlamalıdır');
-      return;
-    }
-
-    setIsProcessing(true);
-    setProcessingStep(0);
-
-    try {
-      // Simulate progress for better UX
-      const progressInterval = setInterval(() => {
-        setProcessingStep((prev) => {
-          if (prev < processingStepsUrl.length - 1) {
-            return prev + 1;
+        } catch (uploadError: any) {
+          console.error('❌ Şəkil yükləmə xətası:', {
+            message: uploadError.message,
+            response: uploadError.response?.data,
+            status: uploadError.response?.status,
+            statusText: uploadError.response?.statusText,
+          });
+          
+          let errorMessage = t.productPost.errorImageUpload;
+          
+          if (uploadError.response?.data?.error) {
+            errorMessage = uploadError.response.data.error;
+          } else if (uploadError.response?.status === 401) {
+            errorMessage = t.productPost.errorLoginRequired;
+          } else if (uploadError.response?.status === 400) {
+            errorMessage = uploadError.response.data?.error || t.productPost.errorInvalidFile;
+          } else if (uploadError.response?.status === 500) {
+            errorMessage = t.productPost.errorServerError;
+          } else if (uploadError.message) {
+            errorMessage = uploadError.message;
           }
-          return prev;
-        });
-      }, 3500);
+          
+          throw new Error(errorMessage);
+        }
+      } else {
+        throw new Error(t.productPost.errorFileRequired);
+      }
 
-      const response = await falAIAPI.createProductPostFromUrl({
-        product_url: productUrl,
-        num_images: numImages
+      // finalImageUrl-in düzgün olduğunu yoxla - MƏCBURİ
+      if (!finalImageUrl) {
+        throw new Error(t.productPost.errorUrlRequired);
+      }
+      
+      // URL-in absolute olduğunu təmin et
+      if (!finalImageUrl.startsWith('http://') && !finalImageUrl.startsWith('https://')) {
+        console.warn('⚠️ URL relative görünür, absolute URL-ə çevrilir...');
+        // API_BASE_URL-dən /api hissəsini çıxarırıq çünki image URL-i artıq /media/ ilə başlayır
+        const baseUrl = API_BASE_URL.replace('/api', '');
+        finalImageUrl = `${baseUrl}${finalImageUrl}`;
+        console.log('✅ Absolute URL:', finalImageUrl);
+      }
+      
+      // URL-in düzgün formatda olduğunu yoxla
+      try {
+        new URL(finalImageUrl);
+      } catch (urlError) {
+        throw new Error(t.productPost.errorInvalidUrl.replace('{url}', finalImageUrl));
+      }
+      
+      // Şəkil URL-ini base64-ə çevir
+      console.log('🔄 Şəkil URL-i base64-ə çevrilir...', finalImageUrl);
+      let imageBase64: string;
+      
+      try {
+        // URL-dən şəkili yüklə
+        const imageResponse = await fetch(finalImageUrl, {
+          mode: 'cors',
+          credentials: 'omit',
+        });
+        
+        if (!imageResponse.ok) {
+          throw new Error(t.productPost.errorImageLoad.replace('{status}', imageResponse.status.toString()).replace('{statusText}', imageResponse.statusText));
+        }
+        
+        // Blob-a çevir
+        const blob = await imageResponse.blob();
+        
+        // Base64-ə çevir
+        const reader = new FileReader();
+        imageBase64 = await new Promise<string>((resolve, reject) => {
+          reader.onloadend = () => {
+            const base64String = reader.result as string;
+            // data:image/jpeg;base64, prefix-ini çıxar
+            const base64Data = base64String.split(',')[1] || base64String;
+            resolve(base64Data);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+        
+        console.log('✅ Şəkil base64-ə çevrildi, uzunluq:', imageBase64.length);
+      } catch (imageError: any) {
+        console.error('❌ Şəkil base64-ə çevrilmə xətası:', imageError);
+        throw new Error(`Şəkil base64-ə çevrilə bilmədi: ${imageError.message}`);
+      }
+      
+      // Webhook URL - production və development üçün fərqli
+      const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || 
+        (process.env.NODE_ENV === 'production' 
+          ? 'https://astork1.app.n8n.cloud/webhook-test/image-to-image'
+          : 'https://astork1.app.n8n.cloud/webhook/image-to-image');
+      
+      console.log('🔄 Webhook-una göndərilir:', {
+        url: webhookUrl,
+        data: {
+          'Product Image Base64': `data:image/jpeg;base64,${imageBase64.substring(0, 50)}... (${imageBase64.length} chars)`,
+          'Product Name (Optional)': productName || '',
+          'Ad Style': adStyle,
+          'Aspect Ratio': aspectRatio,
+        },
       });
       
-      clearInterval(progressInterval);
-      setProcessingStep(processingStepsUrl.length - 1);
+      let response;
+      try {
+        // Timeout ilə fetch - 5 dəqiqə (300 saniyə) - workflow uzun müddət ala bilər
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 dəqiqə
+        
+        console.log('⏳ Webhook-una request göndərilir (timeout: 5 dəqiqə)...');
+        
+        response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            'Product Image Base64': `data:image/jpeg;base64,${imageBase64}`,
+            'Product Name (Optional)': productName || '',
+            'Ad Style': adStyle,
+            'Aspect Ratio': aspectRatio,
+          }),
+          signal: controller.signal,
+        });
+        
+        clearTimeout(timeoutId);
+        console.log('✅ Webhook response alındı');
+      } catch (fetchError: any) {
+        console.error('❌ Webhook fetch xətası:', fetchError);
+        
+          // AbortError - timeout
+          if (fetchError.name === 'AbortError') {
+            throw new Error(t.productPost.errorWorkflowTimeout);
+          }
+
+          // Network error, CORS error, və s.
+          if (fetchError.message?.includes('Failed to fetch') ||
+            fetchError.name === 'TypeError' ||
+            fetchError.message?.includes('NetworkError') ||
+            fetchError.message?.includes('Network request failed')) {
+            throw new Error(t.productPost.errorWebhookConnection);
+          }
+        
+        throw new Error(`Webhook xətası: ${fetchError.message || 'Naməlum xəta'}`);
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => '');
+        let errorMessage = `Workflow xətası: ${response.status} ${response.statusText}`;
+        
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.error || errorJson.message || errorMessage;
+        } catch {
+          if (errorText) {
+            errorMessage = errorText.substring(0, 200);
+          }
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      let data;
+      try {
+        const responseText = await response.text();
+        if (responseText) {
+          data = JSON.parse(responseText);
+        } else {
+          data = { success: true, message: 'Workflow işlədi' };
+        }
+      } catch (parseError) {
+        console.warn('⚠️ Response JSON parse edilə bilmədi, default cavab istifadə edilir');
+        data = { success: true, message: 'Workflow işlədi' };
+      }
       
-      console.log('URL Response data:', response.data);
+      console.log('✅ Webhook Response alındı:', data);
+      console.log('📊 Response struktur (keys):', Object.keys(data));
+      console.log('📋 Tam Response JSON:', JSON.stringify(data, null, 2));
+      console.log('🔍 Response type:', typeof data);
+      console.log('🔍 Response is array:', Array.isArray(data));
       
-      setResult(response.data);
-      setIsProcessing(false);
+      // Gələn şəkil URL-ini çıxar
+      // Response strukturuna görə müxtəlif yerlərdə ola bilər
+      let generatedImageUrl: string | null = null;
+      
+      if (data) {
+        // Birbaşa image_url
+        if (data.image_url) {
+          generatedImageUrl = data.image_url;
+          console.log('✅ Şəkil URL tapıldı (data.image_url):', generatedImageUrl);
+        }
+        // images array-də
+        else if (data.images && Array.isArray(data.images) && data.images.length > 0) {
+          generatedImageUrl = data.images[0].url || data.images[0];
+          console.log('✅ Şəkil URL tapıldı (data.images[0]):', generatedImageUrl);
+        }
+        // json içində
+        else if (data.json && data.json.image_url) {
+          generatedImageUrl = data.json.image_url;
+          console.log('✅ Şəkil URL tapıldı (data.json.image_url):', generatedImageUrl);
+        }
+        // FAL response strukturuna görə
+        else if (data.response_url) {
+          // response_url varsa, onu istifadə et (async response)
+          console.log('⚠️ Async response URL alındı:', data.response_url);
+        }
+        // data.data içində
+        else if (data.data && data.data.image_url) {
+          generatedImageUrl = data.data.image_url;
+          console.log('✅ Şəkil URL tapıldı (data.data.image_url):', generatedImageUrl);
+        }
+        // Digər mümkün strukturlar
+        else {
+          console.warn('⚠️ Şəkil URL-i tapılmadı. Response struktur:', Object.keys(data));
+          console.log('📋 Tam response object:', data);
+          console.log('📋 Response stringify:', JSON.stringify(data, null, 2));
+          
+          // Deep search - bütün nested objectlərdə axtar
+          const deepSearch = (obj: any, path = ''): string | null => {
+            if (!obj || typeof obj !== 'object') return null;
+            
+            for (const key in obj) {
+              const currentPath = path ? `${path}.${key}` : key;
+              const value = obj[key];
+              
+              if (key === 'image_url' || key === 'url') {
+                if (typeof value === 'string' && (value.startsWith('http://') || value.startsWith('https://'))) {
+                  console.log(`✅ Şəkil URL tapıldı (deep search: ${currentPath}):`, value);
+                  return value;
+                }
+              }
+              
+              if (key === 'images' && Array.isArray(value) && value.length > 0) {
+                const firstImage = value[0];
+                if (firstImage && typeof firstImage === 'object') {
+                  const url = firstImage.url || firstImage.image_url;
+                  if (url && typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))) {
+                    console.log(`✅ Şəkil URL tapıldı (deep search: ${currentPath}[0]):`, url);
+                    return url;
+                  }
+                }
+              }
+              
+              if (typeof value === 'object' && value !== null) {
+                const found = deepSearch(value, currentPath);
+                if (found) return found;
+              }
+            }
+            
+            return null;
+          };
+          
+          const foundUrl = deepSearch(data);
+          if (foundUrl) {
+            generatedImageUrl = foundUrl;
+          }
+        }
+      }
+      
+      // Əgər şəkil URL-i tapılmadısa, orijinal şəkil göstər (fallback)
+      // Amma əsas məqsəd yaradılmış şəkil göstərməkdir
+      if (!generatedImageUrl) {
+        console.warn('⚠️ Yaradılmış şəkil URL-i tapılmadı, orijinal şəkil göstəriləcək');
+        console.warn('📋 Response data:', JSON.stringify(data, null, 2));
+        // Fallback: orijinal şəkil
+        generatedImageUrl = finalImageUrl;
+      }
+      
+      console.log('🖼️ Yaradılmış şəkil URL:', generatedImageUrl);
+      
+      // Gələn cavabı işlə
+      setResult({
+        success: true,
+        message: t.productPost.successAdImageCreated,
+        workflow_summary: {
+          step_1: t.productPost.workflowStep1,
+          step_2: t.productPost.workflowStep2,
+          step_3: t.productPost.workflowStep3,
+          step_4: t.productPost.workflowStep4,
+          step_5: t.productPost.workflowStep5,
+        },
+        posts: [],
+        product_analysis: {} as ProductAnalysis,
+        images: {
+          original_image_url: finalImageUrl,
+          background_removed_image_url: generatedImageUrl || finalImageUrl,
+        },
+        num_created: 1,
+        source: {
+          method: 'n8n_webhook',
+          original_url: finalImageUrl,
+          final_url: generatedImageUrl || finalImageUrl,
+          extracted_data: data, // Tam response-u burada saxlayırıq ki, UI-da görə bilsin
+        },
+      });
+      
+      // Debug: Response-u localStorage-a yaz (browser console-dan baxmaq üçün)
+      try {
+        localStorage.setItem('last_n8n_response', JSON.stringify(data, null, 2));
+        console.log('💾 Response localStorage-a yazıldı. Console-da görmək üçün: localStorage.getItem("last_n8n_response")');
+      } catch (e) {
+        console.warn('⚠️ localStorage-a yazıla bilmədi:', e);
+      }
     } catch (err: any) {
+      console.error('Workflow xətası:', err);
+      setError(err.message || 'Workflow zamanı xəta baş verdi');
+    } finally {
       setIsProcessing(false);
-      setError(err.response?.data?.error || err.message || 'URL-dən məhsul postu yaradıla bilmədi');
     }
   };
+
 
   const handleViewPosts = () => {
     router.push('/posts');
   };
 
+  const handleAnalyzeAndCreatePost = async () => {
+    if (!result?.images?.background_removed_image_url) {
+      setError(t.productPost.errorImageUrlNotFound);
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setError('');
+
+    try {
+      console.log('🔄 Şəkil analiz edilir və post yaradılır...', {
+        image_url: result.images.background_removed_image_url,
+        product_name: productName,
+      });
+
+      const response = await api.post('/ai/analyze-image-and-create-post/', {
+        image_url: result.images.background_removed_image_url,
+        product_name: productName || '',
+      });
+
+      console.log('✅ Post yaradıldı:', response.data);
+
+      if (response.data.success && response.data.post) {
+        // Post-u result.posts array-inə əlavə et
+        const newPost: ProductPost = {
+          id: response.data.post.id,
+          hook: response.data.post.title || '',
+          body: response.data.post.description || '',
+          cta: '',
+          full_caption: response.data.post.content || '',
+          hashtags: response.data.post.hashtags || [],
+          complete_content: response.data.post.content || '',
+          image_url: response.data.post.image_url,
+          image_generation_prompt: '',
+          status: response.data.post.status || 'pending_approval',
+          design_context: '',
+        };
+
+        // Update result with new post
+        setResult(prev => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            posts: [...(prev.posts || []), newPost],
+            num_created: (prev.num_created || 0) + 1,
+          };
+        });
+
+        // Show success message
+        alert(t.productPost.successPostCreated);
+      } else {
+        throw new Error(t.productPost.errorPostCreationFailed);
+      }
+    } catch (err: any) {
+      console.error('❌ Post yaradılma xətası:', err);
+      setError(err.response?.data?.error || err.message || t.productPost.errorPostCreationFailed);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+
   return (
     <DashboardLayout>
       <div className="container mx-auto py-8 px-4 max-w-6xl">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-2">Məhsul Post Yaradıcı</h1>
+          <h1 className="text-3xl font-bold mb-2">{t.productPost.title}</h1>
           <p className="text-muted-foreground">
-            AI ilə professional məhsul postları yaradın - Şəkil yükləyin və ya URL verin
+            {t.productPost.description}
           </p>
         </div>
 
         {!result && (
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'upload' | 'url')} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="upload" className="flex items-center gap-2">
-                <Upload className="h-4 w-4" />
-                Şəkil Yüklə
-              </TabsTrigger>
-              <TabsTrigger value="url" className="flex items-center gap-2">
-                <LinkIcon className="h-4 w-4" />
-                URL-dən
-              </TabsTrigger>
-            </TabsList>
-
-            {/* Upload Tab */}
-            <TabsContent value="upload">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Məhsul Məlumatları</CardTitle>
-                    <CardDescription>
-                      Məhsul şəklini yükləyin və istəyə görə əlavə məlumat verin
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                {/* Image Upload */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t.productPost.cardTitle}</CardTitle>
+                <CardDescription>
+                  {t.productPost.cardDescription}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Product Image */}
                 <div className="space-y-2">
-                  <Label htmlFor="product_image">Məhsul Rəsmi *</Label>
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1">
-                      <Input
-                        id="product_image"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        disabled={isProcessing}
-                        className="cursor-pointer"
-                      />
-                    </div>
+                  <Label htmlFor="product_image">
+                    {t.productPost.productImage} <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="space-y-3">
+                    <Input
+                      id="product_image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      disabled={isProcessing}
+                      className="cursor-pointer"
+                    />
                     {productImagePreview && (
                       <div className="relative w-32 h-32 rounded-lg overflow-hidden border">
                         <Image
@@ -299,46 +621,66 @@ export default function ProductPostPage() {
                   </div>
                 </div>
 
-                {/* Product Name */}
+                {/* Product Name (Optional) */}
                 <div className="space-y-2">
-                  <Label htmlFor="product_name">Məhsul Adı (İstəyə görə)</Label>
+                  <Label htmlFor="product_name">{t.productPost.productNameOptional}</Label>
                   <Input
                     id="product_name"
                     value={productName}
                     onChange={(e) => setProductName(e.target.value)}
-                    placeholder="Məsələn: iPhone 15 Pro"
+                    placeholder={t.productPost.productNamePlaceholder}
                     disabled={isProcessing}
                   />
                 </div>
 
-                {/* Product Description */}
+                {/* Ad Style */}
                 <div className="space-y-2">
-                  <Label htmlFor="product_description">Məhsul Təsviri (İstəyə görə)</Label>
-                  <Textarea
-                    id="product_description"
-                    value={productDescription}
-                    onChange={(e) => setProductDescription(e.target.value)}
-                    placeholder="Məhsulun xüsusiyyətləri, faydaları və s."
-                    rows={4}
+                  <Label htmlFor="ad_style">
+                    {t.productPost.adStyle} <span className="text-red-500">*</span>
+                  </Label>
+                  <Select
+                    value={adStyle}
+                    onValueChange={setAdStyle}
                     disabled={isProcessing}
-                  />
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t.productPost.adStylePlaceholder} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="modern">{t.productPost.modern}</SelectItem>
+                      <SelectItem value="professional">{t.productPost.professional}</SelectItem>
+                      <SelectItem value="playful">{t.productPost.playful}</SelectItem>
+                      <SelectItem value="elegant">{t.productPost.elegant}</SelectItem>
+                      <SelectItem value="minimalist">{t.productPost.minimalist}</SelectItem>
+                      <SelectItem value="luxury">{t.productPost.luxury}</SelectItem>
+                      <SelectItem value="casual">{t.productPost.casual}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                {/* Number of Images */}
+                {/* Aspect Ratio */}
                 <div className="space-y-2">
-                  <Label htmlFor="num_images">Yaradılacaq Post Sayı</Label>
-                  <Input
-                    id="num_images"
-                    type="number"
-                    min={1}
-                    max={10}
-                    value={numImages}
-                    onChange={(e) => setNumImages(parseInt(e.target.value) || 3)}
+                  <Label htmlFor="aspect_ratio">
+                    {t.productPost.aspectRatio} <span className="text-red-500">*</span>
+                  </Label>
+                  <Select
+                    value={aspectRatio}
+                    onValueChange={setAspectRatio}
                     disabled={isProcessing}
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    AI {numImages} dənə fərqli reklam postu yaradacaq (hələlik 3, daha sonra dəyişdirilə bilər)
-                  </p>
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t.productPost.aspectRatioPlaceholder} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1:1">{t.productPost.square}</SelectItem>
+                      <SelectItem value="9:16">{t.productPost.story}</SelectItem>
+                      <SelectItem value="16:9">{t.productPost.landscape}</SelectItem>
+                      <SelectItem value="4:5">{t.productPost.portrait}</SelectItem>
+                      <SelectItem value="1.91:1">{t.productPost.facebookPost}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardContent>
             </Card>
@@ -357,18 +699,16 @@ export default function ProductPostPage() {
                     <div className="flex items-center gap-3">
                       <Loader2 className="h-5 w-5 animate-spin text-primary" />
                       <div>
-                        <p className="font-medium">{processingSteps[processingStep]}</p>
+                        <p className="font-medium">{t.productPost.generating}</p>
                         <p className="text-sm text-muted-foreground">
-                          Addım {processingStep + 1} / {processingSteps.length}
+                          {t.productPost.pleaseWait}
                         </p>
                       </div>
                     </div>
                     <div className="w-full bg-secondary rounded-full h-2">
                       <div
                         className="bg-primary h-2 rounded-full transition-all duration-300"
-                        style={{
-                          width: `${((processingStep + 1) / processingSteps.length) * 100}%`,
-                        }}
+                        style={{ width: '50%' }}
                       />
                     </div>
                   </div>
@@ -378,212 +718,207 @@ export default function ProductPostPage() {
 
             <Button
               type="submit"
-              disabled={!productImage || isProcessing}
+              disabled={!productImage || !adStyle || !aspectRatio || isProcessing}
               className="w-full"
               size="lg"
             >
               {isProcessing ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Hazırlanır...
+                  {t.productPost.processing}
                 </>
               ) : (
                 <>
                   <Sparkles className="mr-2 h-4 w-4" />
-                  Postları Yarad
+                  {t.productPost.submit}
                 </>
               )}
             </Button>
           </form>
-        </TabsContent>
+        )}
 
-        {/* URL Tab */}
-        <TabsContent value="url">
-          <form onSubmit={handleUrlSubmit} className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Məhsul URL-dən</CardTitle>
-                <CardDescription>
-                  Məhsul səhifəsinin linkini yapışdırın - AI avtomatik analiz edəcək
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* URL Input */}
-                <div className="space-y-2">
-                  <Label htmlFor="product_url">Məhsul URL-i *</Label>
-                  <Input
-                    id="product_url"
-                    type="url"
-                    value={productUrl}
-                    onChange={(e) => setProductUrl(e.target.value)}
-                    placeholder="https://example.com/product/123"
-                    disabled={isProcessing}
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Məsələn: Amazon, eBay, Etsy, və ya istənilən onlayn mağaza linki
-                  </p>
-                </div>
-
-                {/* Number of Posts */}
-                <div className="space-y-2">
-                  <Label htmlFor="num_images_url">Yaradılacaq Post Sayı</Label>
-                  <Input
-                    id="num_images_url"
-                    type="number"
-                    min="1"
-                    max="10"
-                    value={numImages}
-                    onChange={(e) => setNumImages(parseInt(e.target.value))}
-                    disabled={isProcessing}
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    AI {numImages} dənə fərqli reklam postu yaradacaq
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {error && (
-              <Alert variant="destructive">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            {isProcessing && (
+        {result && (
+          <div className="space-y-6">
+            {/* Created Posts - Yaradılmış şəkil də burada göstərilir */}
+            {((result.posts && result.posts.length > 0) || result.images?.background_removed_image_url) && (
               <Card>
-                <CardContent className="pt-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                      <div>
-                        <p className="font-medium">{processingStepsUrl[processingStep]}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Addım {processingStep + 1} / {processingStepsUrl.length}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="w-full bg-secondary rounded-full h-2">
-                      <div
-                        className="bg-primary h-2 rounded-full transition-all duration-300"
-                        style={{
-                          width: `${((processingStep + 1) / processingStepsUrl.length) * 100}%`,
-                        }}
-                      />
-                    </div>
+                <CardHeader>
+                  <CardTitle>{t.productPost.createdPosts}</CardTitle>
+                  <CardDescription>
+                    {result.posts && result.posts.length > 0 
+                      ? `${result.posts.length} ${t.productPost.createdPostsDesc}`
+                      : t.productPost.createdAdImage}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {/* Yaradılmış Reklam Şəkli */}
+                    {result.images?.background_removed_image_url && (
+                      <Card className="overflow-hidden">
+                        <div 
+                          className="relative w-full h-48 rounded-t-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            console.log('🖼️ Şəkil klikləndi:', result.images.background_removed_image_url);
+                            setSelectedImage(result.images.background_removed_image_url!);
+                          }}
+                        >
+                          <img
+                            src={result.images.background_removed_image_url}
+                            alt="Yaradılmış reklam şəkli"
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              console.error('Image load error:', result.images.background_removed_image_url);
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold mb-2">{t.productPost.createdAdImage}</h3>
+                          <p className="text-sm text-muted-foreground mb-3">
+                            {t.productPost.createdAdImageDesc}
+                          </p>
+                          <div className="flex flex-col gap-2">
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                console.log('🔵 Test düyməsi klikləndi');
+                                setSelectedImage(result.images.background_removed_image_url!);
+                              }}
+                              variant="secondary"
+                              size="sm"
+                              className="w-full"
+                            >
+                              <ImageIcon className="mr-2 h-4 w-4" />
+                              {t.productPost.openImage}
+                            </Button>
+                            <Button
+                              onClick={handleAnalyzeAndCreatePost}
+                              disabled={isAnalyzing}
+                              className="w-full"
+                              size="sm"
+                            >
+                              {isAnalyzing ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  {t.productPost.analyzing}
+                                </>
+                              ) : (
+                                <>
+                                  <Sparkles className="mr-2 h-4 w-4" />
+                                  {t.productPost.approveAndCreate}
+                                </>
+                              )}
+                            </Button>
+                            <div className="flex gap-2">
+                              <Button
+                                onClick={() => {
+                                  const link = document.createElement('a');
+                                  link.href = result.images.background_removed_image_url!;
+                                  link.download = `reklam-sekli-${Date.now()}.jpg`;
+                                  link.click();
+                                }}
+                                variant="outline"
+                                size="sm"
+                                className="flex-1"
+                              >
+                                <Upload className="mr-2 h-4 w-4" />
+                                {t.productPost.download}
+                              </Button>
+                              <Button
+                                onClick={() => {
+                                  window.open(result.images.background_removed_image_url!, '_blank');
+                                }}
+                                variant="outline"
+                                size="sm"
+                                className="flex-1"
+                              >
+                                <ImageIcon className="mr-2 h-4 w-4" />
+                                {t.productPost.open}
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                    
+                    {/* Digər Postlar */}
+                    {result.posts && result.posts.map((post, idx) => (
+                      <Card 
+                        key={post.id} 
+                        className="overflow-hidden hover:shadow-lg transition-shadow"
+                      >
+                        {/* Image */}
+                        {post.image_url ? (
+                          <div 
+                            className="relative w-full h-48 cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              console.log('🖼️ Post şəkli klikləndi:', post.image_url);
+                              setSelectedImage(post.image_url!);
+                            }}
+                          >
+                            <img
+                              src={post.image_url}
+                              alt={post.hook}
+                              className="w-full h-48 object-cover pointer-events-none"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                console.log('🖼️ Post şəkli klikləndi (img):', post.image_url);
+                                setSelectedImage(post.image_url!);
+                              }}
+                              onError={(e) => {
+                                console.error('Image load error:', post.image_url);
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <div className="relative w-full h-48 bg-muted flex items-center justify-center">
+                            <div className="text-center p-4">
+                              <ImageIcon className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
+                              <p className="text-sm text-muted-foreground">{t.productPost.imageWillBeCreated}</p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold mb-2 line-clamp-2">{post.hook}</h3>
+                          <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
+                            {post.body}
+                          </p>
+                          <p className="text-sm font-medium text-primary mb-3">{post.cta}</p>
+                          
+                          {/* Hashtags */}
+                          {post.hashtags.length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                              {post.hashtags.slice(0, 5).map((tag, tagIdx) => (
+                                <span
+                                  key={tagIdx}
+                                  className="text-xs bg-secondary px-2 py-1 rounded"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                              {post.hashtags.length > 5 && (
+                                <span className="text-xs text-muted-foreground">
+                                  +{post.hashtags.length - 5}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            <Button
-              type="submit"
-              disabled={!productUrl || isProcessing}
-              className="w-full"
-              size="lg"
-            >
-              {isProcessing ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  URL Analiz Edilir...
-                </>
-              ) : (
-                <>
-                  <LinkIcon className="mr-2 h-4 w-4" />
-                  URL-dən Postlar Yarad
-                </>
-              )}
-            </Button>
-          </form>
-        </TabsContent>
-      </Tabs>
-        )}
-
-        {result && (
-          <div className="space-y-6">
-            {/* Success Message */}
-            <Alert className="border-green-500 bg-green-50">
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
-              <AlertDescription>
-                <strong>{result.num_created} post</strong> uğurla yaradıldı!
-                {result.source && (
-                  <div className="mt-2 text-sm">
-                    <p><strong>Mənbə:</strong> URL-dən</p>
-                    <p className="text-xs text-muted-foreground truncate">{result.source.original_url}</p>
-                  </div>
-                )}
-              </AlertDescription>
-            </Alert>
-
-
-            {/* Created Posts - SIMPLIFIED */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Yaradılmış Postlar</CardTitle>
-                <CardDescription>{result.posts.length} post uğurla yaradıldı</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {result.posts.map((post, idx) => (
-                    <Card key={post.id} className="overflow-hidden">
-                      {/* Image */}
-                      {post.image_url ? (
-                        <div className="relative w-full h-48">
-                          <img
-                            src={post.image_url}
-                            alt={post.hook}
-                            className="w-full h-48 object-cover"
-                            onError={(e) => {
-                              console.error('Image load error:', post.image_url);
-                              e.currentTarget.style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      ) : (
-                        <div className="relative w-full h-48 bg-muted flex items-center justify-center">
-                          <div className="text-center p-4">
-                            <ImageIcon className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
-                            <p className="text-sm text-muted-foreground">Şəkil yaradılacaq</p>
-                          </div>
-                        </div>
-                      )}
-                      
-                      <CardContent className="p-4">
-                        <h3 className="font-semibold mb-2 line-clamp-2">{post.hook}</h3>
-                        <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
-                          {post.body}
-                        </p>
-                        <p className="text-sm font-medium text-primary mb-3">{post.cta}</p>
-                        
-                        {/* Hashtags */}
-                        {post.hashtags.length > 0 && (
-                          <div className="flex flex-wrap gap-1">
-                            {post.hashtags.slice(0, 5).map((tag, tagIdx) => (
-                              <span
-                                key={tagIdx}
-                                className="text-xs bg-secondary px-2 py-1 rounded"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                            {post.hashtags.length > 5 && (
-                              <span className="text-xs text-muted-foreground">
-                                +{post.hashtags.length - 5}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
             {/* Actions */}
             <div className="flex gap-4">
               <Button onClick={handleViewPosts} className="flex-1" size="lg">
-                Postları Görüntülə
+                {t.productPost.viewPosts}
               </Button>
               <Button
                 onClick={() => {
@@ -591,16 +926,60 @@ export default function ProductPostPage() {
                   setProductImage(null);
                   setProductImagePreview(null);
                   setProductName('');
-                  setProductDescription('');
+                  setAdStyle('');
+                  setAspectRatio('');
                 }}
                 variant="outline"
                 size="lg"
               >
-                Yeni Post Yarad
+                {t.productPost.createNewPost}
               </Button>
             </div>
           </div>
         )}
+
+        {/* Image Modal */}
+        <Dialog open={!!selectedImage} onOpenChange={(open) => {
+          if (!open) {
+            setSelectedImage(null);
+          }
+        }}>
+          <DialogContent className="!max-w-[75vw] !w-[75vw] !p-0 !max-h-[90vh] !h-auto !bg-white dark:!bg-gray-900 !rounded-xl overflow-hidden">
+            <DialogHeader className="flex flex-row items-center justify-between p-5 pb-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 space-y-0">
+              <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+                {t.productPost.imagePreview}
+              </DialogTitle>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedImage(null);
+                }}
+                className="rounded-full p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </DialogHeader>
+            
+            {/* Image Container */}
+            {selectedImage && (
+              <div className="flex items-center justify-center bg-white dark:bg-gray-900" style={{ minHeight: '500px', maxHeight: 'calc(90vh - 150px)' }}>
+                <img
+                  src={selectedImage}
+                  alt="Post şəkli"
+                  className="max-w-full max-h-full h-auto object-contain"
+                  style={{ maxHeight: 'calc(90vh - 150px)' }}
+                />
+              </div>
+            )}
+            
+            {/* Footer */}
+            <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+              {t.productPost.closeModalHint}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );

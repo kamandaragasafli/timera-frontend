@@ -164,16 +164,30 @@ export default function CompetitorAnalysisPage() {
       if (response.data?.analysis) {
         setAnalysisData(response.data.analysis);
         setScrapedData(response.data.competitor_data);
+      } else if (response.data?.error) {
+        setError(response.data.error);
+      } else {
+        setError('Analiz nəticəsi alına bilmədi. Zəhmət olmasa yenidən cəhd edin.');
       }
     } catch (err: any) {
       console.error('Error analyzing competitor:', err);
       
-      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
-        setError('Sorğu zaman aşımına uğradı. Zəhmət olmasa yenidən cəhd edin.');
-      } else if (err.code === 'ERR_NETWORK' || err.message?.includes('Network Error')) {
-        setError('Şəbəkə xətası. Backend serverin işlədiyini yoxlayın.');
+      // More detailed error handling
+      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout') || err.message?.includes('timeout')) {
+        setError('Sorğu zaman aşımına uğradı (5 dəqiqə). Analiz çox uzun çəkdi. Zəhmət olmasa daha qısa analiz dərinliyi seçin və ya yenidən cəhd edin.');
+      } else if (err.code === 'ERR_NETWORK' || err.message?.includes('Network Error') || err.message?.includes('Failed to fetch')) {
+        setError('Şəbəkə xətası. Backend serverin işlədiyini və internet bağlantınızı yoxlayın.');
+      } else if (err.response?.status === 401) {
+        setError('Giriş tələb olunur. Zəhmət olmasa yenidən giriş edin.');
+      } else if (err.response?.status === 403) {
+        setError('Bu əməliyyat üçün icazəniz yoxdur.');
+      } else if (err.response?.status === 500) {
+        setError('Server xətası. Zəhmət olmasa bir az sonra yenidən cəhd edin.');
+      } else if (err.response?.status === 503) {
+        setError('Xidmət müvəqqəti olaraq əlçatan deyil. Zəhmət olmasa bir az sonra yenidən cəhd edin.');
       } else {
-        setError(err.response?.data?.error || err.message || 'Analiz zamanı xəta baş verdi');
+        const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || 'Analiz zamanı xəta baş verdi';
+        setError(errorMessage);
       }
     } finally {
       setIsAnalyzing(false);
@@ -215,12 +229,24 @@ export default function CompetitorAnalysisPage() {
           </p>
         </div>
 
-        {error && (
-          <Alert variant="destructive">
-            <AlertCircle className="w-4 h-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+            {error && (
+              <Alert variant="destructive" className="mt-4">
+                <AlertCircle className="w-4 h-4" />
+                <AlertDescription>
+                  <div className="font-semibold mb-1">Xəta baş verdi:</div>
+                  <div>{error}</div>
+                  <div className="mt-2 text-sm opacity-90">
+                    Əgər problem davam edərsə, zəhmət olmasa:
+                    <ul className="list-disc list-inside mt-1 space-y-1">
+                      <li>Internet bağlantınızı yoxlayın</li>
+                      <li>Backend serverin işlədiyini təsdiqləyin</li>
+                      <li>Daha qısa analiz dərinliyi seçin (Quick)</li>
+                      <li>Bir az sonra yenidən cəhd edin</li>
+                    </ul>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
 
         {/* Analysis Input */}
         <Card>
@@ -296,7 +322,7 @@ export default function CompetitorAnalysisPage() {
               {isAnalyzing ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Analiz edilir...
+                  Rəqib Analiz Edilir... (Bu 1-5 dəqiqə çəkə bilər)
                 </>
               ) : (
                 <>

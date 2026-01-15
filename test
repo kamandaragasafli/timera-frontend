@@ -1,0 +1,778 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "path": "4b4cf3d5-a84d-4e05-89c0-c185ce58f974",
+        "formTitle": "🎨 Professional Product Ad Generator",
+        "formDescription": "Upload your product image and generate stunning advertisements",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Product Image URL",
+              "fieldType": "string",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Product Name (Optional)",
+              "fieldType": "string"
+            },
+            {
+              "fieldLabel": "Ad Style",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Luxury Premium (High-End)"
+                  },
+                  {
+                    "option": "Modern Minimalist (Clean)"
+                  },
+                  {
+                    "option": "Bold Energetic (Dynamic)"
+                  },
+                  {
+                    "option": "Lifestyle Aspirational"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Aspect Ratio",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "16:9 (Landscape)"
+                  },
+                  {
+                    "option": "9:16 (Vertical)"
+                  },
+                  {
+                    "option": "1:1 (Square)"
+                  },
+                  {
+                    "option": "4:5 (Portrait)"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f0a63274-1786-4ebb-bc79-843a254553ad",
+      "name": "Product Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2,
+      "position": [
+        -9072,
+        6720
+      ],
+      "webhookId": "4b4cf3d5-a84d-4e05-89c0-c185ce58f974"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/birefnet",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key YOUR_FAL_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"image_url\": \"{{ $json['Product Image URL'] }}\", \"operating_resolution\": \"1024x1024\"}",
+        "options": {}
+      },
+      "id": "8290428f-b176-41c3-8554-da61e9521d1e",
+      "name": "1. Remove Background",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -8848,
+        6720
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "HJGRYiqmoWw0JOhE",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 15,
+        "unit": "seconds"
+      },
+      "id": "8a69c8e3-b207-44d8-b05c-d71ea8a0d68d",
+      "name": "Wait BG Removal",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        -8624,
+        6720
+      ],
+      "webhookId": "bg-wait"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.status_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "2367ddfb-ad65-4873-852d-407fc567f551",
+      "name": "Check BG Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -8400,
+        6640
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "HJGRYiqmoWw0JOhE",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "value2": "COMPLETED"
+            }
+          ]
+        }
+      },
+      "id": "3c02c460-faa0-41ca-9d7f-c74ef680f2d0",
+      "name": "BG Ready?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -8176,
+        6640
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "4ae423a2-1793-4e8b-997c-0ce008700ae5",
+      "name": "Loop BG",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -7952,
+        6816
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const statusUrl = $input.item.json.status_url;\nconst requestId = statusUrl.split('/requests/')[1].split('/status')[0];\nconst baseUrl = statusUrl.split('/requests/')[0];\nconst resultUrl = `${baseUrl}/requests/${requestId}`;\n\nreturn {\n  json: {\n    request_id: requestId,\n    result_url: resultUrl\n  }\n};"
+      },
+      "id": "06fd3178-53ac-4782-a2be-fd4626996a77",
+      "name": "Extract BG Request ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -7952,
+        6592
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.result_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {}
+      },
+      "id": "74c2ba62-44d0-4e8b-abbd-2dd9428433ac",
+      "name": "Get BG Result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -7728,
+        6592
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "HJGRYiqmoWw0JOhE",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list"
+        },
+        "text": "={{ 'Analyze this ' + ($node['Product Form'].json['Product Name (Optional)'] || 'product') + '. Describe a professional advertising background that would enhance it based on ' + $node['Product Form'].json['Ad Style'] + ' style.' }}",
+        "imageUrls": "={{ $node['Product Form'].json['Product Image URL'] }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        -7504,
+        6592
+      ],
+      "id": "f1d0a656-575b-4cbe-a6b9-8c4779c4074d",
+      "name": "2. Analyze Product",
+      "credentials": {
+        "openAiApi": {
+          "id": "Zj6TXoDnOSEwQGwt",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json['0'].content[0].text }}",
+        "options": {
+          "systemMessage": "Create a prompt for ONLY THE BACKGROUND - never mention the product.\n\nStyle: {{ $node['Product Form'].json['Ad Style'] }}\n\nGuidelines:\n- Luxury: Marble, gold, dramatic lighting, dark tones\n- Minimalist: White space, clean surfaces, soft shadows\n- Energetic: Vibrant colors, dynamic angles, high contrast\n- Lifestyle: Natural settings, warm tones, organic materials\n\nRespond ONLY with minified JSON (no markdown):\n{\"background_prompt\":\"professional advertising background, [environment], studio lighting, 8k, commercial photography\",\"negative_prompt\":\"product, object, text, watermark, logo, person, low quality, blurry\"}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -7280,
+        6592
+      ],
+      "id": "62c0b11a-632c-44f7-94a3-05c82e9f3f54",
+      "name": "3. Generate Prompt"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -7216,
+        6816
+      ],
+      "id": "544d5e4b-302c-46bd-91fe-9b517f00927d",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "Zj6TXoDnOSEwQGwt",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.item.json.output.trim();\nlet cleaned = raw.startsWith('```') ? raw.replace(/```json\\s*/g, '').replace(/```\\s*/g, '').trim() : raw;\n\nconst parsed = JSON.parse(cleaned);\nconst aspectField = $node['Product Form'].json['Aspect Ratio'];\n\nlet width, height;\nif (aspectField.includes('16:9')) { width = 1920; height = 1080; }\nelse if (aspectField.includes('9:16')) { width = 1080; height = 1920; }\nelse if (aspectField.includes('4:5')) { width = 1080; height = 1350; }\nelse { width = 1024; height = 1024; }\n\nreturn {\n  json: {\n    background_prompt: parsed.background_prompt,\n    negative_prompt: parsed.negative_prompt,\n    width: width,\n    height: height,\n    product_no_bg_url: $node['Get BG Result'].json.image.url\n  }\n};"
+      },
+      "id": "d37ff7b5-3a1f-4ead-951d-3f25ab7edde9",
+      "name": "Parse",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6928,
+        6592
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/flux-pro/v1.1",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": []
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": \"{{ $json.background_prompt }}\",\n  \"image_size\": {\"width\": {{ $json.width }}, \"height\": {{ $json.height }}},\n  \"num_inference_steps\": 28,\n  \"guidance_scale\": 3.5,\n  \"num_images\": 1,\n  \"enable_safety_checker\": true\n}",
+        "options": {}
+      },
+      "id": "2d5c3d83-2ab3-425f-ab82-939fec9999b7",
+      "name": "4. Generate BG",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -6704,
+        6592
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "HJGRYiqmoWw0JOhE",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 20,
+        "unit": "seconds"
+      },
+      "id": "c01b123d-d269-4efd-920a-ea6134bad3f6",
+      "name": "Wait BG Gen",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        -6480,
+        6592
+      ],
+      "webhookId": "bg-gen-wait"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.status_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "1f1d45a1-28a8-4f86-8b7e-29330d1c559b",
+      "name": "Check BG Gen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -6256,
+        6528
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "HJGRYiqmoWw0JOhE",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "value2": "COMPLETED"
+            }
+          ]
+        }
+      },
+      "id": "8d89da5b-3bb1-47ac-a07f-621c275d608f",
+      "name": "BG Gen Ready?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -6032,
+        6528
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "e4838a47-57fe-48e9-910c-a28e0e4df0a3",
+      "name": "Loop BG Gen",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -5808,
+        6688
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const statusUrl = $input.item.json.status_url;\nconst requestId = statusUrl.split('/requests/')[1].split('/status')[0];\nconst baseUrl = statusUrl.split('/requests/')[0];\nconst resultUrl = `${baseUrl}/requests/${requestId}`;\n\nreturn {\n  json: {\n    result_url: resultUrl,\n    product_no_bg_url: $node['Parse'].json.product_no_bg_url\n  }\n};"
+      },
+      "id": "4b798cff-4bf9-4f5d-a7f4-261cdd6bca6b",
+      "name": "Extract BG Gen ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5808,
+        6480
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.result_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {}
+      },
+      "id": "4f18115f-ea24-4ea4-839d-6f6e634e2d95",
+      "name": "Get BG Gen Result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -5584,
+        6576
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "HJGRYiqmoWw0JOhE",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.images[0].url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "e603ad0a-be58-4222-849d-47ae8657b89c",
+      "name": "Download BG",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -5360,
+        6576
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $node['Product Form'].json['Product Image URL'] }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "03ff5188-dfbf-42b7-aebb-14ea505f2981",
+      "name": "Download Product",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -5440,
+        6320
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const name = ($node['Product Form'].json['Product Name (Optional)'] || 'product').replace(/\\s+/g, '_');\nconst style = $node['Product Form'].json['Ad Style'].split(' ')[0].toLowerCase();\nconst ratio = $node['Product Form'].json['Aspect Ratio'].split(' ')[0].replace(':', 'x');\nconst date = new Date().toISOString().split('T')[0];\nconst ts = Date.now();\nconst filename = `Ad_${name}_${style}_${ratio}_${date}_${ts}.jpg`;\n\nreturn {\n  json: {\n    filename,\n    success: true,\n    message: '✅ Professional ad ready for download!',\n    metadata: {\n      product_name: $node['Product Form'].json['Product Name (Optional)'] || 'Product',\n      ad_style: $node['Product Form'].json['Ad Style'],\n      aspect_ratio: $node['Product Form'].json['Aspect Ratio'],\n      created_at: new Date().toISOString()\n    }\n  },\n  binary: {\n    data: $input.item.binary.data,\n    mimeType: 'image/jpeg',\n    fileName: filename\n  }\n};"
+      },
+      "id": "9bc1f48b-1794-4ded-9b03-2240dd28df4e",
+      "name": "6. Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5536,
+        7008
+      ]
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "from PIL import Image\nimport io\n\n# Get binary data from previous nodes\nproduct_binary = $node['Download Product'].binary['data']\nbackground_binary = $node['Download BG'].binary['data']\n\n# Load images\nproduct_img = Image.open(io.BytesIO(product_binary)).convert('RGBA')\nbackground_img = Image.open(io.BytesIO(background_binary)).convert('RGBA')\n\n# --- Simple background removal (assumes light/white background) ---\n# Any pixel close to white becomes transparent\ndatas = product_img.getdata()\nnew_data = []\nfor item in datas:\n    r, g, b, a = item\n    if r > 240 and g > 240 and b > 240:  # near-white background\n        new_data.append((255, 255, 255, 0))\n    else:\n        new_data.append((r, g, b, a))\nproduct_img.putdata(new_data)\n\n# Resize product to fit background while maintaining aspect ratio\nbg_width, bg_height = background_img.size\nproduct_ratio = product_img.width / product_img.height\nbg_ratio = bg_width / bg_height\n\n# Calculate new product size (80% of background)\nif product_ratio > bg_ratio:\n    new_width = int(bg_width * 0.8)\n    new_height = int(new_width / product_ratio)\nelse:\n    new_height = int(bg_height * 0.8)\n    new_width = int(new_height * product_ratio)\n\nproduct_resized = product_img.resize((new_width, new_height), Image.Resampling.LANCZOS)\n\n# Center the product on background\nx_offset = (bg_width - new_width) // 2\ny_offset = (bg_height - new_height) // 2\n\n# Composite images using alpha channel of product_resized\nbackground_img.paste(product_resized, (x_offset, y_offset), product_resized)\n\n# Convert to bytes\noutput_buffer = io.BytesIO()\nbackground_img.convert('RGB').save(output_buffer, format='JPEG', quality=95)\noutput_bytes = output_buffer.getvalue()\n\nreturn {\n    'json': {\n        'success': True,\n        'width': bg_width,\n        'height': bg_height,\n        'product_size': f'{new_width}x{new_height}',\n        'position': f'{x_offset},{y_offset}'\n    },\n    'binary': {\n        'data': output_bytes\n    }\n}"
+      },
+      "id": "2b6ae0ec-5519-4faa-ad84-d12876bac019",
+      "name": "5. Composite with Python",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5136,
+        6576
+      ]
+    }
+  ],
+  "connections": {
+    "Product Form": {
+      "main": [
+        [
+          {
+            "node": "1. Remove Background",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Remove Background": {
+      "main": [
+        [
+          {
+            "node": "Wait BG Removal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait BG Removal": {
+      "main": [
+        [
+          {
+            "node": "Check BG Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check BG Status": {
+      "main": [
+        [
+          {
+            "node": "BG Ready?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BG Ready?": {
+      "main": [
+        [
+          {
+            "node": "Extract BG Request ID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop BG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop BG": {
+      "main": [
+        [
+          {
+            "node": "Wait BG Removal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract BG Request ID": {
+      "main": [
+        [
+          {
+            "node": "Get BG Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get BG Result": {
+      "main": [
+        [
+          {
+            "node": "2. Analyze Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Analyze Product": {
+      "main": [
+        [
+          {
+            "node": "3. Generate Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Generate Prompt": {
+      "main": [
+        [
+          {
+            "node": "Parse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "3. Generate Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse": {
+      "main": [
+        [
+          {
+            "node": "4. Generate BG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. Generate BG": {
+      "main": [
+        [
+          {
+            "node": "Wait BG Gen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait BG Gen": {
+      "main": [
+        [
+          {
+            "node": "Check BG Gen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check BG Gen": {
+      "main": [
+        [
+          {
+            "node": "BG Gen Ready?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BG Gen Ready?": {
+      "main": [
+        [
+          {
+            "node": "Extract BG Gen ID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop BG Gen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop BG Gen": {
+      "main": [
+        [
+          {
+            "node": "Wait BG Gen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract BG Gen ID": {
+      "main": [
+        [
+          {
+            "node": "Get BG Gen Result",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get BG Gen Result": {
+      "main": [
+        [
+          {
+            "node": "Download BG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download BG": {
+      "main": [
+        [
+          {
+            "node": "5. Composite with Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Product": {
+      "main": [
+        [
+          {
+            "node": "5. Composite with Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. Composite with Python": {
+      "main": [
+        [
+          {
+            "node": "6. Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9cb16818b0c35fdb242d61858c4a5b7bf1bc7317966feeb2c88ee7427dc6245e"
+  }
+}
+

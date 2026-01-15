@@ -15,62 +15,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useAuth } from '@/contexts/AuthContext';
-
-// Password strength calculator
-const calculatePasswordStrength = (password: string): { strength: number; label: string; color: string } => {
-  if (!password) return { strength: 0, label: '', color: '' };
-  
-  let strength = 0;
-  
-  // Length check
-  if (password.length >= 8) strength += 25;
-  if (password.length >= 12) strength += 10;
-  
-  // Contains lowercase
-  if (/[a-z]/.test(password)) strength += 15;
-  
-  // Contains uppercase
-  if (/[A-Z]/.test(password)) strength += 15;
-  
-  // Contains numbers
-  if (/[0-9]/.test(password)) strength += 15;
-  
-  // Contains special characters
-  if (/[^a-zA-Z0-9]/.test(password)) strength += 20;
-  
-  let label = '';
-  let color = '';
-  
-  if (strength < 30) {
-    label = 'Zəif';
-    color = 'bg-red-500';
-  } else if (strength < 60) {
-    label = 'Orta';
-    color = 'bg-yellow-500';
-  } else if (strength < 80) {
-    label = 'Yaxşı';
-    color = 'bg-blue-500';
-  } else {
-    label = 'Güclü';
-    color = 'bg-green-500';
-  }
-  
-  return { strength, label, color };
-};
-
-const registerSchema = z.object({
-  email: z.string().email('Zəhmət olmasa düzgün e-poçt ünvanı daxil edin'),
-  password: z.string().min(8, 'Şifrə ən azı 8 simvol olmalıdır'),
-  confirmPassword: z.string(),
-  first_name: z.string().min(1, 'Ad tələb olunur'),
-  last_name: z.string().min(1, 'Soyad tələb olunur'),
-  company_name: z.string().optional(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Şifrələr uyğun gəlmir",
-  path: ["confirmPassword"],
-});
-
-type RegisterFormData = z.infer<typeof registerSchema>;
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -81,6 +26,63 @@ export default function RegisterForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { register: registerUser } = useAuth();
   const router = useRouter();
+  const t = useTranslation();
+
+  // Password strength calculator
+  const calculatePasswordStrength = (password: string): { strength: number; label: string; color: string } => {
+    if (!password) return { strength: 0, label: '', color: '' };
+    
+    let strength = 0;
+    
+    // Length check
+    if (password.length >= 8) strength += 25;
+    if (password.length >= 12) strength += 10;
+    
+    // Contains lowercase
+    if (/[a-z]/.test(password)) strength += 15;
+    
+    // Contains uppercase
+    if (/[A-Z]/.test(password)) strength += 15;
+    
+    // Contains numbers
+    if (/[0-9]/.test(password)) strength += 15;
+    
+    // Contains special characters
+    if (/[^a-zA-Z0-9]/.test(password)) strength += 20;
+    
+    let label = '';
+    let color = '';
+    
+    if (strength < 30) {
+      label = t.auth.register.passwordStrengthWeak;
+      color = 'bg-red-500';
+    } else if (strength < 60) {
+      label = t.auth.register.passwordStrengthMedium;
+      color = 'bg-yellow-500';
+    } else if (strength < 80) {
+      label = t.auth.register.passwordStrengthGood;
+      color = 'bg-blue-500';
+    } else {
+      label = t.auth.register.passwordStrengthStrong;
+      color = 'bg-green-500';
+    }
+    
+    return { strength, label, color };
+  };
+
+  const registerSchema = z.object({
+    email: z.string().email(t.auth.register.errors.invalidEmail),
+    password: z.string().min(8, t.auth.register.errors.passwordMinLength),
+    confirmPassword: z.string(),
+    first_name: z.string().min(1, t.auth.register.errors.firstNameRequired),
+    last_name: z.string().min(1, t.auth.register.errors.lastNameRequired),
+    company_name: z.string().optional(),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: t.auth.register.errors.passwordsMismatch,
+    path: ["confirmPassword"],
+  });
+
+  type RegisterFormData = z.infer<typeof registerSchema>;
 
   const {
     register,
@@ -108,14 +110,14 @@ export default function RegisterForm() {
   useEffect(() => {
     if (confirmPassword && password) {
       if (password !== confirmPassword) {
-        setPasswordMismatch('Şifrələr uyğun gəlmir');
+        setPasswordMismatch(t.auth.register.errors.passwordsMismatch);
       } else {
         setPasswordMismatch('');
       }
     } else {
       setPasswordMismatch('');
     }
-  }, [password, confirmPassword]);
+  }, [password, confirmPassword, t]);
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
@@ -134,11 +136,11 @@ export default function RegisterForm() {
     } catch (err: any) {
       const errorMessage = err.message || '';
       
-      // Handle specific errors in Azerbaijan
+      // Handle specific errors
       if (errorMessage.toLowerCase().includes('email') && errorMessage.toLowerCase().includes('exist')) {
-        setError('Bu e-poçt ünvanı artıq istifadə olunur');
+        setError(t.auth.register.errors.emailExists);
       } else {
-        setError('Qeydiyyat uğursuz oldu. Zəhmət olmasa yenidən cəhd edin');
+        setError(t.auth.register.errors.registrationFailed);
       }
     } finally {
       setIsLoading(false);
@@ -156,10 +158,10 @@ export default function RegisterForm() {
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">
-              Hesab Yaradın
+              {t.auth.register.title}
             </CardTitle>
             <CardDescription className="text-center">
-              Timera ilə işə başlayın
+              {t.auth.register.description}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -172,10 +174,10 @@ export default function RegisterForm() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="first_name">Ad</Label>
+                  <Label htmlFor="first_name">{t.auth.register.firstNameLabel}</Label>
                   <Input
                     id="first_name"
-                    placeholder="Adınız"
+                    placeholder={t.auth.register.firstNamePlaceholder}
                     {...register('first_name')}
                     className={errors.first_name ? 'border-red-500' : ''}
                   />
@@ -185,10 +187,10 @@ export default function RegisterForm() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="last_name">Soyad</Label>
+                  <Label htmlFor="last_name">{t.auth.register.lastNameLabel}</Label>
                   <Input
                     id="last_name"
-                    placeholder="Soyadınız"
+                    placeholder={t.auth.register.lastNamePlaceholder}
                     {...register('last_name')}
                     className={errors.last_name ? 'border-red-500' : ''}
                   />
@@ -199,11 +201,11 @@ export default function RegisterForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">E-poçt</Label>
+                <Label htmlFor="email">{t.auth.register.emailLabel}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="epoct@numune.az"
+                  placeholder={t.auth.register.emailPlaceholder}
                   {...register('email')}
                   className={errors.email ? 'border-red-500' : ''}
                 />
@@ -213,21 +215,21 @@ export default function RegisterForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="company_name">Şirkət Adı (İstəyə Bağlı)</Label>
+                <Label htmlFor="company_name">{t.auth.register.companyNameLabel}</Label>
                 <Input
                   id="company_name"
-                  placeholder="Şirkətinizin adı"
+                  placeholder={t.auth.register.companyNamePlaceholder}
                   {...register('company_name')}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Şifrə</Label>
+                <Label htmlFor="password">{t.auth.register.passwordLabel}</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Şifrə yaradın"
+                    placeholder={t.auth.register.passwordPlaceholder}
                     {...register('password')}
                     className={errors.password ? 'border-red-500 pr-10' : 'pr-10'}
                   />
@@ -256,7 +258,7 @@ export default function RegisterForm() {
                 {password && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">Şifrə gücü:</span>
+                      <span className="text-muted-foreground">{t.auth.register.passwordStrength}</span>
                       <span className={`font-medium ${
                         passwordStrength.strength < 30 ? 'text-red-500' :
                         passwordStrength.strength < 60 ? 'text-yellow-500' :
@@ -273,19 +275,19 @@ export default function RegisterForm() {
                       />
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      İpucu: Böyük və kiçik hərflər, rəqəmlər və xüsusi simvollar istifadə edin
+                      {t.auth.register.passwordHint}
                     </p>
                   </div>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Şifrəni Təsdiq Et</Label>
+                <Label htmlFor="confirmPassword">{t.auth.register.confirmPasswordLabel}</Label>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Şifrəni təkrar daxil edin"
+                    placeholder={t.auth.register.confirmPasswordPlaceholder}
                     {...register('confirmPassword')}
                     className={errors.confirmPassword || passwordMismatch ? 'border-red-500 pr-10' : confirmPassword && !passwordMismatch ? 'border-green-500 pr-10' : 'pr-10'}
                   />
@@ -321,7 +323,7 @@ export default function RegisterForm() {
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
-                    Şifrələr uyğundur
+                    {t.auth.register.passwordsMatch}
                   </p>
                 )}
                 {/* Form validation error */}
@@ -335,19 +337,19 @@ export default function RegisterForm() {
                 className="w-full"
                 disabled={isLoading}
               >
-                {isLoading ? 'Hesab yaradılır...' : 'Qeydiyyatdan Keç'}
+                {isLoading ? t.auth.register.submittingButton : t.auth.register.submitButton}
               </Button>
             </form>
 
             <Separator />
 
             <div className="text-center text-sm">
-              <span className="text-gray-600">Artıq hesabınız var? </span>
+              <span className="text-gray-600">{t.auth.register.hasAccount} </span>
               <Link
                 href="/auth/login"
                 className="font-medium text-blue-600 hover:text-blue-500"
               >
-                Daxil Ol
+                {t.auth.register.signInLink}
               </Link>
             </div>
           </CardContent>

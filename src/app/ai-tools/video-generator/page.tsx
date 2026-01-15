@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { falAIAPI, authAPI } from '@/lib/api';
 import { Loader2, Download, Copy, CheckCircle2, Video, AlertTriangle, Upload } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface VideoResult {
   video_url: string;
@@ -33,15 +34,14 @@ interface CompanyProfile {
 
 export default function VideoGeneratorPage() {
   const router = useRouter();
-  const [mode, setMode] = useState<'text' | 'image'>('text');
+  const t = useTranslation();
+  const mode = 'image'; // Only image-to-video mode
   const [prompt, setPrompt] = useState('');
   const [productImage, setProductImage] = useState<File | null>(null);
   const [productImagePreview, setProductImagePreview] = useState<string | null>(null);
   const [productImageUrl, setProductImageUrl] = useState<string | null>(null);
   const [duration, setDuration] = useState(5);
   const [fps, setFps] = useState(24);
-  const [width, setWidth] = useState(1024);
-  const [height, setHeight] = useState(576);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStep, setGenerationStep] = useState(0);
   const [result, setResult] = useState<VideoResult | null>(null);
@@ -89,18 +89,18 @@ export default function VideoGeneratorPage() {
     try {
       // Validation
       if (!prompt.trim()) {
-        throw new Error('Prompt daxil edin');
+        throw new Error(t.videoGenerator.errorPromptRequired);
       }
 
       if (mode === 'image' && !productImage) {
-        throw new Error('Video üçün şəkil yükləyin');
+        throw new Error(t.videoGenerator.errorImageRequired);
       }
 
       // Progress steps
       const progressSteps = [
-        { step: 1, message: 'Prompt professional hale gətirilir...', delay: 2000 },
-        { step: 2, message: 'Video yaradılır...', delay: 10000 },
-        { step: 3, message: 'Tamamlanır...', delay: 5000 },
+        { step: 1, message: t.videoGenerator.progressStep1, delay: 2000 },
+        { step: 2, message: t.videoGenerator.progressStep2, delay: 10000 },
+        { step: 3, message: t.videoGenerator.progressStep3, delay: 5000 },
       ];
 
       for (const progress of progressSteps) {
@@ -108,59 +108,26 @@ export default function VideoGeneratorPage() {
         await new Promise(resolve => setTimeout(resolve, progress.delay));
       }
 
-      if (mode === 'image' && productImage) {
-        // Image-to-video using existing endpoint
-        setGenerationStep(2);
-        
-        // First, we need to upload the image to get a URL
-        // For now, we'll use a simplified approach - in production, upload to your server first
-        const imageFormData = new FormData();
-        imageFormData.append('image', productImage);
-        
-        // Note: In production, you should upload the image first to get a URL
-        // For now, we'll use the image-to-video endpoint which might accept base64 or file upload
-        // Let's use the existing image-to-video endpoint
-        try {
-          // We need to upload image first to get URL
-          // For demo, let's assume we have an upload endpoint or use a temporary solution
-          const response = await falAIAPI.imageToVideo({
-            image_url: productImagePreview || '', // This should be a proper URL
-            prompt: prompt,
-            duration: duration,
-            fps: fps,
-            save_to_storage: true,
-          });
-          
-          setResult({
-            video_url: response.data.video_url,
-            status: response.data.status,
-            job_id: response.data.job_id,
-            saved_video_url: response.data.saved_video_url,
-          });
-        } catch (imgError: any) {
-          throw new Error(`Image-to-video xətası: ${imgError.response?.data?.error || imgError.message}`);
-        }
-      } else {
-        // Text-to-video
-        setGenerationStep(2);
-        
-        const response = await falAIAPI.klingVideoTextToVideo({
+      // Image-to-video only
+      setGenerationStep(2);
+      
+      try {
+        const response = await falAIAPI.imageToVideo({
+          image_url: productImagePreview || '', // This should be a proper URL
           prompt: prompt,
           duration: duration,
           fps: fps,
-          width: width,
-          height: height,
-          enhance_prompt: true,
           save_to_storage: true,
         });
         
         setResult({
           video_url: response.data.video_url,
-          enhanced_prompt: response.data.enhanced_prompt,
           status: response.data.status,
           job_id: response.data.job_id,
           saved_video_url: response.data.saved_video_url,
         });
+      } catch (imgError: any) {
+        throw new Error(t.videoGenerator.errorImageToVideo.replace('{error}', imgError.response?.data?.error || imgError.message));
       }
 
       setGenerationStep(0);
@@ -168,18 +135,18 @@ export default function VideoGeneratorPage() {
       console.error('Video generation error:', err);
       
       if (err.response?.status === 401) {
-        setError('Giriş edilməyib. Zəhmət olmasa yenidən giriş edin.');
+        setError(t.videoGenerator.errorLoginRequired);
       } else if (err.response?.status === 500) {
         const errorDetails = err.response?.data?.details || err.response?.data?.error || '';
-        setError(`Server xətası (500). ${errorDetails ? `Detallar: ${errorDetails}` : 'Backend developer ilə əlaqə saxlayın.'}`);
+        setError(`${t.videoGenerator.errorServerError} ${errorDetails ? `Details: ${errorDetails}` : ''}`);
       } else if (err.code === 'ERR_NETWORK' || err.message?.includes('Network Error')) {
-        setError('Şəbəkə xətası. Backend server-ə qoşula bilinmir.');
+        setError(t.videoGenerator.errorNetworkError);
       } else {
         const errorMessage = err.response?.data?.error || 
                            err.response?.data?.detail || 
                            err.response?.data?.message ||
                            err.message || 
-                           'Video yaradıla bilmədi';
+                           t.videoGenerator.errorVideoGenerationFailed;
         setError(errorMessage);
       }
       
@@ -215,15 +182,15 @@ export default function VideoGeneratorPage() {
   };
 
   const progressSteps = [
-    { step: 1, label: '📝 Prompt', message: 'Prompt professional hale gətirilir...' },
-    { step: 2, label: '🎬 Video', message: 'Video yaradılır...' },
-    { step: 3, label: '✨ Tamamlanır', message: 'Tamamlanır...' },
+    { step: 1, label: t.videoGenerator.progressStep1, message: t.videoGenerator.progressStep1 },
+    { step: 2, label: t.videoGenerator.progressStep2, message: t.videoGenerator.progressStep2 },
+    { step: 3, label: t.videoGenerator.progressStep3, message: t.videoGenerator.progressStep3 },
   ];
 
   return (
     <DashboardLayout 
-      title="AI Video Generator"
-      description="Create professional videos with AI using Kling Video"
+      title={t.videoGenerator.title}
+      description={t.videoGenerator.description}
     >
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Form Card */}
@@ -231,106 +198,64 @@ export default function VideoGeneratorPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Video className="w-5 h-5" />
-              Video Yaradın
+              {t.videoGenerator.cardTitle}
             </CardTitle>
             <CardDescription>
-              Kling Video AI ilə professional videolar yaradın
+              {t.videoGenerator.cardDescription}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleGenerate} className="space-y-6">
-              {/* Mode Toggle */}
-              <div className="space-y-3">
-                <Label>Video Yaradılma Metodu</Label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setMode('text')}
-                    disabled={isGenerating}
-                    className={`p-4 border-2 rounded-lg text-center transition-all ${
-                      mode === 'text'
-                        ? 'border-primary bg-primary/5'
-                        : 'border-muted hover:border-primary/50'
-                    }`}
-                  >
-                    <div className="text-2xl mb-2">📝</div>
-                    <div className="text-sm font-medium">Metindən Video</div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      Prompt yazın, video yaradılsın
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMode('image')}
-                    disabled={isGenerating}
-                    className={`p-4 border-2 rounded-lg text-center transition-all ${
-                      mode === 'image'
-                        ? 'border-primary bg-primary/5'
-                        : 'border-muted hover:border-primary/50'
-                    }`}
-                  >
-                    <div className="text-2xl mb-2">🖼️</div>
-                    <div className="text-sm font-medium">Şəkildən Video</div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      Şəkil yükləyin, hərəkətli video olsun
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              <Separator />
 
               {/* Prompt */}
               <div className="space-y-2">
-                <Label htmlFor="prompt">AI Prompt *</Label>
+                <Label htmlFor="prompt">{t.videoGenerator.promptLabel}</Label>
                 <Textarea
                   id="prompt"
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="məs: A beautiful sunset over mountains with birds flying, cinematic camera movement, slow motion"
+                  placeholder={t.videoGenerator.promptPlaceholder}
                   rows={4}
                   required
                   disabled={isGenerating}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Prompt arxa planda professional video terminologiyası ilə zənginləşdiriləcək
+                  {t.videoGenerator.promptDescription}
                 </p>
               </div>
 
-              {/* Image Upload (for image-to-video mode) */}
-              {mode === 'image' && (
-                <div className="space-y-2">
-                  <Label htmlFor="productImage">Şəkil Yükləyin *</Label>
-                  <Input
-                    id="productImage"
-                    type="file"
-                    accept="image/png,image/jpeg,image/jpg"
-                    onChange={handleImageChange}
-                    disabled={isGenerating}
-                    required={mode === 'image'}
-                  />
-                  {productImagePreview && (
-                    <div className="mt-2 relative w-64 h-64 rounded-lg overflow-hidden border">
-                      <Image
-                        src={productImagePreview}
-                        alt="Preview"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
+              {/* Image Upload */}
+              <div className="space-y-2">
+                <Label htmlFor="productImage">{t.videoGenerator.imageUploadLabel}</Label>
+                <Input
+                  id="productImage"
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg"
+                  onChange={handleImageChange}
+                  disabled={isGenerating}
+                  required
+                />
+                {productImagePreview && (
+                  <div className="mt-2 relative w-64 h-64 rounded-lg overflow-hidden border">
+                    <Image
+                      src={productImagePreview}
+                      alt="Preview"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+              </div>
 
               <Separator />
 
               {/* Video Settings */}
               <div className="space-y-4">
-                <Label className="text-base font-semibold">Video Parametrləri</Label>
+                <Label className="text-base font-semibold">{t.videoGenerator.parametersLabel}</Label>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="duration">Müddət (saniyə)</Label>
+                    <Label htmlFor="duration">{t.videoGenerator.durationLabel}</Label>
                     <Input
                       id="duration"
                       type="number"
@@ -343,7 +268,7 @@ export default function VideoGeneratorPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="fps">FPS (Frame per Second)</Label>
+                    <Label htmlFor="fps">{t.videoGenerator.fpsLabel}</Label>
                     <Input
                       id="fps"
                       type="number"
@@ -356,37 +281,6 @@ export default function VideoGeneratorPage() {
                   </div>
                 </div>
 
-                {mode === 'text' && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="width">En (px)</Label>
-                      <Input
-                        id="width"
-                        type="number"
-                        min="512"
-                        max="1920"
-                        step="64"
-                        value={width}
-                        onChange={(e) => setWidth(parseInt(e.target.value) || 1024)}
-                        disabled={isGenerating}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="height">Hündürlük (px)</Label>
-                      <Input
-                        id="height"
-                        type="number"
-                        min="512"
-                        max="1920"
-                        step="64"
-                        value={height}
-                        onChange={(e) => setHeight(parseInt(e.target.value) || 576)}
-                        disabled={isGenerating}
-                      />
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Error Display */}
@@ -394,7 +288,7 @@ export default function VideoGeneratorPage() {
                 <Alert variant="destructive">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
-                    <p className="font-medium mb-1">Xəta baş verdi</p>
+                    <p className="font-medium mb-1">{t.videoGenerator.errorTitle}</p>
                     <p className="text-sm">{error}</p>
                   </AlertDescription>
                 </Alert>
@@ -404,7 +298,7 @@ export default function VideoGeneratorPage() {
               {isGenerating && (
                 <div className="space-y-3 p-4 bg-muted rounded-lg">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium">Video yaradılır... (30-60 saniyə)</span>
+                    <span className="font-medium">{t.videoGenerator.progressMessage}</span>
                     <Loader2 className="w-4 h-4 animate-spin" />
                   </div>
                   <div className="flex gap-2">
@@ -434,12 +328,12 @@ export default function VideoGeneratorPage() {
                 {isGenerating ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Video Yaradılır...
+                    {t.videoGenerator.generatingButton}
                   </>
                 ) : (
                   <>
                     <Video className="w-4 h-4 mr-2" />
-                    Video Yaradın
+                    {t.videoGenerator.generateButton}
                   </>
                 )}
               </Button>
@@ -453,13 +347,13 @@ export default function VideoGeneratorPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-green-500" />
-                Yaradılmış Video
+                {t.videoGenerator.resultTitle}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Generated Video */}
               <div className="space-y-3">
-                <Label>Yaradılmış Video</Label>
+                <Label>{t.videoGenerator.resultVideoLabel}</Label>
                 <div className="relative rounded-lg overflow-hidden border-2 border-muted bg-black">
                   <video
                     src={result.video_url}
@@ -478,7 +372,7 @@ export default function VideoGeneratorPage() {
                     className="flex-1"
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    Yüklə
+                    {t.videoGenerator.downloadButton}
                   </Button>
                   <Button
                     variant="outline"
@@ -486,7 +380,7 @@ export default function VideoGeneratorPage() {
                     className="flex-1"
                   >
                     <Copy className="w-4 h-4 mr-2" />
-                    Link Kopyala
+                    {t.videoGenerator.copyLinkButton}
                   </Button>
                 </div>
               </div>
@@ -496,7 +390,7 @@ export default function VideoGeneratorPage() {
                   <Separator />
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label className="text-sm text-muted-foreground">Professional Prompt:</Label>
+                      <Label className="text-sm text-muted-foreground">{t.videoGenerator.professionalPromptLabel}</Label>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -520,14 +414,14 @@ export default function VideoGeneratorPage() {
 
               {/* Metadata */}
               <div className="space-y-2">
-                <Label className="text-sm text-muted-foreground">Video Məlumatları:</Label>
+                <Label className="text-sm text-muted-foreground">{t.videoGenerator.videoInfoLabel}</Label>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
-                    <span className="font-medium">Status:</span>{' '}
+                    <span className="font-medium">{t.videoGenerator.statusLabel}</span>{' '}
                     <Badge variant="outline">{result.status}</Badge>
                   </div>
                   <div>
-                    <span className="font-medium">Job ID:</span>{' '}
+                    <span className="font-medium">{t.videoGenerator.jobIdLabel}</span>{' '}
                     <code className="text-xs">{result.job_id}</code>
                   </div>
                 </div>

@@ -15,13 +15,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useAuth } from '@/contexts/AuthContext';
-
-const loginSchema = z.object({
-  email: z.string().email('Zəhmət olmasa düzgün e-poçt ünvanı daxil edin'),
-  password: z.string().min(1, 'Şifrə tələb olunur'),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +23,14 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
+  const t = useTranslation();
+
+  const loginSchema = z.object({
+    email: z.string().email(t.auth.login.errors.invalidEmail),
+    password: z.string().min(1, t.auth.login.errors.passwordRequired),
+  });
+
+  type LoginFormData = z.infer<typeof loginSchema>;
 
   const {
     register,
@@ -63,31 +65,31 @@ export default function LoginForm() {
           errorMessage.includes('authentication') ||
           errorMessage.includes('unauthorized') ||
           errorMessage === 'login failed') {
-        setError('E-poçt və ya şifrə yanlışdır');
+        setError(t.auth.login.errors.wrongCredentials);
       } 
       // Check for user not found (less common, as most backends hide this for security)
       else if (errorMessage.includes('not found') || 
                errorMessage.includes('does not exist') ||
                errorMessage.includes('user does not exist')) {
-        setError('Bu e-poçt ünvanı ilə istifadəçi tapılmadı');
+        setError(t.auth.login.errors.userNotFound);
       } 
       // Check for disabled account
       else if (errorMessage.includes('disabled') || 
                errorMessage.includes('inactive') ||
                errorMessage.includes('not active') ||
                errorMessage.includes('account is disabled')) {
-        setError('Hesabınız deaktiv edilib. Zəhmət olmasa dəstək ilə əlaqə saxlayın');
+        setError(t.auth.login.errors.accountDisabled);
       } 
       // Network or server errors
       else if (errorMessage.includes('network') || 
                errorMessage.includes('server') ||
                errorMessage.includes('connection') ||
                errorMessage.includes('timeout')) {
-        setError('Serverlə əlaqə qurula bilmədi. İnternet bağlantınızı yoxlayın');
+        setError(t.auth.login.errors.networkError);
       }
       // Default error - also treat as credentials error for security
       else {
-        setError('E-poçt və ya şifrə yanlışdır');
+        setError(t.auth.login.errors.wrongCredentials);
       }
     } finally {
       setIsLoading(false);
@@ -105,10 +107,10 @@ export default function LoginForm() {
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">
-              Timera-ya Daxil Olun
+              {t.auth.login.title}
             </CardTitle>
             <CardDescription className="text-center">
-              Hesabınıza daxil olmaq üçün e-poçt və şifrənizi daxil edin
+              {t.auth.login.description}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -120,11 +122,11 @@ export default function LoginForm() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">E-poçt</Label>
+                <Label htmlFor="email">{t.auth.login.emailLabel}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="E-poçt ünvanınızı daxil edin"
+                  placeholder={t.auth.login.emailPlaceholder}
                   {...register('email')}
                   className={errors.email ? 'border-red-500' : ''}
                 />
@@ -134,12 +136,12 @@ export default function LoginForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Şifrə</Label>
+                <Label htmlFor="password">{t.auth.login.passwordLabel}</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Şifrənizi daxil edin"
+                    placeholder={t.auth.login.passwordPlaceholder}
                     {...register('password')}
                     className={errors.password ? 'border-red-500 pr-10' : 'pr-10'}
                   />
@@ -170,19 +172,19 @@ export default function LoginForm() {
                 className="w-full"
                 disabled={isLoading}
               >
-                {isLoading ? 'Daxil olunur...' : 'Daxil Ol'}
+                {isLoading ? t.auth.login.submittingButton : t.auth.login.submitButton}
               </Button>
             </form>
 
             <Separator />
 
             <div className="text-center text-sm">
-              <span className="text-gray-600">Hesabınız yoxdur? </span>
+              <span className="text-gray-600">{t.auth.login.noAccount} </span>
               <Link
                 href="/auth/register"
                 className="font-medium text-blue-600 hover:text-blue-500"
               >
-                Qeydiyyatdan keçin
+                {t.auth.login.signUpLink}
               </Link>
             </div>
           </CardContent>

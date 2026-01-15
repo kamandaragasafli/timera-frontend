@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { authAPI, aiAPI, api } from '@/lib/api';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const companyProfileSchema = z.object({
   company_name: z.string().min(1, 'Şirkət adı tələb olunur'),
@@ -53,6 +54,7 @@ interface CompanyProfileFormProps {
 }
 
 export default function CompanyProfileForm({ onComplete, existingProfile }: CompanyProfileFormProps) {
+  const t = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -656,9 +658,9 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold">Şirkət Profili Quraşdırması</h1>
+        <h1 className="text-3xl font-bold">{t.settings.companyProfile.setupTitle}</h1>
         <p className="text-muted-foreground">
-          Daha yaxşı AI məzmunu yaratmaq üçün bizə biznesinizi tanıtmağa kömək edin
+          {t.settings.companyProfile.setupDescription}
         </p>
       </div>
 
@@ -692,16 +694,16 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
           <CardHeader>
             <CardTitle className="flex items-center">
               <span className="mr-2">🏢</span>
-              Əsas Məlumat
+              {t.settings.companyProfile.basicInfo}
             </CardTitle>
             <CardDescription>
-              Bizə şirkətiniz haqqında məlumat verin
+              {t.settings.companyProfile.basicInfoDesc}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Logo Upload Section */}
             <div className="space-y-4 border-b pb-6 mb-6">
-              <Label>Şirkət Loqosu</Label>
+              <Label>{t.settings.companyProfile.companyLogo}</Label>
               <div
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
@@ -727,12 +729,12 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                         size="sm"
                         onClick={() => document.getElementById('logo-upload')?.click()}
                       >
-                        Loqonu Dəyişdir
+                        {t.settings.companyProfile.changeLogo}
                       </Button>
                       {analyzingLogo && (
                         <p className="text-sm text-blue-600 flex items-center">
                           <span className="mr-2 animate-spin">⏳</span>
-                          AI loqonu təhlil edir...
+                          {t.settings.companyProfile.logoAnalyzing}
                         </p>
                       )}
                     </div>
@@ -744,10 +746,10 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Loqonu yükləyin və ya sürüşdürün
+                        {t.settings.companyProfile.dragDropLogo}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        PNG şəffaflıqla tövsiyə olunur. JPG və ya SVG (max 10MB)
+                        {t.settings.companyProfile.logoFileTypes}
                       </p>
                     </div>
                     <Button
@@ -756,7 +758,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                       size="sm"
                       onClick={() => document.getElementById('logo-upload')?.click()}
                     >
-                      Fayl Seçin
+                      {t.settings.companyProfile.selectFile}
                     </Button>
                   </div>
                 )}
@@ -769,16 +771,16 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                💡 AI loqonuzu avtomatik təhlil edəcək və brend rənglərinizi, stilinizi və daha çox məlumatı əldə edəcək
+                {t.settings.companyProfile.logoAnalysisHint}
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="company_name">Şirkət Adı *</Label>
+                <Label htmlFor="company_name">{t.settings.companyProfile.companyName} *</Label>
                 <Input
                   id="company_name"
-                  placeholder="Şirkətinizin Adı"
+                  placeholder={t.settings.companyProfile.companyNamePlaceholder}
                   {...register('company_name')}
                   className={errors.company_name ? 'border-red-500' : ''}
                 />
@@ -788,13 +790,13 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="industry">Sənaye *</Label>
+                <Label htmlFor="industry">{t.settings.companyProfile.industry} *</Label>
                 <select
                   id="industry"
                   {...register('industry')}
                   className={`w-full p-2 border rounded-md bg-background ${errors.industry ? 'border-red-500' : ''}`}
                 >
-                  <option value="">Sənaye Seçin</option>
+                  <option value="">{t.settings.companyProfile.selectIndustry}</option>
                   {industryOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -807,13 +809,13 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="company_size">Şirkət Ölçüsü *</Label>
+                <Label htmlFor="company_size">{t.settings.companyProfile.companySize} *</Label>
                 <select
                   id="company_size"
                   {...register('company_size')}
                   className={`w-full p-2 border rounded-md bg-background ${errors.company_size ? 'border-red-500' : ''}`}
                 >
-                  <option value="">Şirkət Ölçüsünü Seçin</option>
+                  <option value="">{t.settings.companyProfile.selectCompanySize}</option>
                   {companySizeOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -826,11 +828,11 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="website">Vebsayt</Label>
+                <Label htmlFor="website">{t.settings.companyProfile.website}</Label>
                 <Input
                   id="website"
                   type="url"
-                  placeholder="https://sirketiniz.com"
+                  placeholder={t.settings.companyProfile.websitePlaceholder}
                   {...register('website')}
                   className={errors.website ? 'border-red-500' : ''}
                 />
@@ -841,10 +843,10 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="location">Yer</Label>
+              <Label htmlFor="location">{t.settings.companyProfile.location}</Label>
               <Input
                 id="location"
-                placeholder="Şəhər, Ölkə"
+                placeholder={t.settings.companyProfile.locationPlaceholder}
                 {...register('location')}
               />
             </div>
@@ -856,16 +858,16 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
           <CardHeader>
             <CardTitle className="flex items-center">
               <span className="mr-2">📝</span>
-              Biznes Təsviri
+              {t.settings.companyProfile.businessDescriptionTitle}
             </CardTitle>
             <CardDescription>
-              AI-ə biznesinizi daha yaxşı başa düşməyə kömək edin
+              {t.settings.companyProfile.businessDescriptionDesc}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="business_description">Şirkətiniz nə edir? *</Label>
+                <Label htmlFor="business_description">{t.settings.companyProfile.businessDescriptionLabel}</Label>
                 <Button
                   type="button"
                   variant="ghost"
@@ -877,21 +879,21 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                   {aiLoading.business_description ? (
                     <>
                       <span className="mr-1 animate-spin">⏳</span>
-                      AI Yaradır...
+                      {t.settings.companyProfile.aiGenerating}
                     </>
                   ) : (
                     <>
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-1">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
                       </svg>
-                      AI Təklifi
+                      {t.settings.companyProfile.aiSuggestion}
                     </>
                   )}
                 </Button>
               </div>
               <Textarea
                 id="business_description"
-                placeholder="Biznesinizi, məhsullarınızı və ya xidmətlərinizi ətraflı təsvir edin..."
+                placeholder={t.settings.companyProfile.businessDescriptionPlaceholder}
                 className={`min-h-[100px] ${errors.business_description ? 'border-red-500' : ''}`}
                 {...register('business_description')}
               />
@@ -902,7 +904,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="target_audience">Hədəf auditoriyanız kimdir? *</Label>
+                <Label htmlFor="target_audience">{t.settings.companyProfile.targetAudienceLabel}</Label>
                 <Button
                   type="button"
                   variant="ghost"
@@ -914,21 +916,21 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                   {aiLoading.target_audience ? (
                     <>
                       <span className="mr-1 animate-spin">⏳</span>
-                      AI Yaradır...
+                      {t.settings.companyProfile.aiGenerating}
                     </>
                   ) : (
                     <>
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-1">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
                       </svg>
-                      AI Təklifi
+                      {t.settings.companyProfile.aiSuggestion}
                     </>
                   )}
                 </Button>
               </div>
               <Textarea
                 id="target_audience"
-                placeholder="İdeal müştərilərinizi, onların demoqrafiyasını, maraqlarını və ehtiyaclarını təsvir edin..."
+                placeholder={t.settings.companyProfile.targetAudiencePlaceholder}
                 className={`min-h-[80px] ${errors.target_audience ? 'border-red-500' : ''}`}
                 {...register('target_audience')}
               />
@@ -939,7 +941,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="unique_selling_points">Şirkətinizi unikal edən nədir? *</Label>
+                <Label htmlFor="unique_selling_points">{t.settings.companyProfile.uniqueSellingPointsLabel}</Label>
                 <Button
                   type="button"
                   variant="ghost"
@@ -951,21 +953,21 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                   {aiLoading.unique_selling_points ? (
                     <>
                       <span className="mr-1 animate-spin">⏳</span>
-                      AI Yaradır...
+                      {t.settings.companyProfile.aiGenerating}
                     </>
                   ) : (
                     <>
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-1">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
                       </svg>
-                      AI Təklifi
+                      {t.settings.companyProfile.aiSuggestion}
                     </>
                   )}
                 </Button>
               </div>
               <Textarea
                 id="unique_selling_points"
-                placeholder="Rəqabət üstünlüklərinizi, unikal xüsusiyyətlərinizi və ya xüsusi keyfiyyətlərinizi təsvir edin..."
+                placeholder={t.settings.companyProfile.uniqueSellingPointsPlaceholder}
                 className={`min-h-[80px] ${errors.unique_selling_points ? 'border-red-500' : ''}`}
                 {...register('unique_selling_points')}
               />
@@ -981,16 +983,16 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
           <CardHeader>
             <CardTitle className="flex items-center">
               <span className="mr-2">🎯</span>
-              Sosial Media Strategiyası
+              {t.settings.companyProfile.socialMediaStrategyTitle}
             </CardTitle>
             <CardDescription>
-              Sosial media məqsədlərinizi və üstünlüklərinizi müəyyənləşdirin
+              {t.settings.companyProfile.socialMediaStrategyDesc}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="social_media_goals">Sosial media məqsədləriniz nələrdir? *</Label>
+                <Label htmlFor="social_media_goals">{t.settings.companyProfile.socialMediaGoalsLabel}</Label>
                 <Button
                   type="button"
                   variant="ghost"
@@ -1002,21 +1004,21 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                   {aiLoading.social_media_goals ? (
                     <>
                       <span className="mr-1 animate-spin">⏳</span>
-                      AI Yaradır...
+                      {t.settings.companyProfile.aiGenerating}
                     </>
                   ) : (
                     <>
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-1">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
                       </svg>
-                      AI Təklifi
+                      {t.settings.companyProfile.aiSuggestion}
                     </>
                   )}
                 </Button>
               </div>
               <Textarea
                 id="social_media_goals"
-                placeholder="Məs: Brend məlumatlılığını artırmaq, potensial müştərilər əldə etmək, müştərilərlə əlaqə qurmaq, vebsayta trafik cəlb etmək..."
+                placeholder={t.settings.companyProfile.socialMediaGoalsPlaceholder}
                 className={`min-h-[80px] ${errors.social_media_goals ? 'border-red-500' : ''}`}
                 {...register('social_media_goals')}
               />
@@ -1026,13 +1028,13 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="preferred_tone">Üstünlük Verilən Ünsiyyət Üslubu *</Label>
+              <Label htmlFor="preferred_tone">{t.settings.companyProfile.preferredToneLabel}</Label>
               <select
                 id="preferred_tone"
                 {...register('preferred_tone')}
                 className={`w-full p-2 border rounded-md bg-background ${errors.preferred_tone ? 'border-red-500' : ''}`}
               >
-                <option value="">Üslub Seçin</option>
+                <option value="">{t.settings.companyProfile.selectTone}</option>
                 {toneOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -1047,7 +1049,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="content_topics">Məzmun Mövzuları</Label>
+                  <Label htmlFor="content_topics">{t.settings.companyProfile.contentTopicsLabel}</Label>
                   <Button
                     type="button"
                     variant="ghost"
@@ -1067,17 +1069,17 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                 </div>
                 <Input
                   id="content_topics"
-                  placeholder="texnologiya, innovasiya, məsləhətlər, xəbərlər"
+                  placeholder={t.settings.companyProfile.contentTopicsPlaceholder}
                   {...register('content_topics')}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Mövzuları vergüllə ayırın
+                  {t.settings.companyProfile.contentTopicsHint}
                 </p>
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="keywords">Vacib Açar Sözlər</Label>
+                  <Label htmlFor="keywords">{t.settings.companyProfile.keywordsLabel}</Label>
                   <Button
                     type="button"
                     variant="ghost"
@@ -1097,24 +1099,24 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                 </div>
                 <Input
                   id="keywords"
-                  placeholder="AI, avtomatlaşdırma, səmərəlilik, inkişaf"
+                  placeholder={t.settings.companyProfile.keywordsPlaceholder}
                   {...register('keywords')}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Açar sözləri vergüllə ayırın
+                  {t.settings.companyProfile.keywordsHint}
                 </p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="avoid_topics">Qaçınılacaq Mövzular (İstəyə Bağlı)</Label>
+              <Label htmlFor="avoid_topics">{t.settings.companyProfile.avoidTopicsLabel}</Label>
               <Input
                 id="avoid_topics"
-                placeholder="siyasət, mübahisəli mövzular, rəqiblər"
+                placeholder={t.settings.companyProfile.avoidTopicsPlaceholder}
                 {...register('avoid_topics')}
               />
               <p className="text-xs text-muted-foreground">
-                Mövzuları vergüllə ayırın
+                {t.settings.companyProfile.avoidTopicsHint}
               </p>
             </div>
           </CardContent>
@@ -1125,16 +1127,16 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
           <CardHeader>
             <CardTitle className="flex items-center">
               <span className="mr-2">⚙️</span>
-              AI Yaradılma Parametrləri
+              {t.settings.companyProfile.aiGenerationSettingsTitle}
             </CardTitle>
             <CardDescription>
-              AI məzmun yaradılması ilə bağlı tənzimləmələr
+              {t.settings.companyProfile.aiGenerationSettingsDesc}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="posts_to_generate">
-                Hər Dəfə Neçə Paylaşım Yaradılsın? 
+                {t.settings.companyProfile.postsToGenerateLabel} 
                 <span className="text-muted-foreground text-xs ml-2">(1-30 arası)</span>
               </Label>
               <Input
@@ -1146,7 +1148,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                 {...register('posts_to_generate', { valueAsNumber: true })}
               />
               <p className="text-xs text-muted-foreground">
-                AI bir dəfədə bu qədər paylaşım yaradacaq. Tövsiyə: 10-15 arası optimal sayılır.
+                {t.settings.companyProfile.postsToGenerateHint}
               </p>
             </div>
           </CardContent>
@@ -1157,29 +1159,29 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
           <CardHeader>
             <CardTitle className="flex items-center">
               <span className="mr-2">👁️</span>
-              Önizləmə
+              {t.settings.companyProfile.previewTitle}
             </CardTitle>
             <CardDescription>
-              Bu məlumat AI məzmunu yaratmaq üçün istifadə olunacaq
+              {t.settings.companyProfile.previewDesc}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3 text-sm">
               <div className="flex items-center space-x-2">
-                <Badge variant="outline">Şirkət</Badge>
-                <span>{watch('company_name') || 'Göstərilməyib'}</span>
+                <Badge variant="outline">{t.settings.companyProfile.previewCompany}</Badge>
+                <span>{watch('company_name') || t.settings.companyProfile.previewNotShown}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Badge variant="outline">Sənaye</Badge>
-                <span>{industryOptions.find(opt => opt.value === watch('industry'))?.label || 'Seçilməyib'}</span>
+                <Badge variant="outline">{t.settings.companyProfile.previewIndustry}</Badge>
+                <span>{industryOptions.find(opt => opt.value === watch('industry'))?.label || t.settings.companyProfile.previewNotSelected}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Badge variant="outline">Üslub</Badge>
-                <span>{toneOptions.find(opt => opt.value === watch('preferred_tone'))?.label || 'Seçilməyib'}</span>
+                <Badge variant="outline">{t.settings.companyProfile.previewTone}</Badge>
+                <span>{toneOptions.find(opt => opt.value === watch('preferred_tone'))?.label || t.settings.companyProfile.previewNotSelected}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Badge variant="outline">Mövzular</Badge>
-                <span>{watch('content_topics') || 'Göstərilməyib'}</span>
+                <Badge variant="outline">{t.settings.companyProfile.previewTopics}</Badge>
+                <span>{watch('content_topics') || t.settings.companyProfile.previewNotShown}</span>
               </div>
             </div>
           </CardContent>
@@ -1193,7 +1195,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center">
                 <span className="mr-2">✨</span>
-                AI Brend Təhlili
+                {t.settings.companyProfile.brandAnalysisTitle}
               </div>
               <div className="flex items-center gap-2">
                 <Button
@@ -1427,10 +1429,10 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
           <CardHeader>
             <CardTitle className="flex items-center">
               <span className="mr-2">🎨</span>
-              Brending Parametrləri
+              {t.settings.companyProfile.brandingParamsTitle}
             </CardTitle>
             <CardDescription>
-              Şirkət loqosu və sloganını AI yaradılmış şəkillərə avtomatik əlavə edin
+              {t.settings.companyProfile.brandingParamsDesc}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -1438,10 +1440,10 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
             <div className="flex items-center justify-between p-4 border rounded-lg">
               <div className="space-y-0.5">
                 <Label htmlFor="branding-enabled" className="text-base font-semibold">
-                  Avtomatik Brending Aktivdir
+                  {t.settings.companyProfile.automaticBrandingActive}
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  Bütün yeni AI yaradılmış şəkillərə loqo və slogan avtomatik əlavə ediləcək
+                  {t.settings.companyProfile.automaticBrandingDesc}
                 </p>
               </div>
               <Switch
@@ -1461,7 +1463,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                 {!logoPreview && (
                   <Alert variant="destructive">
                     <AlertDescription>
-                      ⚠️ Brending aktivləşdirmək üçün loqo yükləməlisiniz. Yuxarıdakı "Şirkət Loqosu" bölməsindən loqo yükləyin.
+                      {t.settings.companyProfile.brandingRequiresLogo}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -1469,7 +1471,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                 {/* Slogan Input */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="slogan">Slogan (İstəyə bağlı)</Label>
+                    <Label htmlFor="slogan">{t.settings.companyProfile.sloganLabel}</Label>
                     <Button
                       type="button"
                       variant="outline"
@@ -1479,25 +1481,25 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                       className="text-xs"
                     >
                       {aiLoading['slogan'] ? (
-                        <>⏳ AI yaradır...</>
+                        <>{t.settings.companyProfile.aiGenerating}</>
                       ) : (
-                        <>✨ AI ilə Yarat</>
+                        <>{t.settings.companyProfile.aiSuggestion}</>
                       )}
                     </Button>
                   </div>
                   <Textarea
                     id="slogan"
-                    placeholder="Məsələn: Transform Your Social Media"
+                    placeholder={t.settings.companyProfile.sloganPlaceholder}
                     maxLength={200}
                     {...register('slogan')}
                     className={errors.slogan ? 'border-red-500' : ''}
                   />
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-muted-foreground">
-                      Şəkillərdə loqonun yanında göstəriləcək mətn
+                      {t.settings.companyProfile.sloganHint}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {watch('slogan')?.length || 0}/200 simvol
+                      {watch('slogan')?.length || 0}/200 {t.settings.companyProfile.sloganChars}
                     </p>
                   </div>
                   {errors.slogan && (
@@ -1507,7 +1509,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
 
                 {/* Branding Mode Selector */}
                 <div className="space-y-3 border-t pt-4">
-                  <Label>Brending Rejimi</Label>
+                  <Label>{t.settings.companyProfile.brandingMode}</Label>
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -1525,7 +1527,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                     >
                       <div className="flex flex-col items-center space-y-2">
                         <span className="text-2xl">⭐</span>
-                        <span className="text-sm font-medium">Standart</span>
+                        <span className="text-sm font-medium">{t.settings.companyProfile.standard}</span>
                       </div>
                     </button>
                     <button
@@ -1539,7 +1541,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                     >
                       <div className="flex flex-col items-center space-y-2">
                         <span className="text-2xl">🎨</span>
-                        <span className="text-sm font-medium">Fərdi</span>
+                        <span className="text-sm font-medium">{t.settings.companyProfile.custom}</span>
                       </div>
                     </button>
                   </div>
@@ -1550,28 +1552,28 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                   <div className="space-y-4 p-4 bg-muted/50 rounded-lg border">
                     <div className="flex items-center space-x-2 mb-3">
                       <span className="text-lg">⭐</span>
-                      <Label className="text-base font-semibold">Standart Brending Parametrləri</Label>
+                      <Label className="text-base font-semibold">{t.settings.companyProfile.standardBrandingParams}</Label>
                     </div>
                     <div className="space-y-3 text-sm">
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Logo Mövqeyi:</span>
-                        <span className="font-medium">Yuxarıda Ortada (Gradient ilə)</span>
+                        <span className="text-muted-foreground">{t.settings.companyProfile.logoPosition}</span>
+                        <span className="font-medium">{t.settings.companyProfile.logoPositionStandard}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Slogan Mövqeyi:</span>
-                        <span className="font-medium">Aşağıda Ortada (Gradient ilə)</span>
+                        <span className="text-muted-foreground">{t.settings.companyProfile.sloganPosition}</span>
+                        <span className="font-medium">{t.settings.companyProfile.sloganPositionStandard}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Logo Ölçüsü:</span>
-                        <span className="font-medium">13% şəkil genişliyindən</span>
+                        <span className="text-muted-foreground">{t.settings.companyProfile.logoSize}</span>
+                        <span className="font-medium">{t.settings.companyProfile.logoSizeStandard}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Gradient:</span>
-                        <span className="font-medium">Avtomatik (Brand rəngləri)</span>
+                        <span className="text-muted-foreground">{t.settings.companyProfile.gradient}</span>
+                        <span className="font-medium">{t.settings.companyProfile.gradientStandard}</span>
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground mt-3">
-                      ✨ Standart rejim: Logo və slogan üçün avtomatik gradient overlay-lar əlavə olunacaq
+                      {t.settings.companyProfile.standardModeNote}
                     </p>
                   </div>
                 ) : (
@@ -1579,15 +1581,15 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                   <div className="space-y-6">
                     {/* Logo Position Selector */}
                     <div className="space-y-3">
-                      <Label>Logo Mövqeyi</Label>
+                      <Label>{t.settings.companyProfile.logoPositionLabel}</Label>
                       <div className="grid grid-cols-3 gap-3">
                         {[
-                          { value: 'top-left', label: 'Üst Sol', icon: '↖️' },
-                          { value: 'top-center', label: 'Üst Orta', icon: '⬆️' },
-                          { value: 'top-right', label: 'Üst Sağ', icon: '↗️' },
-                          { value: 'bottom-left', label: 'Alt Sol', icon: '↙️' },
-                          { value: 'bottom-center', label: 'Alt Orta', icon: '⬇️' },
-                          { value: 'bottom-right', label: 'Alt Sağ', icon: '↘️' },
+                          { value: 'top-left', label: t.settings.companyProfile.logoPositionTopLeft, icon: '↖️' },
+                          { value: 'top-center', label: t.settings.companyProfile.logoPositionTopCenter, icon: '⬆️' },
+                          { value: 'top-right', label: t.settings.companyProfile.logoPositionTopRight, icon: '↗️' },
+                          { value: 'bottom-left', label: t.settings.companyProfile.logoPositionBottomLeft, icon: '↙️' },
+                          { value: 'bottom-center', label: t.settings.companyProfile.logoPositionBottomCenter, icon: '⬇️' },
+                          { value: 'bottom-right', label: t.settings.companyProfile.logoPositionBottomRight, icon: '↘️' },
                         ].map((pos) => (
                           <button
                             key={pos.value}
@@ -1607,17 +1609,17 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                         ))}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Logo mövqeyini seçin (gradient overlay ilə)
+                        {t.settings.companyProfile.logoPositionHint}
                       </p>
                     </div>
 
                     {/* Slogan Position Selector */}
                     <div className="space-y-3">
-                      <Label>Slogan Mövqeyi</Label>
+                      <Label>{t.settings.companyProfile.sloganPositionLabel}</Label>
                       <div className="grid grid-cols-2 gap-3">
                         {[
-                          { value: 'top-center', label: 'Üstdə Ortada', icon: '⬆️' },
-                          { value: 'bottom-center', label: 'Altda Ortada', icon: '⬇️' },
+                          { value: 'top-center', label: t.settings.companyProfile.sloganPositionTopCenter, icon: '⬆️' },
+                          { value: 'bottom-center', label: t.settings.companyProfile.sloganPositionBottomCenter, icon: '⬇️' },
                         ].map((pos) => (
                           <button
                             key={pos.value}
@@ -1637,14 +1639,14 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                         ))}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Slogan gradient overlay ilə görünəcək
+                        {t.settings.companyProfile.sloganPositionHint}
                       </p>
                     </div>
 
                     {/* Logo Size Slider */}
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <Label>Logo Ölçüsü</Label>
+                        <Label>{t.settings.companyProfile.logoSizeLabel}</Label>
                         <span className="text-sm font-semibold text-primary">
                           {logoSizePercent}%
                         </span>
@@ -1660,16 +1662,16 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                         />
                       </div>
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Kiçik (2%)</span>
-                        <span className="font-medium">Orta (13%)</span>
-                        <span>Böyük (25%)</span>
+                        <span>{t.settings.companyProfile.logoSizeSmall}</span>
+                        <span className="font-medium">{t.settings.companyProfile.logoSizeMedium}</span>
+                        <span>{t.settings.companyProfile.logoSizeLarge}</span>
                       </div>
                     </div>
 
                     {/* Slogan Size Slider */}
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <Label>Slogan Ölçüsü</Label>
+                        <Label>{t.settings.companyProfile.sloganSizeLabel}</Label>
                         <span className="text-sm font-semibold text-primary">
                           {sloganSizePercent}%
                         </span>
@@ -1685,9 +1687,9 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                         />
                       </div>
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Kiçik (2%)</span>
-                        <span className="font-medium">Orta (4%)</span>
-                        <span>Böyük (8%)</span>
+                        <span>{t.settings.companyProfile.sloganSizeSmall}</span>
+                        <span className="font-medium">{t.settings.companyProfile.sloganSizeMedium}</span>
+                        <span>{t.settings.companyProfile.sloganSizeLarge}</span>
                       </div>
                     </div>
                   </div>

@@ -6,7 +6,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { postsAPI, authAPI } from '@/lib/api';
+import { postsAPI, authAPI, socialAccountsAPI } from '@/lib/api';
 import Image from 'next/image';
 import { 
   Calendar, 
@@ -75,7 +75,7 @@ export default function PostsPage() {
     scheduled: 0,
     approved: 0,
   });
-  const [selectedImage, setSelectedImage] = useState<{ url: string; title: string } | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const t = useTranslation();
 
   useEffect(() => {
@@ -177,16 +177,60 @@ export default function PostsPage() {
   const [applyingBranding, setApplyingBranding] = useState<{[key: string]: boolean}>({});
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [selectedPostForShare, setSelectedPostForShare] = useState<Post | null>(null);
+  const [publishResult, setPublishResult] = useState<{
+    platform: string;
+    account: string;
+    status: 'success' | 'failed';
+    postId?: string;
+    postLink?: string;
+    error?: string;
+  } | null>(null);
 
   const handlePublishToFacebook = async (postId: string) => {
     try {
       setPublishingPosts(prev => ({ ...prev, [postId]: { ...prev[postId], facebook: true } }));
-      await postsAPI.publishToFacebook(postId);
-      alert(t.posts.successPublishedFacebook);
+      const response = await postsAPI.publishToFacebook(postId);
+      const data = response.data;
+      
+      // Get account info
+      const socialAccounts = await socialAccountsAPI.getAccounts();
+      const facebookAccount = (socialAccounts.data.results || socialAccounts.data || []).find(
+        (acc: any) => acc.platform === 'facebook' && acc.is_active
+      );
+      
+      setPublishResult({
+        platform: 'Facebook',
+        account: facebookAccount?.display_name || facebookAccount?.platform_username || 'Unknown',
+        status: 'success',
+        postId: data.facebook_post_id,
+        postLink: data.facebook_post_id ? `https://www.facebook.com/${data.facebook_post_id}` : undefined,
+      });
+      
       loadPosts(); // Reload posts
     } catch (error: any) {
       console.error('Failed to publish to Facebook:', error);
-      alert(`${t.posts.errorPublishFacebook}: ${error.response?.data?.error || error.message}`);
+      
+      // Get account info for error display
+      try {
+        const socialAccounts = await socialAccountsAPI.getAccounts();
+        const facebookAccount = (socialAccounts.data.results || socialAccounts.data || []).find(
+          (acc: any) => acc.platform === 'facebook' && acc.is_active
+        );
+        
+        setPublishResult({
+          platform: 'Facebook',
+          account: facebookAccount?.display_name || facebookAccount?.platform_username || 'Unknown',
+          status: 'failed',
+          error: error.response?.data?.error || error.message,
+        });
+      } catch {
+        setPublishResult({
+          platform: 'Facebook',
+          account: 'Unknown',
+          status: 'failed',
+          error: error.response?.data?.error || error.message,
+        });
+      }
     } finally {
       setPublishingPosts(prev => ({ ...prev, [postId]: { ...prev[postId], facebook: false } }));
     }
@@ -195,12 +239,51 @@ export default function PostsPage() {
   const handlePublishToInstagram = async (postId: string) => {
     try {
       setPublishingPosts(prev => ({ ...prev, [postId]: { ...prev[postId], instagram: true } }));
-      await postsAPI.publishToInstagram(postId);
-      alert(t.posts.successPublishedInstagram);
+      const response = await postsAPI.publishToInstagram(postId);
+      const data = response.data;
+      
+      // Get account info
+      const socialAccounts = await socialAccountsAPI.getAccounts();
+      const instagramAccount = (socialAccounts.data.results || socialAccounts.data || []).find(
+        (acc: any) => acc.platform === 'instagram' && acc.is_active
+      );
+      
+      // Instagram post ID format: media_id (e.g., "17968155506501729")
+      // Instagram post URL format: https://www.instagram.com/p/{shortcode}/
+      // But we only have media_id, so we'll show the ID
+      setPublishResult({
+        platform: 'Instagram',
+        account: instagramAccount?.display_name || instagramAccount?.platform_username || 'Unknown',
+        status: 'success',
+        postId: data.instagram_post_id,
+        postLink: data.instagram_post_id ? `https://www.instagram.com/p/${data.instagram_post_id}/` : undefined,
+      });
+      
       loadPosts(); // Reload posts
     } catch (error: any) {
       console.error('Failed to publish to Instagram:', error);
-      alert(`${t.posts.errorPublishInstagram}: ${error.response?.data?.error || error.message}`);
+      
+      // Get account info for error display
+      try {
+        const socialAccounts = await socialAccountsAPI.getAccounts();
+        const instagramAccount = (socialAccounts.data.results || socialAccounts.data || []).find(
+          (acc: any) => acc.platform === 'instagram' && acc.is_active
+        );
+        
+        setPublishResult({
+          platform: 'Instagram',
+          account: instagramAccount?.display_name || instagramAccount?.platform_username || 'Unknown',
+          status: 'failed',
+          error: error.response?.data?.error || error.message,
+        });
+      } catch {
+        setPublishResult({
+          platform: 'Instagram',
+          account: 'Unknown',
+          status: 'failed',
+          error: error.response?.data?.error || error.message,
+        });
+      }
     } finally {
       setPublishingPosts(prev => ({ ...prev, [postId]: { ...prev[postId], instagram: false } }));
     }
@@ -209,12 +292,48 @@ export default function PostsPage() {
   const handlePublishToLinkedIn = async (postId: string) => {
     try {
       setPublishingPosts(prev => ({ ...prev, [postId]: { ...prev[postId], linkedin: true } }));
-      await postsAPI.publishToLinkedIn(postId);
-      alert(t.posts.successPublishedLinkedIn);
+      const response = await postsAPI.publishToLinkedIn(postId);
+      const data = response.data;
+      
+      // Get account info
+      const socialAccounts = await socialAccountsAPI.getAccounts();
+      const linkedInAccount = (socialAccounts.data.results || socialAccounts.data || []).find(
+        (acc: any) => acc.platform === 'linkedin' && acc.is_active
+      );
+      
+      setPublishResult({
+        platform: 'LinkedIn',
+        account: linkedInAccount?.display_name || linkedInAccount?.platform_username || 'Unknown',
+        status: 'success',
+        postId: data.linkedin_post_id || data.post_id,
+        postLink: data.post_url || data.post_link,
+      });
+      
       loadPosts(); // Reload posts
     } catch (error: any) {
       console.error('Failed to publish to LinkedIn:', error);
-      alert(`${t.posts.errorPublishLinkedIn}: ${error.response?.data?.error || error.message}`);
+      
+      // Get account info for error display
+      try {
+        const socialAccounts = await socialAccountsAPI.getAccounts();
+        const linkedInAccount = (socialAccounts.data.results || socialAccounts.data || []).find(
+          (acc: any) => acc.platform === 'linkedin' && acc.is_active
+        );
+        
+        setPublishResult({
+          platform: 'LinkedIn',
+          account: linkedInAccount?.display_name || linkedInAccount?.platform_username || 'Unknown',
+          status: 'failed',
+          error: error.response?.data?.error || error.message,
+        });
+      } catch {
+        setPublishResult({
+          platform: 'LinkedIn',
+          account: 'Unknown',
+          status: 'failed',
+          error: error.response?.data?.error || error.message,
+        });
+      }
     } finally {
       setPublishingPosts(prev => ({ ...prev, [postId]: { ...prev[postId], linkedin: false } }));
     }
@@ -405,8 +524,13 @@ export default function PostsPage() {
                       <div className="flex-shrink-0 relative w-full sm:w-48">
                         <div 
                           className="w-full sm:w-48 h-48 rounded-lg overflow-hidden bg-muted relative cursor-pointer hover:opacity-90 transition-opacity"
-                          onClick={() => imageUrl && setSelectedImage({ url: imageUrl, title: post.title })}
-                          title={t.posts.clickToEnlarge}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (imageUrl) {
+                              console.log('🖼️ Şəkil klikləndi:', imageUrl);
+                              setSelectedImage(imageUrl);
+                            }
+                          }}
                         >
                           {imageUrl ? (
                             <>
@@ -414,7 +538,7 @@ export default function PostsPage() {
                               <img
                                 src={imageUrl}
                                 alt={post.title}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover pointer-events-none"
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement;
                                   const container = target.parentElement;
@@ -492,27 +616,35 @@ export default function PostsPage() {
                               </Button>
                             )}
                             
-                            {(post.status === 'approved' || post.status === 'scheduled' || post.status === 'draft' || post.status === 'pending_approval') && (
+                            {/* Publish buttons - only for approved posts */}
+                            {post.status === 'approved' && (
                               <>
-                                {/* Facebook - Coming Soon (disabled) */}
                                 <Button
                                   size="sm"
-                                  // Backend publishing kept in code, but UI is disabled for now
-                                  disabled
-                                  className="bg-[#1877F2]/40 text-white cursor-not-allowed"
-                                  title={t.aiTools?.comingSoon || 'Coming Soon'}
+                                  onClick={() => handlePublishToFacebook(post.id)}
+                                  disabled={publishingPosts[post.id]?.facebook}
+                                  className="bg-[#1877F2] hover:bg-[#1565C0] text-white"
+                                  title={t.posts.publishToFacebook}
                                 >
+                                  {publishingPosts[post.id]?.facebook ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  ) : (
                                     <Facebook className="w-4 h-4" />
+                                  )}
                                 </Button>
                                 
-                                {/* Instagram - Coming Soon (disabled) */}
                                 <Button
                                   size="sm"
-                                  disabled
-                                  className="bg-gradient-to-r from-[#833AB4]/40 via-[#FD1D1D]/40 to-[#F77737]/40 text-white cursor-not-allowed"
-                                  title={t.aiTools?.comingSoon || 'Coming Soon'}
+                                  onClick={() => handlePublishToInstagram(post.id)}
+                                  disabled={publishingPosts[post.id]?.instagram}
+                                  className="bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90 text-white"
+                                  title={t.posts.publishToInstagram}
                                 >
+                                  {publishingPosts[post.id]?.instagram ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  ) : (
                                     <Instagram className="w-4 h-4" />
+                                  )}
                                 </Button>
                                 
                                 <Button
@@ -527,6 +659,38 @@ export default function PostsPage() {
                                   ) : (
                                     <LinkedInIcon className="w-4 h-4" />
                                   )}
+                                </Button>
+                              </>
+                            )}
+                            
+                            {/* Pending approval - show disabled buttons with tooltip */}
+                            {post.status === 'pending_approval' && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  disabled
+                                  className="bg-[#1877F2]/40 text-white cursor-not-allowed"
+                                  title={t.posts.publishRequiresApprovalTooltip}
+                                >
+                                    <Facebook className="w-4 h-4" />
+                                </Button>
+                                
+                                <Button
+                                  size="sm"
+                                  disabled
+                                  className="bg-gradient-to-r from-[#833AB4]/40 via-[#FD1D1D]/40 to-[#F77737]/40 text-white cursor-not-allowed"
+                                  title={t.posts.publishRequiresApprovalTooltip}
+                                >
+                                    <Instagram className="w-4 h-4" />
+                                </Button>
+                                
+                                <Button
+                                  size="sm"
+                                  disabled
+                                  className="bg-[#0077b5]/40 text-white cursor-not-allowed"
+                                  title={t.posts.publishRequiresApprovalTooltip}
+                                >
+                                    <LinkedInIcon className="w-4 h-4" />
                                 </Button>
                               </>
                             )}
@@ -617,48 +781,6 @@ export default function PostsPage() {
         )}
       </div>
 
-      {/* Image Preview Modal */}
-      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogPortal>
-          {/* Custom lighter overlay */}
-          <DialogPrimitive.Overlay 
-            className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
-          />
-          <DialogPrimitive.Content
-            className="fixed top-[50%] left-[50%] z-50 translate-x-[-50%] translate-y-[-50%] max-w-6xl w-[95vw] max-h-[95vh] bg-background border-2 rounded-lg shadow-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200"
-          >
-            <DialogHeader className="p-4 pb-2 border-b bg-background">
-              <DialogTitle className="text-lg font-semibold pr-8">{selectedImage?.title}</DialogTitle>
-            </DialogHeader>
-            
-            <div className="relative w-full h-[80vh] bg-background flex items-center justify-center p-4">
-              {selectedImage && (
-                <div className="relative w-full h-full flex items-center justify-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={selectedImage.url}
-                    alt={selectedImage.title}
-                    className="max-w-full max-h-full object-contain"
-                  />
-                </div>
-              )}
-            </div>
-            
-            <div className="p-4 border-t bg-background text-center text-sm text-muted-foreground">
-              {t.posts.closeModalDesc}
-            </div>
-
-            {/* Close button */}
-            <DialogPrimitive.Close className="absolute top-4 right-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-              <span className="sr-only">{t.posts.closeModal}</span>
-            </DialogPrimitive.Close>
-          </DialogPrimitive.Content>
-        </DialogPortal>
-      </Dialog>
 
       {/* Share Modal */}
       {selectedPostForShare && (
@@ -671,6 +793,122 @@ export default function PostsPage() {
           post={selectedPostForShare}
         />
       )}
+
+      {/* Image Preview Modal */}
+      <Dialog open={!!selectedImage} onOpenChange={(open) => {
+        if (!open) {
+          setSelectedImage(null);
+        }
+      }}>
+        <DialogContent className="!max-w-[75vw] !w-[75vw] !p-0 !max-h-[90vh] !h-auto !bg-white dark:!bg-gray-900 !rounded-xl overflow-hidden">
+          <DialogHeader className="flex flex-row items-center justify-between p-5 pb-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 space-y-0">
+            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+              Şəkil Önizləməsi
+            </DialogTitle>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedImage(null);
+              }}
+              className="rounded-full p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </DialogHeader>
+          
+          {/* Image Container */}
+          {selectedImage && (
+            <div className="flex items-center justify-center bg-white dark:bg-gray-900" style={{ minHeight: '500px', maxHeight: 'calc(90vh - 150px)' }}>
+              <img
+                src={selectedImage}
+                alt="Post şəkli"
+                className="max-w-full max-h-full h-auto object-contain"
+                style={{ maxHeight: 'calc(90vh - 150px)' }}
+              />
+            </div>
+          )}
+          
+          {/* Footer */}
+          <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+            Bağlamaq üçün ESC basın və ya xaricə klik edin
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Publish Result Dialog */}
+      <Dialog open={!!publishResult} onOpenChange={(open) => {
+        if (!open) {
+          setPublishResult(null);
+        }
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t.posts.publishResultTitle}</DialogTitle>
+          </DialogHeader>
+          
+          {publishResult && (
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{t.posts.publishResultPlatform}:</span>
+                  <span className="font-medium">{publishResult.platform}</span>
+                </div>
+                
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{t.posts.publishResultAccount}:</span>
+                  <span className="font-medium">{publishResult.account}</span>
+                </div>
+                
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{t.posts.publishResultStatus}:</span>
+                  <Badge 
+                    variant={publishResult.status === 'success' ? 'default' : 'destructive'}
+                    className={publishResult.status === 'success' ? 'bg-green-500' : ''}
+                  >
+                    {publishResult.status === 'success' ? t.posts.publishResultSuccess : t.posts.publishResultFailed}
+                  </Badge>
+                </div>
+                
+                {publishResult.status === 'success' && publishResult.postId && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">{t.posts.publishResultPostId}:</span>
+                    <span className="font-mono text-xs">{publishResult.postId}</span>
+                  </div>
+                )}
+                
+                {publishResult.status === 'success' && publishResult.postLink && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">{t.posts.publishResultPostLink}:</span>
+                    <a 
+                      href={publishResult.postLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline text-xs truncate max-w-[200px]"
+                    >
+                      {t.posts.publishResultPostLink}
+                    </a>
+                  </div>
+                )}
+                
+                {publishResult.status === 'failed' && publishResult.error && (
+                  <div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg">
+                    <p className="text-sm text-red-800 dark:text-red-200">{publishResult.error}</p>
+                  </div>
+                )}
+              </div>
+              
+              <Button 
+                onClick={() => setPublishResult(null)}
+                className="w-full"
+              >
+                {t.common.close}
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
     </DashboardLayout>
   );

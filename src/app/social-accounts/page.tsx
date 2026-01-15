@@ -47,12 +47,20 @@ const TikTokIcon = ({ className }: { className?: string }) => (
 interface SocialAccount {
   id: string;
   platform: string;
+  platform_user_id: string;
   platform_username: string;
   display_name: string;
   profile_picture_url?: string;
   is_active: boolean;
   last_used: string | null;
   created_at: string;
+  expires_at?: string | null;
+  settings?: {
+    page_id?: string;
+    page_name?: string;
+    page_category?: string;
+    page_tasks?: string[];
+  };
 }
 
 export default function SocialAccountsPage() {
@@ -184,7 +192,8 @@ export default function SocialAccountsPage() {
   };
 
   const handleDisconnect = async (accountId: string, platform: string) => {
-    if (!confirm(t.socialAccounts.disconnectConfirm)) return;
+    const confirmMessage = `${t.socialAccounts.disconnectConfirm}\n\n${t.socialAccounts.disconnectWarning}`;
+    if (!confirm(confirmMessage)) return;
     
     try {
       await socialAccountsAPI.disconnectAccount(accountId);
@@ -250,12 +259,22 @@ export default function SocialAccountsPage() {
     }).format(date);
   };
 
+  const getTokenStatus = (account: SocialAccount) => {
+    if (!account.expires_at) return { status: t.socialAccounts.tokenActive, color: 'text-green-600' };
+    const expiresAt = new Date(account.expires_at);
+    const now = new Date();
+    if (expiresAt < now) {
+      return { status: t.socialAccounts.tokenExpired, color: 'text-red-600' };
+    }
+    return { status: t.socialAccounts.tokenActive, color: 'text-green-600' };
+  };
+
   // Available platforms to connect
   const availablePlatforms = [
     {
       key: 'facebook',
       name: 'Facebook',
-      description: 'Səhifələrə və qruplara paylaşım',
+      description: t.socialAccounts.platformDescriptionFacebook,
       icon: <Facebook className="w-6 h-6" />,
       color: 'bg-blue-600',
       available: true
@@ -263,7 +282,7 @@ export default function SocialAccountsPage() {
     {
       key: 'instagram',
       name: 'Instagram',
-      description: 'Şəkil və hekayə paylaşın',
+      description: t.socialAccounts.platformDescriptionInstagram,
       icon: <Instagram className="w-6 h-6" />,
       color: 'bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400',
       available: true
@@ -271,7 +290,7 @@ export default function SocialAccountsPage() {
     {
       key: 'linkedin',
       name: 'LinkedIn',
-      description: 'Peşəkar şəbəkə və biznes paylaşımları',
+      description: t.socialAccounts.platformDescriptionLinkedIn,
       icon: <LinkedInIcon className="w-6 h-6" />,
       color: 'bg-[#0077b5]',
       available: true
@@ -279,15 +298,16 @@ export default function SocialAccountsPage() {
     {
       key: 'youtube',
       name: 'YouTube',
-      description: 'Video paylaşımı və kanal idarəetməsi',
+      description: t.socialAccounts.platformDescriptionYouTube,
       icon: <Youtube className="w-6 h-6" />,
       color: 'bg-[#FF0000]',
-      available: true
+      available: false,
+      comingSoon: true
     },
     {
       key: 'tiktok',
       name: 'TikTok',
-      description: 'Qısa video paylaşımı',
+      description: t.socialAccounts.platformDescriptionTikTok,
       icon: <TikTokIcon className="w-6 h-6" />,
       color: 'bg-black',
       available: true
@@ -362,14 +382,51 @@ export default function SocialAccountsPage() {
                           <span className="font-medium">{account.display_name}</span>
                         </div>
                         
+                        {/* Platform-specific IDs */}
+                        {account.platform === 'facebook' && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">{t.socialAccounts.pageId}:</span>
+                            <span className="font-medium text-xs font-mono">{account.platform_user_id}</span>
+                          </div>
+                        )}
+                        
+                        {account.platform === 'instagram' && (
+                          <>
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-muted-foreground">{t.socialAccounts.instagramId}:</span>
+                              <span className="font-medium text-xs font-mono">{account.platform_user_id}</span>
+                            </div>
+                            {account.settings?.page_id && (
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-muted-foreground">{t.socialAccounts.pageId}:</span>
+                                <span className="font-medium text-xs font-mono">{account.settings.page_id}</span>
+                              </div>
+                            )}
+                          </>
+                        )}
+                        
+                        {(account.platform === 'linkedin' || account.platform === 'youtube' || account.platform === 'tiktok') && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">Account ID:</span>
+                            <span className="font-medium text-xs font-mono">{account.platform_user_id}</span>
+                          </div>
+                        )}
+                        
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">{t.socialAccounts.lastUsed}:</span>
-                          <span className="font-medium text-xs">{formatDate(account.last_used)}</span>
+                          <span className="text-muted-foreground">{t.socialAccounts.connectedAt}:</span>
+                          <span className="font-medium text-xs">{formatDate(account.created_at)}</span>
                         </div>
                         
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">{t.common.save}:</span>
-                          <span className="font-medium text-xs">{formatDate(account.created_at)}</span>
+                          <span className="text-muted-foreground">{t.socialAccounts.tokenStatus}:</span>
+                          <span className={`font-medium text-xs ${getTokenStatus(account).color}`}>
+                            {getTokenStatus(account).status}
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">{t.socialAccounts.lastUsed}:</span>
+                          <span className="font-medium text-xs">{formatDate(account.last_used)}</span>
                         </div>
                         
                         <div className="flex items-center gap-2 pt-3 border-t">
@@ -430,17 +487,21 @@ export default function SocialAccountsPage() {
                     </div>
                   </CardHeader>
                   
-                  <CardContent>
+                  <CardContent className="space-y-4">
                     <Button 
                       className="w-full" 
-                      disabled={!platform.available || isConnecting === platform.key}
+                      disabled={!platform.available || isConnecting === platform.key || platform.comingSoon}
                       onClick={() => handleConnect(platform.key)}
-                      variant={isConnected ? "outline" : "default"}
+                      variant={isConnected ? "outline" : platform.comingSoon ? "secondary" : "default"}
                     >
                       {isConnecting === platform.key ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                           {t.socialAccounts.connecting}
+                        </>
+                      ) : platform.comingSoon ? (
+                        <>
+                          {t.aiTools.comingSoon}
                         </>
                       ) : isConnected ? (
                         <>
@@ -454,6 +515,81 @@ export default function SocialAccountsPage() {
                         </>
                       )}
                     </Button>
+                    
+                    {/* Permissions explanation for Facebook */}
+                    {platform.key === 'facebook' && (
+                      <div className="pt-3 border-t space-y-2">
+                        <p className="text-sm font-medium text-muted-foreground mb-2">
+                          {t.socialAccounts.permissionsPurpose}
+                        </p>
+                        <div className="text-xs text-muted-foreground">
+                          <p>{t.socialAccounts.permissionsFacebook}</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Permissions explanation for Instagram */}
+                    {platform.key === 'instagram' && (
+                      <div className="pt-3 border-t space-y-2">
+                        <p className="text-sm font-medium text-muted-foreground mb-2">
+                          {t.socialAccounts.permissionsPurpose}
+                        </p>
+                        <div className="space-y-1.5 text-xs text-muted-foreground">
+                          <div className="flex items-start gap-2">
+                            <span className="text-primary">•</span>
+                            <span>{t.socialAccounts.permissionsPosting}</span>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="text-primary">•</span>
+                            <span>{t.socialAccounts.permissionsAnalytics}</span>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="text-primary">•</span>
+                            <span>{t.socialAccounts.permissionsMessages}</span>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="text-primary">•</span>
+                            <span>{t.socialAccounts.permissionsAds}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Permissions explanation for LinkedIn */}
+                    {platform.key === 'linkedin' && (
+                      <div className="pt-3 border-t space-y-2">
+                        <p className="text-sm font-medium text-muted-foreground mb-2">
+                          {t.socialAccounts.permissionsPurpose}
+                        </p>
+                        <div className="text-xs text-muted-foreground">
+                          <p>{t.socialAccounts.permissionsLinkedIn}</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Permissions explanation for TikTok */}
+                    {platform.key === 'tiktok' && !isConnected && (
+                      <div className="pt-3 border-t space-y-2">
+                        <p className="text-sm font-medium text-muted-foreground mb-2">
+                          {t.socialAccounts.permissionsPurpose}
+                        </p>
+                        <div className="text-xs text-muted-foreground">
+                          <p>{t.socialAccounts.permissionsTikTok}</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Permissions explanation for YouTube */}
+                    {platform.key === 'youtube' && (
+                      <div className="pt-3 border-t space-y-2">
+                        <p className="text-sm font-medium text-muted-foreground mb-2">
+                          {t.socialAccounts.permissionsPurpose}
+                        </p>
+                        <div className="text-xs text-muted-foreground">
+                          <p>{t.socialAccounts.permissionsYouTube}</p>
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               );

@@ -22,8 +22,8 @@ export default function AIToolsPage() {
   const aiTools = [
     {
       id: 10,
-      name: 'Məhsul Post Yaradıcı',
-      description: 'Məhsul rəsmini yükləyin, AI arxa fonu siləcək, analiz edəcək və reklam postları hazırlayacaq',
+      name: t.productPost.title,
+      description: t.productPost.description,
       icon: '🛍️',
       color: 'bg-amber-500',
       category: 'Visual Content'
@@ -78,7 +78,7 @@ export default function AIToolsPage() {
       icon: '📈',
       color: 'bg-orange-500',
       category: 'Analytics',
-      comingSoon: false
+      comingSoon: true
     },
     {
       id: 6,
@@ -87,7 +87,7 @@ export default function AIToolsPage() {
       icon: '🔍',
       color: 'bg-indigo-500',
       category: 'Analytics',
-      comingSoon: false
+      comingSoon: true
     }
   ];
 
@@ -229,7 +229,7 @@ What's your experience with social media automation? Share your thoughts below!
 
           {/* AI Tools Grid */}
           <div>
-            <h2 className="text-xl font-semibold mb-4">All AI Tools</h2>
+            <h2 className="text-xl font-semibold mb-4">{t.aiTools.allTools}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {aiTools.map((tool) => (
                 <Card key={tool.id} className="hover:shadow-md transition-shadow">
@@ -248,7 +248,7 @@ What's your experience with social media automation? Share your thoughts below!
                       </div>
                       {tool.comingSoon && (
                         <Badge variant="secondary" className="text-xs">
-                          Tezliklə
+                          {t.aiTools.comingSoon}
                         </Badge>
                       )}
                     </div>
@@ -261,7 +261,7 @@ What's your experience with social media automation? Share your thoughts below!
                       variant={tool.comingSoon ? "secondary" : "default"}
                       onClick={() => handleOpenTool(tool.id)}
                     >
-                      {tool.comingSoon ? 'Tezliklə' : t.common.start}
+                      {tool.comingSoon ? t.aiTools.comingSoon : t.common.start}
                     </Button>
                   </CardContent>
                 </Card>

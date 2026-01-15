@@ -152,6 +152,64 @@ export interface Translations {
     company: string;
     register: string;
   };
+  auth: {
+    login: {
+      title: string;
+      description: string;
+      emailLabel: string;
+      emailPlaceholder: string;
+      passwordLabel: string;
+      passwordPlaceholder: string;
+      submitButton: string;
+      submittingButton: string;
+      noAccount: string;
+      signUpLink: string;
+      errors: {
+        invalidEmail: string;
+        passwordRequired: string;
+        wrongCredentials: string;
+        userNotFound: string;
+        accountDisabled: string;
+        networkError: string;
+      };
+    };
+    register: {
+      title: string;
+      description: string;
+      firstNameLabel: string;
+      firstNamePlaceholder: string;
+      lastNameLabel: string;
+      lastNamePlaceholder: string;
+      emailLabel: string;
+      emailPlaceholder: string;
+      companyNameLabel: string;
+      companyNamePlaceholder: string;
+      passwordLabel: string;
+      passwordPlaceholder: string;
+      confirmPasswordLabel: string;
+      confirmPasswordPlaceholder: string;
+      passwordStrength: string;
+      passwordStrengthWeak: string;
+      passwordStrengthMedium: string;
+      passwordStrengthGood: string;
+      passwordStrengthStrong: string;
+      passwordHint: string;
+      passwordsMatch: string;
+      submitButton: string;
+      submittingButton: string;
+      hasAccount: string;
+      signInLink: string;
+      errors: {
+        invalidEmail: string;
+        passwordMinLength: string;
+        firstNameRequired: string;
+        lastNameRequired: string;
+        passwordsMismatch: string;
+        emailExists: string;
+        registrationFailed: string;
+      };
+    };
+  };
   settings: {
     title: string;
     description: string;
@@ -184,6 +242,127 @@ export interface Translations {
       noProfile: string;
       createProfile: string;
       loading: string;
+      setupTitle: string;
+      setupDescription: string;
+      basicInfo: string;
+      basicInfoDesc: string;
+      companyLogo: string;
+      changeLogo: string;
+      uploadLogo: string;
+      dragDropLogo: string;
+      logoFileTypes: string;
+      selectFile: string;
+      logoAnalysisHint: string;
+      logoAnalyzing: string;
+      location: string;
+      locationPlaceholder: string;
+      companyNamePlaceholder: string;
+      selectIndustry: string;
+      selectCompanySize: string;
+      websitePlaceholder: string;
+      validationCompanyNameRequired: string;
+      validationIndustryRequired: string;
+      validationCompanySizeRequired: string;
+      validationUrlInvalid: string;
+      validationMinChars: string;
+      validationToneRequired: string;
+      validationPostsMin: string;
+      validationPostsMax: string;
+      validationSloganMax: string;
+      successProfileCreated: string;
+      successProfileUpdated: string;
+      successProfileLogoCreated: string;
+      successProfileLogoUpdated: string;
+      errorSaveFailed: string;
+      errorBrandAnalysisNotFound: string;
+      errorCompanyNameRequiredForSlogan: string;
+      businessDescriptionTitle: string;
+      businessDescriptionDesc: string;
+      businessDescriptionLabel: string;
+      businessDescriptionPlaceholder: string;
+      targetAudienceLabel: string;
+      targetAudiencePlaceholder: string;
+      uniqueSellingPointsLabel: string;
+      uniqueSellingPointsPlaceholder: string;
+      socialMediaStrategyTitle: string;
+      socialMediaStrategyDesc: string;
+      socialMediaGoalsLabel: string;
+      socialMediaGoalsPlaceholder: string;
+      preferredToneLabel: string;
+      selectTone: string;
+      contentTopicsLabel: string;
+      contentTopicsPlaceholder: string;
+      contentTopicsHint: string;
+      keywordsLabel: string;
+      keywordsPlaceholder: string;
+      keywordsHint: string;
+      avoidTopicsLabel: string;
+      avoidTopicsPlaceholder: string;
+      avoidTopicsHint: string;
+      aiGenerationSettingsTitle: string;
+      aiGenerationSettingsDesc: string;
+      postsToGenerateLabel: string;
+      postsToGenerateHint: string;
+      previewTitle: string;
+      previewDesc: string;
+      previewNotShown: string;
+      previewNotSelected: string;
+      previewCompany: string;
+      previewIndustry: string;
+      previewTone: string;
+      previewTopics: string;
+      brandAnalysisTitle: string;
+      brandingParamsTitle: string;
+      brandingParamsDesc: string;
+      automaticBrandingActive: string;
+      automaticBrandingDesc: string;
+      brandingRequiresLogo: string;
+      sloganLabel: string;
+      sloganPlaceholder: string;
+      sloganHint: string;
+      sloganChars: string;
+      brandingMode: string;
+      standard: string;
+      custom: string;
+      standardBrandingParams: string;
+      logoPosition: string;
+      sloganPosition: string;
+      logoSize: string;
+      gradient: string;
+      standardModeNote: string;
+      logoPositionLabel: string;
+      logoPositionHint: string;
+      sloganPositionLabel: string;
+      sloganPositionHint: string;
+      logoSizeLabel: string;
+      logoSizeSmall: string;
+      logoSizeMedium: string;
+      logoSizeLarge: string;
+      sloganSizeLabel: string;
+      sloganSizeSmall: string;
+      sloganSizeMedium: string;
+      sloganSizeLarge: string;
+      gradientEnabled: string;
+      gradientColor: string;
+      gradientHeight: string;
+      gradientPosition: string;
+      gradientTop: string;
+      gradientBottom: string;
+      gradientBoth: string;
+      logoPositionTopLeft: string;
+      logoPositionTopCenter: string;
+      logoPositionTopRight: string;
+      logoPositionBottomLeft: string;
+      logoPositionBottomCenter: string;
+      logoPositionBottomRight: string;
+      sloganPositionTopCenter: string;
+      sloganPositionBottomCenter: string;
+      logoPositionStandard: string;
+      sloganPositionStandard: string;
+      logoSizeStandard: string;
+      gradientStandard: string;
+      aiSuggestion: string;
+      aiGenerating: string;
     };
     account: {
       title: string;
@@ -217,6 +396,17 @@ export interface Translations {
       termsOfServiceDesc: string;
       read: string;
     };
+    privacy: {
+      title: string;
+      description: string;
+      dataRetention: string;
+      dataRetentionDesc: string;
+      deletedPostsRetention: string;
+      deletedPostsRetentionDesc: string;
+      immediatelyRemoved: string;
+      retainedForDays: string;
+      days: string;
+    };
     dangerZone: {
       title: string;
       description: string;
@@ -239,8 +429,12 @@ export interface Translations {
     socialAccountsDesc: string;
     analytics: string;
     analyticsDesc: string;
+    messages: string;
+    messagesDesc: string;
     socialMediaAnalysis: string;
     socialMediaAnalysisDesc: string;
+    adsAnalytics: string;
+    adsAnalyticsDesc: string;
     metaAds: string;
     metaAdsDesc: string;
     brandVoice: string;
@@ -335,6 +529,67 @@ export interface Translations {
     errorPublishInstagram: string;
     errorPublishLinkedIn: string;
     errorBranding: string;
+    publishResultTitle: string;
+    publishResultPlatform: string;
+    publishResultAccount: string;
+    publishResultStatus: string;
+    publishResultPostId: string;
+    publishResultPostLink: string;
+    publishResultSuccess: string;
+    publishResultFailed: string;
+    publishRequiresApproval: string;
+    publishRequiresApprovalTooltip: string;
+    reviewGeneratedPosts: string;
+    reviewGeneratedPostsDesc: string;
+    imagesGenerating: string;
+    bulkOperations: string;
+    selectedOf: string;
+    selectAll: string;
+    deselectAll: string;
+    postsSelected: string;
+    approveSelected: string;
+    approve: string;
+    rejectSelected: string;
+    reject: string;
+    postNumber: string;
+    characters: string;
+    waiting: string;
+    postImage: string;
+    imageGenerating: string;
+    imageUploading: string;
+    upload: string;
+    uploadImage: string;
+    edit: string;
+    editPost: string;
+    postContent: string;
+    description: string;
+    hashtags: string;
+    saving: string;
+    saveChanges: string;
+    designSaved: string;
+    designSaveFailed: string;
+    pleaseSelectAtLeastOne: string;
+    confirmApprove: string;
+    confirmReject: string;
+    postsApproved: string;
+    postsRejected: string;
+    postUpdateFailed: string;
+    imageUploadFailed: string;
+    companyProfileNotFound: string;
+    companyLogoNotFound: string;
+    brandingDisabled: string;
+    postNotFound: string;
+    noImageInPost: string;
+    loginRequired: string;
+    brandingApplied: string;
+    brandingFailed: string;
+    designEditor: string;
+    design: string;
+    branded: string;
+    placeholder: string;
+    goToCalendar: string;
+    editPostTitle: string;
+    editPostDesc: string;
   };
   calendar: {
     title: string;
@@ -345,6 +600,40 @@ export interface Translations {
     noPosts: string;
     noPostsDesc: string;
     untitled: string;
+    scheduledTime: string;
+    publishingTo: string;
+    willPublishAutomatically: string;
+    recommendedTimeAI: string;
+    aiRecommended: string;
+    userOverride: string;
+    editPost: string;
+    editPostDesc: string;
+    currentConnectedAccounts: string;
+    connected: string;
+    notConnected: string;
+    connect: string;
+    change: string;
+    connectInstagramFirst: string;
+    connectFacebookFirst: string;
+    connectPlatformFirst: string;
+    connectFirst: string;
+    postingDestination: string;
+    titleLabel: string;
+    titlePlaceholder: string;
+    content: string;
+    contentPlaceholder: string;
+    characters: string;
+    date: string;
+    time: string;
+    platforms: string;
+    selected: string;
+    platform: string;
+    status: string;
+    draft: string;
+    scheduled: string;
+    published: string;
+    preview: string;
+    noContent: string;
   };
   aiContentGenerator: {
     title: string;
@@ -354,6 +643,7 @@ export interface Translations {
   aiTools: {
     title: string;
     description: string;
+    allTools: string;
     contentGenerator: string;
     contentGeneratorDesc: string;
     hashtagGenerator: string;
@@ -383,6 +673,278 @@ export interface Translations {
     saveToProfile: string;
     saved: string;
   };
+  productPost: {
+    title: string;
+    description: string;
+    cardTitle: string;
+    cardDescription: string;
+    processingStep1: string;
+    processingStep2: string;
+    processingStep3: string;
+    processingStep4: string;
+    processingStep5: string;
+    processingComplete: string;
+    processingStepUrl1: string;
+    processingStepUrl2: string;
+    processingStepUrl3: string;
+    processingStepUrl4: string;
+    processingStepUrl5: string;
+    errorImageUrlNotFound: string;
+    successPostCreated: string;
+    errorPostCreationFailed: string;
+    successAdImageCreated: string;
+    workflowStep1: string;
+    workflowStep2: string;
+    workflowStep3: string;
+    workflowStep4: string;
+    workflowStep5: string;
+    download: string;
+    open: string;
+    imageWillBeCreated: string;
+    viewPosts: string;
+    createNewPost: string;
+    imagePreview: string;
+    closeModalHint: string;
+    productImage: string;
+    productImageRequired: string;
+    productName: string;
+    productNameOptional: string;
+    productNamePlaceholder: string;
+    adStyle: string;
+    adStyleRequired: string;
+    adStylePlaceholder: string;
+    aspectRatio: string;
+    aspectRatioRequired: string;
+    aspectRatioPlaceholder: string;
+    submit: string;
+    processing: string;
+    generating: string;
+    pleaseWait: string;
+    createdPosts: string;
+    createdPostsDesc: string;
+    createdAdImage: string;
+    createdAdImageDesc: string;
+    openImage: string;
+    approveAndCreate: string;
+    analyzing: string;
+    selectOption: string;
+    modern: string;
+    professional: string;
+    playful: string;
+    elegant: string;
+    minimalist: string;
+    luxury: string;
+    casual: string;
+    square: string;
+    story: string;
+    landscape: string;
+    portrait: string;
+    facebookPost: string;
+    errorImageUpload: string;
+    errorLoginRequired: string;
+    errorInvalidFile: string;
+    errorServerError: string;
+    errorFileRequired: string;
+    errorUrlRequired: string;
+    errorInvalidUrl: string;
+    errorImageLoad: string;
+    errorWorkflowTimeout: string;
+    errorWebhookConnection: string;
+    errorSelectAdStyle: string;
+  };
+  logoGenerator: {
+    title: string;
+    description: string;
+    back: string;
+    basicInfo: string;
+    basicInfoDesc: string;
+    companyName: string;
+    companyNamePlaceholder: string;
+    descriptionLabel: string;
+    descriptionPlaceholder: string;
+    descriptionHint: string;
+    logoStyle: string;
+    logoStyleDesc: string;
+    colorSelection: string;
+    colorSelectionDesc: string;
+    selectedColor: string;
+    categories: string;
+    categoriesDesc: string;
+    categoriesSelected: string;
+    generateButton: string;
+    generatingButton: string;
+    createdLogo: string;
+    createdSlogan: string;
+    saveToProfile: string;
+    saving: string;
+    downloadLogo: string;
+    copySlogan: string;
+    sloganCopied: string;
+    sloganCopyFailed: string;
+    logoDownloadFailed: string;
+    emptyState: string;
+    errorCompanyNameRequired: string;
+    errorEmptyResponse: string;
+    errorLogoCreationFailed: string;
+    errorNoLogo: string;
+    errorLogoLoadFailed: string;
+    successCreated: string;
+    successSaved: string;
+    errorSaveFailed: string;
+    generatedLogoAlt: string;
+    styleMinimalist: string;
+    styleMinimalistDesc: string;
+    styleElegant: string;
+    styleElegantDesc: string;
+    styleModern: string;
+    styleModernDesc: string;
+    styleProfessional: string;
+    styleProfessionalDesc: string;
+    stylePlayful: string;
+    stylePlayfulDesc: string;
+    colorBlue: string;
+    colorPurple: string;
+    colorRed: string;
+    colorGreen: string;
+    colorOrange: string;
+    colorIndigo: string;
+    colorBlack: string;
+    colorWhite: string;
+    tagTech: string;
+    tagFinance: string;
+    tagHealth: string;
+    tagEducation: string;
+    tagEcommerce: string;
+    tagService: string;
+    tagManufacturing: string;
+    tagRealEstate: string;
+    tagMarketing: string;
+    tagDesign: string;
+    tagKitchen: string;
+    tagFashion: string;
+    tagSports: string;
+    tagTravel: string;
+    tagArt: string;
+  };
+  hashtagGenerator: {
+    title: string;
+    description: string;
+    headerTitle: string;
+    headerDescription: string;
+    contentSectionTitle: string;
+    contentSectionDesc: string;
+    contentLabel: string;
+    contentPlaceholder: string;
+    companyInfo: string;
+    companyName: string;
+    industry: string;
+    business: string;
+    hashtagCount: string;
+    hashtagCountLabel: string;
+    generateButton: string;
+    generatingButton: string;
+    generatedHashtags: string;
+    generatedHashtagsDesc: string;
+    copyAll: string;
+    copied: string;
+    allHashtags: string;
+    copy: string;
+    tipsTitle: string;
+    tip1: string;
+    tip2: string;
+    tip3: string;
+    tip4: string;
+    errorContentRequired: string;
+    errorGenerationFailed: string;
+  };
+  captionOptimizer: {
+    title: string;
+    description: string;
+    headerTitle: string;
+    headerDescription: string;
+    captionSectionTitle: string;
+    captionSectionDesc: string;
+    originalCaptionLabel: string;
+    captionPlaceholder: string;
+    characters: string;
+    contentTypeLabel: string;
+    contentTypePost: string;
+    contentTypeTitle: string;
+    contentTypeDescription: string;
+    platformLabel: string;
+    platformGeneral: string;
+    platformInstagram: string;
+    platformFacebook: string;
+    platformLinkedIn: string;
+    toneLabel: string;
+    toneProfessional: string;
+    toneCasual: string;
+    toneCreative: string;
+    toneFriendly: string;
+    companyInfo: string;
+    companyName: string;
+    industry: string;
+    preferredTone: string;
+    optimizeButton: string;
+    optimizingButton: string;
+    optimizedCaption: string;
+    optimizedCaptionDesc: string;
+    copy: string;
+    copied: string;
+    useOptimized: string;
+    original: string;
+    optimized: string;
+    tipsTitle: string;
+    tip1: string;
+    tip2: string;
+    tip3: string;
+    tip4: string;
+    tip5: string;
+    errorCaptionRequired: string;
+    errorOptimizationFailed: string;
+  };
+  videoGenerator: {
+    title: string;
+    description: string;
+    cardTitle: string;
+    cardDescription: string;
+    methodLabel: string;
+    methodText: string;
+    methodTextDesc: string;
+    methodImage: string;
+    methodImageDesc: string;
+    promptLabel: string;
+    promptPlaceholder: string;
+    promptDescription: string;
+    imageUploadLabel: string;
+    parametersLabel: string;
+    durationLabel: string;
+    fpsLabel: string;
+    widthLabel: string;
+    heightLabel: string;
+    generateButton: string;
+    generatingButton: string;
+    errorTitle: string;
+    progressMessage: string;
+    progressStep1: string;
+    progressStep2: string;
+    progressStep3: string;
+    resultTitle: string;
+    resultVideoLabel: string;
+    downloadButton: string;
+    copyLinkButton: string;
+    professionalPromptLabel: string;
+    videoInfoLabel: string;
+    statusLabel: string;
+    jobIdLabel: string;
+    errorPromptRequired: string;
+    errorImageRequired: string;
+    errorLoginRequired: string;
+    errorServerError: string;
+    errorNetworkError: string;
+    errorVideoGenerationFailed: string;
+    errorImageToVideo: string;
+  };
   socialAccounts: {
     title: string;
     description: string;
@@ -401,6 +963,27 @@ export interface Translations {
     active: string;
     inactive: string;
     disconnectConfirm: string;
+    permissionsPurpose: string;
+    permissionsPosting: string;
+    permissionsAnalytics: string;
+    permissionsMessages: string;
+    permissionsAds: string;
+    permissionsFacebook: string;
+    permissionsLinkedIn: string;
+    permissionsTikTok: string;
+    permissionsYouTube: string;
+    pageId: string;
+    instagramId: string;
+    connectedAt: string;
+    tokenStatus: string;
+    tokenActive: string;
+    tokenExpired: string;
+    disconnectWarning: string;
+    platformDescriptionFacebook: string;
+    platformDescriptionInstagram: string;
+    platformDescriptionLinkedIn: string;
+    platformDescriptionYouTube: string;
+    platformDescriptionTikTok: string;
   };
   analytics: {
     title: string;
@@ -462,6 +1045,19 @@ export interface Translations {
     usageCount: string;
     platforms: string;
     variables: string;
+  };
+  companySetup: {
+    title: string;
+    titleUpdate: string;
+    description: string;
+    descriptionUpdate: string;
+    whyNeededTitle: string;
+    benefit1Title: string;
+    benefit1Desc: string;
+    benefit2Title: string;
+    benefit2Desc: string;
+    benefit3Title: string;
+    benefit3Desc: string;
   };
   share: {
     share: string;
@@ -531,27 +1127,27 @@ const translations: Record<Language, Translations> = {
       tagline: '🚀 The Future is Here with Artificial Intelligence',
       title: 'Artificial Intelligence',
       titleHighlight: 'That Understands Your Brand',
-      description: 'Timera.ai is an AI-powered social media management platform. Content creation, scheduling, design, and analytics — all in one place, fully automated.',
+      description: 'Timera.ai is an AI-powered social media management platform. Content creation, scheduling, design, and analytics — all in one place, with your approval.',
       startFree: 'Start Free',
       howItWorksBtn: 'How It Works?',
       stats24_7: '24/7 AI Assistant',
       stats10x: '10x Faster Content',
-      stats100: '100% Automation',
+      stats100: 'AI-Assisted Management',
     },
     features: {
       title: 'What Does Timera.ai Do?',
       subtitle: 'The new era of social media management with artificial intelligence',
       aiContentCreator: {
         title: 'AI Content Creator',
-        description: 'Text and visual content tailored to your brand is created fully automatically. You can edit any part you want.',
+        description: 'AI generates text and visual content suggestions tailored to your brand. You review, edit, and approve before publishing.',
       },
       designVisual: {
         title: 'Design & Visual',
-        description: 'AI creates designs and visuals that match your brand style. Logo, colors, and tone are automatically analyzed.',
+        description: 'AI creates design suggestions that match your brand style. Logo, colors, and tone are analyzed. You approve final design.',
       },
       smartScheduling: {
         title: 'Smart Scheduling',
-        description: 'Post timing and strategy are automatically configured. Optimal time selection is done by AI.',
+        description: 'AI recommends optimal posting times and strategy. You review and schedule posts for publishing.',
       },
       analytics: {
         title: 'Analytics & Reports',
@@ -559,7 +1155,7 @@ const translations: Record<Language, Translations> = {
       },
       videoContent: {
         title: 'Video Content',
-        description: 'Automated video posts tailored to your brand. Video content preparation is fully automated.',
+        description: 'AI-assisted video content creation tailored to your brand. You review and approve before publishing.',
       },
       secure: {
         title: 'Secure & Legal',
@@ -568,22 +1164,22 @@ const translations: Record<Language, Translations> = {
     },
     howItWorks: {
       title: 'How It Works?',
-      subtitle: 'Automate your social media marketing in 4 simple steps',
+      subtitle: 'Manage your social media marketing with AI assistance in 4 simple steps',
       step1: {
         title: 'Enter Information',
-        description: 'Provide information about your brand, product, and goals. AI learns everything.',
+        description: 'Provide information about your brand, product, and goals. AI learns from your input.',
       },
       step2: {
-        title: 'AI Creates Content',
-        description: 'Post topics, text, and visual content are automatically prepared.',
+        title: 'AI Generates Suggestions',
+        description: 'AI generates post topics, text, and visual content suggestions for your review.',
       },
       step3: {
-        title: 'Approve & Edit',
-        description: 'Edit any part you want and approve posts.',
+        title: 'Review & Approve',
+        description: 'You review, edit any part you want, and approve posts before they go live.',
       },
       step4: {
-        title: 'Automatic Publishing',
-        description: 'The system publishes posts and analyzes results.',
+        title: 'Scheduled Publishing',
+        description: 'After your approval, the system publishes posts at scheduled times and tracks results.',
       },
     },
     why: {
@@ -620,11 +1216,11 @@ const translations: Record<Language, Translations> = {
       items: [
         {
           question: '🧠 What does Timera.ai do and how does it work?',
-          answer: 'Timera.ai is an artificial intelligence-based social media management tool. The platform automates post creation, scheduling, design, video content preparation, analytics reports, and even Meta Ads (Facebook and Instagram ad campaigns) management. Just enter your brand information – AI will do the rest for you.',
+          answer: 'Timera.ai is an AI-assisted social media management tool. The platform helps with post creation, scheduling, design, video content preparation, analytics reports, and Meta Ads (Facebook and Instagram ad campaigns) management. You enter your brand information, AI generates suggestions, and you review and approve everything before it goes live.',
         },
         {
           question: '✍️ Does AI create content completely by itself, or can I edit it?',
-          answer: 'Timera.ai creates content fully automatically – both text, visual, and video formats. However, users can edit and customize any part they want. This approach combines the speed of AI with the flexibility of human creativity.',
+          answer: 'AI generates content suggestions – text, visual, and video formats. Users must review, edit, and approve all content before publishing. No content is published without your explicit approval. This approach combines the speed of AI with human oversight and creativity.',
         },
         {
           question: '🔒 How does Timera.ai protect my data?',
@@ -686,6 +1282,64 @@ const translations: Record<Language, Translations> = {
       company: 'Company',
       register: 'Register',
     },
+    auth: {
+      login: {
+        title: 'Sign In to Timera',
+        description: 'Enter your email and password to access your account',
+        emailLabel: 'Email',
+        emailPlaceholder: 'Enter your email address',
+        passwordLabel: 'Password',
+        passwordPlaceholder: 'Enter your password',
+        submitButton: 'Sign In',
+        submittingButton: 'Signing in...',
+        noAccount: "Don't have an account?",
+        signUpLink: 'Sign up',
+        errors: {
+          invalidEmail: 'Please enter a valid email address',
+          passwordRequired: 'Password is required',
+          wrongCredentials: 'Email or password is incorrect',
+          userNotFound: 'User with this email address not found',
+          accountDisabled: 'Your account has been disabled. Please contact support',
+          networkError: 'Could not connect to server. Please check your internet connection',
+        },
+      },
+      register: {
+        title: 'Create Account',
+        description: 'Get started with Timera',
+        firstNameLabel: 'First Name',
+        firstNamePlaceholder: 'Your first name',
+        lastNameLabel: 'Last Name',
+        lastNamePlaceholder: 'Your last name',
+        emailLabel: 'Email',
+        emailPlaceholder: 'email@example.com',
+        companyNameLabel: 'Company Name (Optional)',
+        companyNamePlaceholder: 'Your company name',
+        passwordLabel: 'Password',
+        passwordPlaceholder: 'Create a password',
+        confirmPasswordLabel: 'Confirm Password',
+        confirmPasswordPlaceholder: 'Re-enter your password',
+        passwordStrength: 'Password strength:',
+        passwordStrengthWeak: 'Weak',
+        passwordStrengthMedium: 'Medium',
+        passwordStrengthGood: 'Good',
+        passwordStrengthStrong: 'Strong',
+        passwordHint: 'Tip: Use uppercase and lowercase letters, numbers, and special characters',
+        passwordsMatch: 'Passwords match',
+        submitButton: 'Sign Up',
+        submittingButton: 'Creating account...',
+        hasAccount: 'Already have an account?',
+        signInLink: 'Sign In',
+        errors: {
+          invalidEmail: 'Please enter a valid email address',
+          passwordMinLength: 'Password must be at least 8 characters',
+          firstNameRequired: 'First name is required',
+          lastNameRequired: 'Last name is required',
+          passwordsMismatch: 'Passwords do not match',
+          emailExists: 'This email address is already in use',
+          registrationFailed: 'Registration failed. Please try again',
+        },
+      },
+    },
     settings: {
       title: 'Settings',
       description: 'Manage your account preferences and configuration',
@@ -718,6 +1372,127 @@ const translations: Record<Language, Translations> = {
         noProfile: 'No company profile created yet',
         createProfile: 'Create Company Profile',
         loading: 'Loading...',
+        setupTitle: 'Company Profile Setup',
+        setupDescription: 'Help us get to know your business to create better AI content',
+        basicInfo: 'Basic Information',
+        basicInfoDesc: 'Tell us about your company',
+        companyLogo: 'Company Logo',
+        changeLogo: 'Change Logo',
+        uploadLogo: 'Upload Logo',
+        dragDropLogo: 'Drag and drop logo or click to upload',
+        logoFileTypes: 'PNG with transparency recommended. JPG or SVG (max 10MB)',
+        selectFile: 'Select File',
+        logoAnalysisHint: '💡 AI will automatically analyze your logo and extract your brand colors, style, and more information',
+        logoAnalyzing: 'AI is analyzing logo...',
+        location: 'Location',
+        locationPlaceholder: 'City, Country',
+        companyNamePlaceholder: 'Your Company Name',
+        selectIndustry: 'Select Industry',
+        selectCompanySize: 'Select Company Size',
+        websitePlaceholder: 'https://yourcompany.com',
+        validationCompanyNameRequired: 'Company name is required',
+        validationIndustryRequired: 'Industry is required',
+        validationCompanySizeRequired: 'Company size is required',
+        validationUrlInvalid: 'Please enter a valid URL',
+        validationMinChars: 'Please provide a detailed description (at least 10 characters)',
+        validationToneRequired: 'Please select preferred tone',
+        validationPostsMin: 'Minimum 1 post',
+        validationPostsMax: 'Maximum 30 posts',
+        validationSloganMax: 'Slogan can be maximum 200 characters',
+        successProfileCreated: 'Company profile successfully created!',
+        successProfileUpdated: 'Company profile successfully updated!',
+        successProfileLogoCreated: 'Company profile and logo successfully created!',
+        successProfileLogoUpdated: 'Company profile and logo successfully updated!',
+        errorSaveFailed: 'Could not save company profile. Please try again.',
+        errorBrandAnalysisNotFound: 'Brand analysis data not found',
+        errorCompanyNameRequiredForSlogan: 'Company name is required to create slogan',
+        businessDescriptionTitle: 'Business Description',
+        businessDescriptionDesc: 'Help AI better understand your business',
+        businessDescriptionLabel: 'What does your company do? *',
+        businessDescriptionPlaceholder: 'Describe your business, products or services in detail...',
+        targetAudienceLabel: 'Who is your target audience? *',
+        targetAudiencePlaceholder: 'Describe your ideal customers, their demographics, interests and needs...',
+        uniqueSellingPointsLabel: 'What makes your company unique? *',
+        uniqueSellingPointsPlaceholder: 'Describe your competitive advantages, unique features or special qualities...',
+        socialMediaStrategyTitle: 'Social Media Strategy',
+        socialMediaStrategyDesc: 'Define your social media goals and preferences',
+        socialMediaGoalsLabel: 'What are your social media goals? *',
+        socialMediaGoalsPlaceholder: 'e.g., Increase brand awareness, acquire potential customers, connect with customers, drive traffic to website...',
+        preferredToneLabel: 'Preferred Communication Tone *',
+        selectTone: 'Select Tone',
+        contentTopicsLabel: 'Content Topics',
+        contentTopicsPlaceholder: 'technology, innovation, tips, news',
+        contentTopicsHint: 'Separate topics with commas',
+        keywordsLabel: 'Important Keywords',
+        keywordsPlaceholder: 'AI, automation, efficiency, development',
+        keywordsHint: 'Separate keywords with commas',
+        avoidTopicsLabel: 'Topics to Avoid (Optional)',
+        avoidTopicsPlaceholder: 'politics, controversial topics, competitors',
+        avoidTopicsHint: 'Separate topics with commas',
+        aiGenerationSettingsTitle: 'AI Generation Settings',
+        aiGenerationSettingsDesc: 'Settings related to AI content generation',
+        postsToGenerateLabel: 'How Many Posts to Generate Each Time?',
+        postsToGenerateHint: 'AI will create this many posts at once. Recommendation: 10-15 is considered optimal.',
+        previewTitle: 'Preview',
+        previewDesc: 'This information will be used to create AI content',
+        previewNotShown: 'Not Shown',
+        previewNotSelected: 'Not Selected',
+        previewCompany: 'Company',
+        previewIndustry: 'Industry',
+        previewTone: 'Tone',
+        previewTopics: 'Topics',
+        brandAnalysisTitle: 'AI Brand Analysis',
+        brandingParamsTitle: 'Branding Parameters',
+        brandingParamsDesc: 'Automatically add company logo and slogan to AI-generated images',
+        automaticBrandingActive: 'Automatic Branding Active',
+        automaticBrandingDesc: 'Logo and slogan will be automatically added to all new AI-generated images',
+        brandingRequiresLogo: '⚠️ You must upload a logo to enable branding. Upload a logo from the "Company Logo" section above.',
+        sloganLabel: 'Slogan (Optional)',
+        sloganPlaceholder: 'e.g., Transform Your Social Media',
+        sloganHint: 'Text to be displayed next to the logo in images',
+        sloganChars: 'characters',
+        brandingMode: 'Branding Mode',
+        standard: 'Standard',
+        custom: 'Custom',
+        standardBrandingParams: 'Standard Branding Parameters',
+        logoPosition: 'Logo Position:',
+        sloganPosition: 'Slogan Position:',
+        logoSize: 'Logo Size:',
+        gradient: 'Gradient:',
+        standardModeNote: '✨ Standard mode: Automatic gradient overlays will be added for logo and slogan',
+        logoPositionLabel: 'Logo Position',
+        logoPositionHint: 'Select logo position (with gradient overlay)',
+        sloganPositionLabel: 'Slogan Position',
+        sloganPositionHint: 'Slogan will appear with gradient overlay',
+        logoSizeLabel: 'Logo Size',
+        logoSizeSmall: 'Small (2%)',
+        logoSizeMedium: 'Medium (13%)',
+        logoSizeLarge: 'Large (25%)',
+        sloganSizeLabel: 'Slogan Size',
+        sloganSizeSmall: 'Small (2%)',
+        sloganSizeMedium: 'Medium (4%)',
+        sloganSizeLarge: 'Large (8%)',
+        gradientEnabled: 'Gradient Overlay',
+        gradientColor: 'Gradient Color',
+        gradientHeight: 'Gradient Height',
+        gradientPosition: 'Gradient Position',
+        gradientTop: 'Top',
+        gradientBottom: 'Bottom',
+        gradientBoth: 'Both',
+        logoPositionTopLeft: 'Top Left',
+        logoPositionTopCenter: 'Top Center',
+        logoPositionTopRight: 'Top Right',
+        logoPositionBottomLeft: 'Bottom Left',
+        logoPositionBottomCenter: 'Bottom Center',
+        logoPositionBottomRight: 'Bottom Right',
+        sloganPositionTopCenter: 'Top Center',
+        sloganPositionBottomCenter: 'Bottom Center',
+        logoPositionStandard: 'Top Center (with Gradient)',
+        sloganPositionStandard: 'Bottom Center (with Gradient)',
+        logoSizeStandard: '13% of image width',
+        gradientStandard: 'Automatic (Brand colors)',
+        aiSuggestion: 'AI Suggestion',
+        aiGenerating: 'AI Creating...',
       },
       account: {
         title: 'Account Settings',
@@ -751,6 +1526,17 @@ const translations: Record<Language, Translations> = {
         termsOfServiceDesc: 'Rules and conditions for using the platform',
         read: 'Read',
       },
+      privacy: {
+        title: 'Privacy & Data Retention',
+        description: 'Manage how your data is stored and retained',
+        dataRetention: 'Data Retention Policy',
+        dataRetentionDesc: 'Configure how long deleted posts are retained',
+        deletedPostsRetention: 'Deleted Posts Retention',
+        deletedPostsRetentionDesc: 'Rejected posts are retained for X days or immediately removed',
+        immediatelyRemoved: 'Immediately Removed',
+        retainedForDays: 'Retained for {days} days',
+        days: 'days',
+      },
       dangerZone: {
         title: 'Danger Zone',
         description: 'Irreversible actions that affect your account',
@@ -773,10 +1559,14 @@ const translations: Record<Language, Translations> = {
       socialAccountsDesc: 'Connected platforms',
       analytics: 'Analytics',
       analyticsDesc: 'Performance data',
+      messages: 'Messages & Inbox',
+      messagesDesc: 'Customer messages and inbox center',
       socialMediaAnalysis: 'Social Media Analysis',
       socialMediaAnalysisDesc: 'Profile and content analysis',
-      metaAds: 'Meta Ads',
-      metaAdsDesc: 'Ad campaigns',
+      adsAnalytics: 'Meta Ads Analytics',
+      adsAnalyticsDesc: 'Campaign insights',
+      metaAds: 'Meta Ads Manager',
+      metaAdsDesc: 'Campaign management',
       brandVoice: 'Brand Voice',
       brandVoiceDesc: 'AI personality settings',
       templates: 'Templates',
@@ -869,6 +1659,68 @@ const translations: Record<Language, Translations> = {
       errorPublishInstagram: '❌ Instagram publishing failed',
       errorPublishLinkedIn: '❌ LinkedIn publishing failed',
       errorBranding: 'Branding could not be applied',
+      publishResultTitle: 'Publish Result',
+      publishResultPlatform: 'Platform',
+      publishResultAccount: 'Target Account',
+      publishResultStatus: 'Status',
+      publishResultPostId: 'Post ID',
+      publishResultPostLink: 'Post Link',
+      publishResultSuccess: 'Success',
+      publishResultFailed: 'Failed',
+      publishRequiresApproval: 'Requires Approval',
+      publishRequiresApprovalTooltip: 'This post must be approved before it can be published',
+      reviewGeneratedPosts: 'Review Generated Posts',
+      reviewGeneratedPostsDesc: 'Review, edit and approve AI-generated content',
+      imagesGenerating: 'Images are being generated in the background and will load automatically',
+      bulkOperations: 'Bulk Operations',
+      selectedOf: 'selected of',
+      selectAll: 'Select All',
+      deselectAll: 'Deselect All',
+      postsSelected: 'posts selected',
+      approveSelected: 'Approve Selected',
+      approve: 'Approve',
+      rejectSelected: 'Reject Selected',
+      reject: 'Reject',
+      postNumber: 'Post',
+      characters: 'characters',
+      waiting: 'Waiting',
+      postImage: 'Post Image',
+      imageGenerating: 'Image is being generated...',
+      imageUploading: 'Image Uploading...',
+      upload: 'Upload',
+      uploadImage: 'Upload Image',
+      edit: 'Edit',
+      editPost: 'Edit Post',
+      postContent: 'Post Content',
+      description: 'Description',
+      hashtags: 'Hashtags',
+      saving: 'Saving...',
+      saveChanges: 'Save Changes',
+      designSaved: 'Design saved successfully!',
+      designSaveFailed: 'Failed to save design',
+      pleaseSelectAtLeastOne: 'Please select at least one post to approve.',
+      pleaseSelectAtLeastOneReject: 'Please select at least one post to reject.',
+      confirmApprove: 'posts will be approved?',
+      confirmReject: 'posts will be rejected?',
+      postsApproved: 'Posts could not be approved. Please try again.',
+      postsRejected: 'Posts could not be rejected. Please try again.',
+      postUpdateFailed: 'Post could not be updated. Please try again.',
+      imageUploadFailed: 'Image could not be uploaded. Please try again.',
+      companyProfileNotFound: 'Company profile not found. Please fill in company information first.',
+      companyLogoNotFound: 'Company logo not found. Please upload logo first.',
+      brandingDisabled: 'Branding is disabled. Enable it in settings.',
+      postNotFound: 'Post not found.',
+      noImageInPost: 'This post has no image.',
+      loginRequired: 'Login required. Please log in again.',
+      brandingApplied: 'Branding applied successfully! ✨',
+      brandingFailed: 'Branding could not be applied',
+      designEditor: 'Design Editor',
+      design: 'Design',
+      branded: 'Branded',
+      placeholder: 'Placeholder',
+      goToCalendar: 'Go to Calendar',
+      editPostTitle: 'Edit Post',
+      editPostDesc: 'Modify AI-generated content according to your needs',
     },
     share: {
       share: 'Share',
@@ -917,6 +1769,40 @@ const translations: Record<Language, Translations> = {
       noPosts: 'No posts scheduled',
       noPostsDesc: 'Create posts to see them on your calendar',
       untitled: 'Untitled',
+      scheduledTime: 'Scheduled Time',
+      publishingTo: 'Publishing to',
+      willPublishAutomatically: 'Will publish automatically',
+      recommendedTimeAI: 'Recommended Time (AI)',
+      aiRecommended: 'AI Recommended',
+      userOverride: 'You can override this time',
+      editPost: 'Edit Post',
+      editPostDesc: 'Modify post content, scheduling, and platforms',
+      currentConnectedAccounts: 'Current Connected Accounts',
+      connected: 'Connected',
+      notConnected: 'Not connected',
+      connect: 'Connect',
+      change: 'Change',
+      connectInstagramFirst: 'Connect Instagram first',
+      connectFacebookFirst: 'Connect Facebook Page first',
+      connectPlatformFirst: 'Connect platform first',
+      connectFirst: 'Connect first',
+      postingDestination: 'Posts will be published from your connected accounts. Manage connections in Social Accounts.',
+      titleLabel: 'Title',
+      titlePlaceholder: 'Post title...',
+      content: 'Content',
+      contentPlaceholder: 'Write post content...',
+      characters: 'characters',
+      date: 'Date',
+      time: 'Time',
+      platforms: 'Platforms',
+      selected: 'Selected',
+      platform: 'platform',
+      status: 'Status',
+      draft: 'Draft',
+      scheduled: 'Scheduled',
+      published: 'Published',
+      preview: 'Preview',
+      noContent: 'No content...',
     },
     aiContentGenerator: {
       title: 'AI Content Generator',
@@ -926,6 +1812,7 @@ const translations: Record<Language, Translations> = {
     aiTools: {
       title: 'AI Tools',
       description: 'Leverage AI to create better social media content',
+      allTools: 'All AI Tools',
       contentGenerator: 'Content Generator',
       contentGeneratorDesc: 'Generate engaging posts with AI',
       hashtagGenerator: 'Hashtag Generator',
@@ -944,7 +1831,7 @@ const translations: Record<Language, Translations> = {
       adCreativeGenerator: 'Ad Creative Generator',
       adCreativeGeneratorDesc: 'Create professional marketing visuals with AI',
       videoGenerator: 'Video Generator',
-      videoGeneratorDesc: 'Create professional videos with AI using Kling Video',
+      videoGeneratorDesc: 'Create professional videos with AI',
       promptPlaceholder: 'e.g., Our new product launch, industry trends, company culture...',
       generate: 'Generate Content',
       generating: 'Generating...',
@@ -954,6 +1841,279 @@ const translations: Record<Language, Translations> = {
       saving: 'Saving...',
       saveToProfile: 'Save to Company Profile',
       saved: 'Saved!',
+    },
+    productPost: {
+      title: 'Product Post Creator',
+      description: 'Upload a product image, AI will remove the background, analyze it, and create ad posts',
+      cardTitle: 'Product Ad Image Generator',
+      cardDescription: 'Upload a product image to generate a professional marketing advertisement',
+      processingStep1: 'Step 1: Image Processing - Background Removal...',
+      processingStep2: 'Step 2: Product Analysis - Structured Analysis...',
+      processingStep3: 'Step 3: Ad Content - Hook, Body and CTA...',
+      processingStep4: 'Step 4: AI Prompt Creation...',
+      processingStep5: 'Step 5: Professional Images with Nano Banana...',
+      processingComplete: 'Posts completed...',
+      processingStepUrl1: 'Step 1: Website content is being extracted...',
+      processingStepUrl2: 'Step 2: Product information is analyzed with AI...',
+      processingStepUrl3: 'Step 3: Product image is being uploaded...',
+      processingStepUrl4: 'Step 4: Background is being removed...',
+      processingStepUrl5: 'Step 5: Professional Images with Nano Banana...',
+      errorImageUrlNotFound: 'Image URL not found',
+      successPostCreated: 'Post successfully created and added to posts/ section!',
+      errorPostCreationFailed: 'Post could not be created',
+      successAdImageCreated: 'Ad image successfully created',
+      workflowStep1: 'Workflow completed',
+      workflowStep2: 'Ad image created',
+      workflowStep3: '',
+      workflowStep4: '',
+      workflowStep5: '',
+      download: 'Download',
+      open: 'Open',
+      imageWillBeCreated: 'Image will be created',
+      viewPosts: 'View Posts',
+      createNewPost: 'Create New Post',
+      imagePreview: 'Image Preview',
+      closeModalHint: 'Press ESC to close or click outside',
+      productImage: 'Product Image',
+      productImageRequired: 'Product Image',
+      productName: 'Product Name (Optional)',
+      productNameOptional: 'Product Name (Optional)',
+      productNamePlaceholder: 'e.g., iPhone 15 Pro',
+      adStyle: 'Ad Style',
+      adStyleRequired: 'Ad Style',
+      adStylePlaceholder: 'Select an option...',
+      aspectRatio: 'Aspect Ratio',
+      aspectRatioRequired: 'Aspect Ratio',
+      aspectRatioPlaceholder: 'Select an option...',
+      submit: 'Submit',
+      processing: 'Processing...',
+      generating: 'Creating ad image...',
+      pleaseWait: 'Please wait',
+      createdPosts: 'Created Posts',
+      createdPostsDesc: 'post(s) successfully created',
+      createdAdImage: 'Created Ad Image',
+      createdAdImageDesc: 'AI-generated professional ad image',
+      openImage: 'Open Image',
+      approveAndCreate: 'Approve and Create Post',
+      analyzing: 'Analyzing...',
+      selectOption: 'Select an option...',
+      modern: 'Modern',
+      professional: 'Professional',
+      playful: 'Playful',
+      elegant: 'Elegant',
+      minimalist: 'Minimalist',
+      luxury: 'Luxury',
+      casual: 'Casual',
+      square: '1:1 (Square - 1080x1080)',
+      story: '9:16 (Story - 1080x1920)',
+      landscape: '16:9 (Landscape - 1920x1080)',
+      portrait: '4:5 (Portrait - 1080x1350)',
+      facebookPost: '1.91:1 (Facebook Post - 1200x628)',
+      errorImageUpload: 'Failed to upload image',
+      errorLoginRequired: 'Login required. Please log in again.',
+      errorInvalidFile: 'Invalid image file',
+      errorServerError: 'Server error. Please try again later.',
+      errorFileRequired: 'Image file is required',
+      errorUrlRequired: 'Image URL is required. Please upload an image.',
+      errorInvalidUrl: 'Image URL is not in valid format: {url}',
+      errorImageLoad: 'Failed to load image: {status} {statusText}',
+      errorWorkflowTimeout: 'Workflow took too long (more than 5 minutes). Please try again.',
+      errorWebhookConnection: 'Could not connect to webhook. Please check your internet connection.',
+      errorSelectAdStyle: 'Please select Ad Style and Aspect Ratio',
+    },
+    logoGenerator: {
+      title: 'Logo & Slogan Generator',
+      description: 'Create professional logo and slogan for your company',
+      back: 'Back',
+      basicInfo: 'Basic Information',
+      basicInfoDesc: 'Enter information about your company',
+      companyName: 'Company/Product Name *',
+      companyNamePlaceholder: 'e.g., Timera, TechStart',
+      descriptionLabel: 'Description *',
+      descriptionPlaceholder: 'Describe your company or product...',
+      descriptionHint: 'More detailed description will create better logo and slogan',
+      logoStyle: 'Logo Style',
+      logoStyleDesc: 'Select logo design style',
+      colorSelection: 'Color Selection',
+      colorSelectionDesc: 'Select the main color for the logo',
+      selectedColor: 'Selected color:',
+      categories: 'Categories (Tags)',
+      categoriesDesc: 'Select the industries your company belongs to',
+      categoriesSelected: 'categories selected',
+      generateButton: 'Create Logo and Slogan',
+      generatingButton: 'Creating Logo...',
+      createdLogo: 'Created Logo',
+      createdSlogan: 'Created Slogan',
+      saveToProfile: 'Add to Company Profile',
+      saving: 'Adding...',
+      downloadLogo: 'Download Logo',
+      copySlogan: 'Copy Slogan',
+      sloganCopied: '✅ Slogan copied!',
+      sloganCopyFailed: 'Slogan could not be copied',
+      logoDownloadFailed: 'Logo could not be downloaded',
+      emptyState: 'Logo and slogan will appear here after creation',
+      errorCompanyNameRequired: 'Please enter company name and description',
+      errorEmptyResponse: 'Empty response received',
+      errorLogoCreationFailed: 'Logo could not be created',
+      errorNoLogo: '⚠️ No logo. Please create a logo first.',
+      errorLogoLoadFailed: 'Logo could not be loaded',
+      errorTitle: 'Error',
+      successCreated: '✅ Logo and slogan successfully created!',
+      successSaved: '✅ Logo and slogan successfully added to company profile!',
+      errorSaveFailed: 'Could not be added to company profile',
+      generatedLogoAlt: 'Generated Logo',
+      styleMinimalist: 'Minimalist',
+      styleMinimalistDesc: 'Simple and clean',
+      styleElegant: 'Elegant',
+      styleElegantDesc: 'Refined and delicate',
+      styleModern: 'Modern',
+      styleModernDesc: 'Contemporary and dynamic',
+      styleProfessional: 'Professional',
+      styleProfessionalDesc: 'For business',
+      stylePlayful: 'Playful',
+      stylePlayfulDesc: 'Cheerful and colorful',
+      colorBlue: 'Blue',
+      colorPurple: 'Purple',
+      colorRed: 'Red',
+      colorGreen: 'Green',
+      colorOrange: 'Orange',
+      colorIndigo: 'Indigo',
+      colorBlack: 'Black',
+      colorWhite: 'White',
+      tagTech: 'Tech',
+      tagFinance: 'Finance',
+      tagHealth: 'Health',
+      tagEducation: 'Education',
+      tagEcommerce: 'E-commerce',
+      tagService: 'Service',
+      tagManufacturing: 'Manufacturing',
+      tagRealEstate: 'Real Estate',
+      tagMarketing: 'Marketing',
+      tagDesign: 'Design',
+      tagKitchen: 'Kitchen',
+      tagFashion: 'Fashion',
+      tagSports: 'Sports',
+      tagTravel: 'Travel',
+      tagArt: 'Art',
+    },
+    hashtagGenerator: {
+      title: 'Hashtag Generator',
+      description: 'Create hashtags suitable for your company',
+      headerTitle: '#️⃣ Hashtag Generator',
+      headerDescription: 'Create hashtags suitable for your company information and post content',
+      contentSectionTitle: 'Post Content',
+      contentSectionDesc: 'Enter post content to create hashtags (optional)',
+      contentLabel: 'Content',
+      contentPlaceholder: 'e.g., Introducing our new product! 🚀',
+      companyInfo: 'Company Information:',
+      companyName: 'Company:',
+      industry: 'Industry:',
+      business: 'Business:',
+      hashtagCount: 'Hashtag Count',
+      hashtagCountLabel: 'hashtags',
+      generateButton: 'Create Hashtags',
+      generatingButton: 'Creating Hashtags...',
+      generatedHashtags: 'Generated Hashtags',
+      generatedHashtagsDesc: 'hashtags created',
+      copyAll: 'Copy All',
+      copied: 'Copied',
+      allHashtags: 'All Hashtags:',
+      copy: 'Copy',
+      tipsTitle: '💡 Tips',
+      tip1: '• Entering post content will give you more relevant hashtags',
+      tip2: '• Your company information is automatically used',
+      tip3: '• Keep hashtag count between 15-25 (for optimal performance)',
+      tip4: '• A mix of popular and niche hashtags gives the best results',
+      errorContentRequired: 'Please enter post content or company information',
+      errorGenerationFailed: 'Hashtags could not be created. Please try again.',
+    },
+    captionOptimizer: {
+      title: 'Caption Optimizer',
+      description: 'Optimize your captions for better engagement',
+      headerTitle: '📝 Caption Optimizer',
+      headerDescription: 'Optimize your captions for better engagement',
+      captionSectionTitle: 'Caption / Title',
+      captionSectionDesc: 'Enter the caption or title you want to optimize',
+      originalCaptionLabel: 'Original Caption',
+      captionPlaceholder: 'e.g., Introducing our new product!',
+      characters: 'characters',
+      contentTypeLabel: 'Content Type',
+      contentTypePost: 'Post',
+      contentTypeTitle: 'Title',
+      contentTypeDescription: 'Description',
+      platformLabel: 'Platform',
+      platformGeneral: 'General',
+      platformInstagram: 'Instagram',
+      platformFacebook: 'Facebook',
+      platformLinkedIn: 'LinkedIn',
+      toneLabel: 'Tone',
+      toneProfessional: 'Professional',
+      toneCasual: 'Casual',
+      toneCreative: 'Creative',
+      toneFriendly: 'Friendly',
+      companyInfo: 'Company Information:',
+      companyName: 'Company:',
+      industry: 'Industry:',
+      preferredTone: 'Preferred Tone:',
+      optimizeButton: 'Optimize',
+      optimizingButton: 'Optimizing...',
+      optimizedCaption: 'Optimized Caption',
+      optimizedCaptionDesc: 'characters (change)',
+      copy: 'Copy',
+      copied: 'Copied',
+      useOptimized: 'Use',
+      original: 'Original',
+      optimized: 'Optimized',
+      tipsTitle: '💡 Tips',
+      tip1: '• Choose platform-appropriate captions (Instagram, Facebook, LinkedIn)',
+      tip2: '• Tone selection should match your brand',
+      tip3: '• Short and engaging captions perform better',
+      tip4: '• Don\'t forget to add a call-to-action',
+      tip5: '• Try different variants and choose the best one',
+      errorCaptionRequired: 'Please enter a caption or title',
+      errorOptimizationFailed: 'Caption could not be optimized. Please try again.',
+    },
+    videoGenerator: {
+      title: 'AI Video Generator',
+      description: 'Create professional videos with AI',
+      cardTitle: 'Create Video',
+      cardDescription: 'Create professional videos from images with AI',
+      methodLabel: 'Video Creation Method',
+      methodText: 'Video from Text',
+      methodTextDesc: 'Write a prompt, let video be created',
+      methodImage: 'Video from Image',
+      methodImageDesc: 'Upload an image, let it be a moving video',
+      promptLabel: 'AI Prompt *',
+      promptPlaceholder: 'e.g., A beautiful sunset over mountains with birds flying, cinematic camera movement, slow motion',
+      promptDescription: 'The prompt will be enriched with professional video terminology in the background',
+      imageUploadLabel: 'Upload Image *',
+      parametersLabel: 'Video Parameters',
+      durationLabel: 'Duration (seconds)',
+      fpsLabel: 'FPS (Frame per Second)',
+      widthLabel: 'Width (px)',
+      heightLabel: 'Height (px)',
+      generateButton: 'Create Video',
+      generatingButton: 'Creating Video...',
+      errorTitle: 'An error occurred',
+      progressMessage: 'Creating video... (30-60 seconds)',
+      progressStep1: '📝 Prompt',
+      progressStep2: '🎬 Video',
+      progressStep3: '✨ Complete',
+      resultTitle: 'Generated Video',
+      resultVideoLabel: 'Generated Video',
+      downloadButton: 'Download',
+      copyLinkButton: 'Copy Link',
+      professionalPromptLabel: 'Professional Prompt:',
+      videoInfoLabel: 'Video Information:',
+      statusLabel: 'Status:',
+      jobIdLabel: 'Job ID:',
+      errorPromptRequired: 'Enter a prompt',
+      errorImageRequired: 'Upload an image for video',
+      errorLoginRequired: 'Not logged in. Please log in again.',
+      errorServerError: 'Server error (500). Contact backend developer.',
+      errorNetworkError: 'Network error. Cannot connect to backend server.',
+      errorVideoGenerationFailed: 'Video could not be created',
+      errorImageToVideo: 'Image-to-video error: {error}',
     },
     socialAccounts: {
       title: 'Social Accounts',
@@ -973,6 +2133,27 @@ const translations: Record<Language, Translations> = {
       active: 'Active',
       inactive: 'Inactive',
       disconnectConfirm: 'Are you sure you want to disconnect this account?',
+      permissionsPurpose: 'What are these permissions for?',
+      permissionsPosting: 'Posting: To publish content to your Facebook Pages and Instagram account',
+      permissionsAnalytics: 'Analytics: To track the performance of your posts',
+      permissionsMessages: 'Messages: To manage customer messages and conversations',
+      permissionsAds: 'Ads: To manage advertising campaigns',
+      permissionsFacebook: 'Posting: To publish content to your Facebook Pages and groups. Analytics: To track post performance, reach, and engagement. Messages: To manage customer messages and conversations. Ads: To manage Facebook advertising campaigns.',
+      permissionsLinkedIn: 'Posting: To publish content to your LinkedIn company pages and personal profile. Analytics: To track post performance, views, and engagement metrics. Messaging: To manage professional messages and connections.',
+      permissionsTikTok: 'Posting: To publish videos to your TikTok account. Analytics: To track video performance, views, and engagement metrics.',
+      permissionsYouTube: 'Video Upload: To upload videos to your YouTube channel. Analytics: To track video performance, views, watch time, and subscriber metrics. Channel Management: To manage your channel settings and content.',
+      pageId: 'Page ID',
+      instagramId: 'Instagram ID',
+      connectedAt: 'Connected at',
+      tokenStatus: 'Token Status',
+      tokenActive: 'Active',
+      tokenExpired: 'Expired',
+      disconnectWarning: 'When you disconnect, the access token will be deleted and webhooks will be stopped.',
+      platformDescriptionFacebook: 'Share to pages and groups',
+      platformDescriptionInstagram: 'Share photos and stories',
+      platformDescriptionLinkedIn: 'Professional network and business shares',
+      platformDescriptionYouTube: 'Video sharing and channel management',
+      platformDescriptionTikTok: 'Short video sharing',
     },
     analytics: {
       title: 'Analytics',
@@ -1021,6 +2202,19 @@ const translations: Record<Language, Translations> = {
       samplePost: 'Sample Post',
       select: 'Select',
     },
+    companySetup: {
+      title: 'Complete Setup',
+      titleUpdate: 'Update Company Profile',
+      description: 'Tell us about your company to create great content',
+      descriptionUpdate: 'Update your company information for better AI content',
+      whyNeededTitle: 'Why This Information Is Needed',
+      benefit1Title: 'Better AI Content',
+      benefit1Desc: 'AI will create content tailored to your business and audience',
+      benefit2Title: 'Targeted Messages',
+      benefit2Desc: 'Posts will be customized to your specific industry and goals',
+      benefit3Title: 'Content in Your Language',
+      benefit3Desc: 'All content will be created in perfect language',
+    },
     templates: {
       title: 'Templates',
       description: 'Content templates for quick post creation',
@@ -1063,27 +2257,27 @@ const translations: Record<Language, Translations> = {
       tagline: '🚀 Süni İntellektlə Gələcək Buradadır',
       title: 'Brendinizi Anlayan',
       titleHighlight: 'Süni İntellekt',
-      description: 'Timera.ai — AI əsaslı sosial media idarəetmə platformasıdır. Kontent yaradılması, planlaşdırma, dizayn və analitik — hamısı bir yerdə, tam avtomatlaşdırılmış.',
+      description: 'Timera.ai — AI əsaslı sosial media idarəetmə platformasıdır. Kontent yaradılması, planlaşdırma, dizayn və analitik — hamısı bir yerdə, sizin təsdiqi ilə.',
       startFree: 'Pulsuz Başlayın',
       howItWorksBtn: 'Necə İşləyir?',
       stats24_7: 'Yorulmayan AI Asistan',
       stats10x: 'Daha Sürətli Kontent',
-      stats100: 'Avtomatlaşdırma',
+      stats100: 'AI Dəstəyi',
     },
     features: {
       title: 'Timera.ai Nə Edir?',
       subtitle: 'Süni intellektlə sosial media idarəçiliyinin yeni dövrü',
       aiContentCreator: {
         title: 'AI Kontent Yaradıcısı',
-        description: 'Brendinizə uyğun mətn və vizual kontent tam avtomatik yaradılır. Siz istədiyi hissəni redaktə edə bilərsiniz.',
+        description: 'AI brendinizə uyğun mətn və vizual kontent təklifləri yaradır. Siz yoxlayır, redaktə edir və təsdiq edirsiniz.',
       },
       designVisual: {
         title: 'Dizayn & Vizual',
-        description: 'AI brend stilinizə uyğun dizayn və vizuallar hazırlayır. Loqo, rəng və ton avtomatik təhlil edilir.',
+        description: 'AI brend stilinizə uyğun dizayn təklifləri hazırlayır. Loqo, rəng və ton təhlil edilir. Siz son dizaynı təsdiq edirsiniz.',
       },
       smartScheduling: {
         title: 'Ağıllı Planlaşdırma',
-        description: 'Paylaşımların vaxtı və strategiya avtomatik qurulur. Optimal vaxt seçimi AI tərəfindən aparılır.',
+        description: 'AI optimal vaxt və strategiya tövsiyələri verir. Siz paylaşımları yoxlayır və planlaşdırırsınız.',
       },
       analytics: {
         title: 'Analitik & Hesabat',
@@ -1091,7 +2285,7 @@ const translations: Record<Language, Translations> = {
       },
       videoContent: {
         title: 'Video Kontent',
-        description: 'Markaya uyğun avtomatik video postlar. Video kontent hazırlığı tam avtomatlaşdırılmış.',
+        description: 'AI dəstəyi ilə markaya uyğun video kontent hazırlanır. Siz yoxlayır və təsdiq edirsiniz.',
       },
       secure: {
         title: 'Təhlükəsiz & Qanuni',
@@ -1100,22 +2294,22 @@ const translations: Record<Language, Translations> = {
     },
     howItWorks: {
       title: 'Necə İşləyir?',
-      subtitle: '4 sadə addımda sosial media marketinqinizi avtomatlaşdırın',
+      subtitle: '4 sadə addımda AI dəstəyi ilə sosial media marketinqinizi idarə edin',
       step1: {
         title: 'Məlumat Daxil Edin',
-        description: 'Brend, məhsul və məqsəd barədə məlumat verin. AI hər şeyi öyrənir.',
+        description: 'Brend, məhsul və məqsəd barədə məlumat verin. AI sizin məlumatlarınızdan öyrənir.',
       },
       step2: {
-        title: 'AI Kontent Yaradır',
-        description: 'Post mövzuları, mətn və vizual kontent avtomatik hazırlanır.',
+        title: 'AI Təkliflər Yaradır',
+        description: 'AI post mövzuları, mətn və vizual kontent təklifləri hazırlayır.',
       },
       step3: {
-        title: 'Təsdiq & Redaktə',
-        description: 'İstənilən hissəni redaktə edin və paylaşımları təsdiq edin.',
+        title: 'Yoxlayın və Təsdiq Edin',
+        description: 'Siz bütün təklifləri yoxlayır, istədiyiniz hissəni redaktə edir və təsdiq edirsiniz.',
       },
       step4: {
-        title: 'Avtomatik Yayım',
-        description: 'Sistem paylaşımları yayımlayır və nəticələri analiz edir.',
+        title: 'Planlaşdırılmış Yayım',
+        description: 'Təsdiqdən sonra sistem planlaşdırılmış vaxtda paylaşımları yayımlayır və nəticələri izləyir.',
       },
     },
     why: {
@@ -1152,11 +2346,11 @@ const translations: Record<Language, Translations> = {
       items: [
         {
           question: '🧠 Timera.ai nə edir və necə işləyir?',
-          answer: 'Timera.ai – süni intellekt əsaslı sosial media idarəetmə alətidir. Platforma post yaradılması, planlaşdırma, dizayn, video kontent hazırlığı, analitik hesabatlar və hətta Meta Ads (Facebook və Instagram reklam kampaniyaları) idarəsini avtomatlaşdırır. Sadəcə brend məlumatlarını daxil edin – qalan hər işi AI sizin yerinizə görəcək.',
+          answer: 'Timera.ai – AI dəstəkli sosial media idarəetmə alətidir. Platforma post yaradılması, planlaşdırma, dizayn, video kontent hazırlığı, analitik hesabatlar və Meta Ads (Facebook və Instagram reklam kampaniyaları) idarəsində kömək edir. Siz brend məlumatlarını daxil edirsiniz, AI təkliflər yaradır, siz yoxlayır və təsdiq edirsiniz.',
         },
         {
           question: '✍️ AI kontenti tam özü yaradır, yoxsa mən redaktə edə bilərəm?',
-          answer: 'Timera.ai kontenti tam avtomatik yaradır – həm mətn, həm vizual, həm də video formatda. Ancaq istifadəçi istədiyi istənilən hissəni redaktə edə və fərdiləşdirə bilər. Bu yanaşma AI-in sürətini və insan yaradıcılığının çevikliyini birləşdirir.',
+          answer: 'AI kontent təklifləri yaradır – mətn, vizual və video formatda. İstifadəçi bütün məzmunu yoxlamalı, redaktə etməli və təsdiq etməlidir. Heç bir məzmun sizin açıq təsdiqi olmadan dərc edilmir. Bu yanaşma AI-in sürətini və insan nəzarətini birləşdirir.',
         },
         {
           question: '🔒 Timera.ai məlumatlarımı necə qoruyur?',
@@ -1218,6 +2412,64 @@ const translations: Record<Language, Translations> = {
       company: 'Şirkət',
       register: 'Qeydiyyat',
     },
+    auth: {
+      login: {
+        title: 'Timera-ya Daxil Olun',
+        description: 'Hesabınıza daxil olmaq üçün e-poçt və şifrənizi daxil edin',
+        emailLabel: 'E-poçt',
+        emailPlaceholder: 'E-poçt ünvanınızı daxil edin',
+        passwordLabel: 'Şifrə',
+        passwordPlaceholder: 'Şifrənizi daxil edin',
+        submitButton: 'Daxil Ol',
+        submittingButton: 'Daxil olunur...',
+        noAccount: 'Hesabınız yoxdur?',
+        signUpLink: 'Qeydiyyatdan keçin',
+        errors: {
+          invalidEmail: 'Zəhmət olmasa düzgün e-poçt ünvanı daxil edin',
+          passwordRequired: 'Şifrə tələb olunur',
+          wrongCredentials: 'E-poçt və ya şifrə yanlışdır',
+          userNotFound: 'Bu e-poçt ünvanı ilə istifadəçi tapılmadı',
+          accountDisabled: 'Hesabınız deaktiv edilib. Zəhmət olmasa dəstək ilə əlaqə saxlayın',
+          networkError: 'Serverlə əlaqə qurula bilmədi. İnternet bağlantınızı yoxlayın',
+        },
+      },
+      register: {
+        title: 'Hesab Yaradın',
+        description: 'Timera ilə işə başlayın',
+        firstNameLabel: 'Ad',
+        firstNamePlaceholder: 'Adınız',
+        lastNameLabel: 'Soyad',
+        lastNamePlaceholder: 'Soyadınız',
+        emailLabel: 'E-poçt',
+        emailPlaceholder: 'epoct@numune.az',
+        companyNameLabel: 'Şirkət Adı (İstəyə Bağlı)',
+        companyNamePlaceholder: 'Şirkətinizin adı',
+        passwordLabel: 'Şifrə',
+        passwordPlaceholder: 'Şifrə yaradın',
+        confirmPasswordLabel: 'Şifrəni Təsdiq Et',
+        confirmPasswordPlaceholder: 'Şifrəni təkrar daxil edin',
+        passwordStrength: 'Şifrə gücü:',
+        passwordStrengthWeak: 'Zəif',
+        passwordStrengthMedium: 'Orta',
+        passwordStrengthGood: 'Yaxşı',
+        passwordStrengthStrong: 'Güclü',
+        passwordHint: 'İpucu: Böyük və kiçik hərflər, rəqəmlər və xüsusi simvollar istifadə edin',
+        passwordsMatch: 'Şifrələr uyğundur',
+        submitButton: 'Qeydiyyatdan Keç',
+        submittingButton: 'Hesab yaradılır...',
+        hasAccount: 'Artıq hesabınız var?',
+        signInLink: 'Daxil Ol',
+        errors: {
+          invalidEmail: 'Zəhmət olmasa düzgün e-poçt ünvanı daxil edin',
+          passwordMinLength: 'Şifrə ən azı 8 simvol olmalıdır',
+          firstNameRequired: 'Ad tələb olunur',
+          lastNameRequired: 'Soyad tələb olunur',
+          passwordsMismatch: 'Şifrələr uyğun gəlmir',
+          emailExists: 'Bu e-poçt ünvanı artıq istifadə olunur',
+          registrationFailed: 'Qeydiyyat uğursuz oldu. Zəhmət olmasa yenidən cəhd edin',
+        },
+      },
+    },
     settings: {
       title: 'Parametrlər',
       description: 'Hesab tənzimləmələrinizi və konfiqurasiyanızı idarə edin',
@@ -1250,6 +2502,78 @@ const translations: Record<Language, Translations> = {
         noProfile: 'Hələ ki şirkət profili yaradılmayıb',
         createProfile: 'Şirkət Profili Yarat',
         loading: 'Yüklənir...',
+        setupTitle: 'Şirkət Profili Quraşdırması',
+        setupDescription: 'Daha yaxşı AI məzmunu yaratmaq üçün bizə biznesinizi tanıtmağa kömək edin',
+        basicInfo: 'Əsas Məlumat',
+        basicInfoDesc: 'Bizə şirkətiniz haqqında məlumat verin',
+        companyLogo: 'Şirkət Loqosu',
+        changeLogo: 'Loqonu Dəyişdir',
+        uploadLogo: 'Loqonu Yüklə',
+        dragDropLogo: 'Loqonu yükləyin və ya sürüşdürün',
+        logoFileTypes: 'PNG şəffaflıqla tövsiyə olunur. JPG və ya SVG (max 10MB)',
+        selectFile: 'Fayl Seçin',
+        logoAnalysisHint: '💡 AI loqonuzu avtomatik təhlil edəcək və brend rənglərinizi, stilinizi və daha çox məlumatı əldə edəcək',
+        logoAnalyzing: 'AI loqonu təhlil edir...',
+        location: 'Yer',
+        locationPlaceholder: 'Şəhər, Ölkə',
+        companyNamePlaceholder: 'Şirkətinizin Adı',
+        selectIndustry: 'Sənaye Seçin',
+        selectCompanySize: 'Şirkət Ölçüsünü Seçin',
+        websitePlaceholder: 'https://sirketiniz.com',
+        validationCompanyNameRequired: 'Şirkət adı tələb olunur',
+        validationIndustryRequired: 'Sənaye tələb olunur',
+        validationCompanySizeRequired: 'Şirkət ölçüsü tələb olunur',
+        validationUrlInvalid: 'Zəhmət olmasa düzgün URL daxil edin',
+        validationMinChars: 'Zəhmət olmasa ətraflı təsvir verin (ən azı 10 simvol)',
+        validationToneRequired: 'Zəhmət olmasa üstünlük verilən üslubu seçin',
+        validationPostsMin: 'Minimum 1 paylaşım',
+        validationPostsMax: 'Maksimum 30 paylaşım',
+        validationSloganMax: 'Slogan maksimum 200 simvol ola bilər',
+        successProfileCreated: 'Şirkət profili uğurla yaradıldı!',
+        successProfileUpdated: 'Şirkət profili uğurla yeniləndi!',
+        successProfileLogoCreated: 'Şirkət profili və loqo uğurla yaradıldı!',
+        successProfileLogoUpdated: 'Şirkət profili və loqo uğurla yeniləndi!',
+        errorSaveFailed: 'Şirkət profilini yadda saxlamaq alınmadı. Zəhmət olmasa yenidən cəhd edin.',
+        errorBrandAnalysisNotFound: 'Brend təhlili məlumatı yoxdur',
+        errorCompanyNameRequiredForSlogan: 'Slogan yaratmaq üçün şirkət adı tələb olunur',
+        businessDescriptionTitle: 'Biznes Təsviri',
+        businessDescriptionDesc: 'AI-ə biznesinizi daha yaxşı başa düşməyə kömək edin',
+        businessDescriptionLabel: 'Şirkətiniz nə edir? *',
+        businessDescriptionPlaceholder: 'Biznesinizi, məhsullarınızı və ya xidmətlərinizi ətraflı təsvir edin...',
+        targetAudienceLabel: 'Hədəf auditoriyanız kimdir? *',
+        targetAudiencePlaceholder: 'İdeal müştərilərinizi, onların demoqrafiyasını, maraqlarını və ehtiyaclarını təsvir edin...',
+        uniqueSellingPointsLabel: 'Şirkətinizi unikal edən nədir? *',
+        uniqueSellingPointsPlaceholder: 'Rəqabət üstünlüklərinizi, unikal xüsusiyyətlərinizi və ya xüsusi keyfiyyətlərinizi təsvir edin...',
+        socialMediaStrategyTitle: 'Sosial Media Strategiyası',
+        socialMediaStrategyDesc: 'Sosial media məqsədlərinizi və üstünlüklərinizi müəyyənləşdirin',
+        socialMediaGoalsLabel: 'Sosial media məqsədləriniz nələrdir? *',
+        socialMediaGoalsPlaceholder: 'Məs: Brend məlumatlılığını artırmaq, potensial müştərilər əldə etmək, müştərilərlə əlaqə qurmaq, vebsayta trafik cəlb etmək...',
+        preferredToneLabel: 'Üstünlük Verilən Ünsiyyət Üslubu *',
+        selectTone: 'Üslub Seçin',
+        contentTopicsLabel: 'Məzmun Mövzuları',
+        contentTopicsPlaceholder: 'texnologiya, innovasiya, məsləhətlər, xəbərlər',
+        contentTopicsHint: 'Mövzuları vergüllə ayırın',
+        keywordsLabel: 'Vacib Açar Sözlər',
+        keywordsPlaceholder: 'AI, avtomatlaşdırma, səmərəlilik, inkişaf',
+        keywordsHint: 'Açar sözləri vergüllə ayırın',
+        avoidTopicsLabel: 'Qaçınılacaq Mövzular (İstəyə Bağlı)',
+        avoidTopicsPlaceholder: 'siyasət, mübahisəli mövzular, rəqiblər',
+        avoidTopicsHint: 'Mövzuları vergüllə ayırın',
+        aiGenerationSettingsTitle: 'AI Yaradılma Parametrləri',
+        aiGenerationSettingsDesc: 'AI məzmun yaradılması ilə bağlı tənzimləmələr',
+        postsToGenerateLabel: 'Hər Dəfə Neçə Paylaşım Yaradılsın?',
+        postsToGenerateHint: 'AI bir dəfədə bu qədər paylaşım yaradacaq. Tövsiyə: 10-15 arası optimal sayılır.',
+        previewTitle: 'Önizləmə',
+        previewDesc: 'Bu məlumat AI məzmunu yaratmaq üçün istifadə olunacaq',
+        previewNotShown: 'Göstərilməyib',
+        previewNotSelected: 'Seçilməyib',
+        previewCompany: 'Şirkət',
+        previewIndustry: 'Sənaye',
+        previewTone: 'Üslub',
+        previewTopics: 'Mövzular',
+        brandAnalysisTitle: 'AI Brend Təhlili',
+        aiSuggestion: 'AI Təklifi',
+        aiGenerating: 'AI Yaradır...',
       },
       account: {
         title: 'Hesab Tənzimləmələri',
@@ -1283,6 +2607,17 @@ const translations: Record<Language, Translations> = {
         termsOfServiceDesc: 'Platformadan istifadə qaydaları və şərtləri',
         read: 'Oxu',
       },
+      privacy: {
+        title: 'Gizlilik & Məlumat Saxlama',
+        description: 'Məlumatlarınızın necə saxlandığını və saxlanıldığını idarə edin',
+        dataRetention: 'Məlumat Saxlama Siyasəti',
+        dataRetentionDesc: 'Silinmiş paylaşımların nə qədər saxlanılacağını konfiqurasiya edin',
+        deletedPostsRetention: 'Silinmiş Paylaşımların Saxlanması',
+        deletedPostsRetentionDesc: 'Rədd edilən paylaşımlar X gün saxlanılır və ya dərhal silinir',
+        immediatelyRemoved: 'Dərhal Silinir',
+        retainedForDays: '{days} gün saxlanılır',
+        days: 'gün',
+      },
       dangerZone: {
         title: 'Təhlükəli Zona',
         description: 'Hesabınıza təsir edən geri dönməz hərəkətlər',
@@ -1305,10 +2640,14 @@ const translations: Record<Language, Translations> = {
       socialAccountsDesc: 'Qoşulmuş platformalar',
       analytics: 'Analitika',
       analyticsDesc: 'Performans məlumatları',
+      messages: 'Mesajlar & Əlaqə',
+      messagesDesc: 'Müştəri mesajları və əlaqə mərkəzi',
       socialMediaAnalysis: 'Sosial Media Analiz',
       socialMediaAnalysisDesc: 'Profil və məzmun analizi',
-      metaAds: 'Meta Ads',
-      metaAdsDesc: 'Reklam kampaniyaları',
+      adsAnalytics: 'Meta Ads Analitika',
+      adsAnalyticsDesc: 'Reklam statistikası',
+      metaAds: 'Meta Ads İdarəçisi',
+      metaAdsDesc: 'Kampaniya idarəetməsi',
       brandVoice: 'Brend Səsi',
       brandVoiceDesc: 'AI şəxsiyyət parametrləri',
       templates: 'Şablonlar',
@@ -1401,6 +2740,68 @@ const translations: Record<Language, Translations> = {
       errorPublishInstagram: '❌ Instagram paylaşımı uğursuz oldu',
       errorPublishLinkedIn: '❌ LinkedIn paylaşımı uğursuz oldu',
       errorBranding: 'Brending tətbiq edilə bilmədi',
+      publishResultTitle: 'Paylaşım Nəticəsi',
+      publishResultPlatform: 'Platforma',
+      publishResultAccount: 'Hədəf Hesab',
+      publishResultStatus: 'Status',
+      publishResultPostId: 'Post ID',
+      publishResultPostLink: 'Post Link',
+      publishResultSuccess: 'Uğurlu',
+      publishResultFailed: 'Uğursuz',
+      publishRequiresApproval: 'Təsdiq Tələb Olunur',
+      publishRequiresApprovalTooltip: 'Bu paylaşım paylaşılmazdan əvvəl təsdiqlənməlidir',
+      reviewGeneratedPosts: 'Review Generated Posts',
+      reviewGeneratedPostsDesc: 'Review, edit and approve AI-generated content',
+      imagesGenerating: 'Images are being generated in the background and will load automatically',
+      bulkOperations: 'Bulk Operations',
+      selectedOf: 'selected of',
+      selectAll: 'Select All',
+      deselectAll: 'Deselect All',
+      postsSelected: 'posts selected',
+      approveSelected: 'Approve Selected',
+      approve: 'Approve',
+      rejectSelected: 'Reject Selected',
+      reject: 'Reject',
+      postNumber: 'Post',
+      characters: 'characters',
+      waiting: 'Waiting',
+      postImage: 'Post Image',
+      imageGenerating: 'Image is being generated...',
+      imageUploading: 'Image Uploading...',
+      upload: 'Upload',
+      uploadImage: 'Upload Image',
+      edit: 'Edit',
+      editPost: 'Edit Post',
+      postContent: 'Post Content',
+      description: 'Description',
+      hashtags: 'Hashtags',
+      saving: 'Saving...',
+      saveChanges: 'Save Changes',
+      designSaved: 'Design saved successfully!',
+      designSaveFailed: 'Failed to save design',
+      pleaseSelectAtLeastOne: 'Please select at least one post to approve.',
+      pleaseSelectAtLeastOneReject: 'Please select at least one post to reject.',
+      confirmApprove: 'posts will be approved?',
+      confirmReject: 'posts will be rejected?',
+      postsApproved: 'Posts could not be approved. Please try again.',
+      postsRejected: 'Posts could not be rejected. Please try again.',
+      postUpdateFailed: 'Post could not be updated. Please try again.',
+      imageUploadFailed: 'Image could not be uploaded. Please try again.',
+      companyProfileNotFound: 'Company profile not found. Please fill in company information first.',
+      companyLogoNotFound: 'Company logo not found. Please upload logo first.',
+      brandingDisabled: 'Branding is disabled. Enable it in settings.',
+      postNotFound: 'Post not found.',
+      noImageInPost: 'This post has no image.',
+      loginRequired: 'Login required. Please log in again.',
+      brandingApplied: 'Branding applied successfully! ✨',
+      brandingFailed: 'Branding could not be applied',
+      designEditor: 'Design Editor',
+      design: 'Design',
+      branded: 'Branded',
+      placeholder: 'Placeholder',
+      goToCalendar: 'Go to Calendar',
+      editPostTitle: 'Edit Post',
+      editPostDesc: 'Modify AI-generated content according to your needs',
     },
     share: {
       share: 'Paylaş',
@@ -1449,6 +2850,40 @@ const translations: Record<Language, Translations> = {
       noPosts: 'Planlaşdırılmış paylaşım yoxdur',
       noPostsDesc: 'Təqviminizdə görmək üçün paylaşımlar yaradın',
       untitled: 'Adsız',
+      scheduledTime: 'Planlaşdırılmış Vaxt',
+      publishingTo: 'Paylaşılacaq',
+      willPublishAutomatically: 'Avtomatik paylaşılacaq',
+      recommendedTimeAI: 'Tövsiyə Olunan Vaxt (AI)',
+      aiRecommended: 'AI Tövsiyəsi',
+      userOverride: 'Bu vaxtı dəyişdirə bilərsiniz',
+      editPost: 'Post Redaktə Et',
+      editPostDesc: 'Paylaşım məzmununu, zamanlamasını və platformalarını dəyişdirin',
+      currentConnectedAccounts: 'Cari Bağlı Hesablar',
+      connected: 'Bağlıdır',
+      notConnected: 'Bağlı deyil',
+      connect: 'Qoş',
+      change: 'Dəyiş',
+      connectInstagramFirst: 'Əvvəlcə Instagram qoşun',
+      connectFacebookFirst: 'Əvvəlcə Facebook Səhifə qoşun',
+      connectPlatformFirst: 'Əvvəlcə platforma qoşun',
+      connectFirst: 'Əvvəlcə qoşun',
+      postingDestination: 'Postlar bağlı hesablarınızdan dərc olunacaq. Bağlantıları Sosial Hesablar səhifəsindən idarə edin.',
+      titleLabel: 'Başlıq',
+      titlePlaceholder: 'Post başlığı...',
+      content: 'Məzmun',
+      contentPlaceholder: 'Post məzmununu yazın...',
+      characters: 'simvol',
+      date: 'Tarix',
+      time: 'Saat',
+      platforms: 'Platformalar',
+      selected: 'Seçildi',
+      platform: 'platforma',
+      status: 'Status',
+      draft: 'Qaralama',
+      scheduled: 'Planlaşdırılıb',
+      published: 'Dərc edilib',
+      preview: 'Önizləmə',
+      noContent: 'Məzmun yoxdur...',
     },
     aiContentGenerator: {
       title: 'AI Məzmun Yaradıcı',
@@ -1458,6 +2893,7 @@ const translations: Record<Language, Translations> = {
     aiTools: {
       title: 'AI Alətlər',
       description: 'Daha yaxşı sosial media məzmunu yaratmaq üçün AI-dan istifadə edin',
+      allTools: 'Bütün AI Alətlər',
       contentGenerator: 'Məzmun Yaradıcısı',
       contentGeneratorDesc: 'AI ilə cəlbedici paylaşımlar yaradın',
       hashtagGenerator: 'Hashtag Yaradıcısı',
@@ -1476,7 +2912,7 @@ const translations: Record<Language, Translations> = {
       adCreativeGenerator: 'Reklam Yaradıcısı',
       adCreativeGeneratorDesc: 'AI ilə professional marketinq vizualları yaradın',
       videoGenerator: 'Video Yaradıcısı',
-      videoGeneratorDesc: 'Kling Video istifadə edərək AI ilə professional videolar yaradın',
+      videoGeneratorDesc: 'AI ilə professional videolar yaradın',
       promptPlaceholder: 'məsələn, Yeni məhsul təqdimatımız, sənaye trendləri, şirkət mədəniyyəti...',
       generate: 'Məzmun Yarad',
       generating: 'Yaradılır...',
@@ -1486,6 +2922,237 @@ const translations: Record<Language, Translations> = {
       saving: 'Saxlanılır...',
       saveToProfile: 'Şirkət Profilinə Saxla',
       saved: 'Saxlanıldı!',
+    },
+    productPost: {
+      title: 'Məhsul Post Yaradıcı',
+      description: 'Məhsul rəsmini yükləyin, AI arxa fonu siləcək, analiz edəcək və reklam postları hazırlayacaq',
+      cardTitle: 'Məhsul Reklam Şəkli Yaradıcı',
+      cardDescription: 'Professional marketinq reklamı yaratmaq üçün məhsul şəklini yükləyin',
+      processingStep1: 'Addım 1: Şəkil Emalı - Arxa Fon Silinməsi...',
+      processingStep2: 'Addım 2: Məhsul Analizi - Strukturlaşdırılmış Analiz...',
+      processingStep3: 'Addım 3: Reklam Məzmunu - Hook, Body və CTA...',
+      processingStep4: 'Addım 4: AI Prompt Yaradılması...',
+      processingStep5: 'Addım 5: Nano Banana ilə Professional Şəkillər...',
+      processingComplete: 'Postlar tamamlanır...',
+      processingStepUrl1: 'Addım 1: Sayt məzmunu çəkilir...',
+      processingStepUrl2: 'Addım 2: AI ilə məhsul məlumatları analiz edilir...',
+      processingStepUrl3: 'Addım 3: Məhsul şəkli yüklənir...',
+      processingStepUrl4: 'Addım 4: Arxa fon silinir...',
+      processingStepUrl5: 'Addım 5: Nano Banana ilə Professional Şəkillər...',
+      errorImageUrlNotFound: 'Şəkil URL-i tapılmadı',
+      successPostCreated: 'Post uğurla yaradıldı və posts/ bölməsinə əlavə edildi!',
+      errorPostCreationFailed: 'Post yaradıla bilmədi',
+      successAdImageCreated: 'Reklam şəkli uğurla yaradıldı',
+      workflowStep1: 'Workflow işlədi',
+      workflowStep2: 'Reklam şəkli yaradıldı',
+      workflowStep3: '',
+      workflowStep4: '',
+      workflowStep5: '',
+      download: 'Yüklə',
+      open: 'Aç',
+      imageWillBeCreated: 'Şəkil yaradılacaq',
+      viewPosts: 'Postları Görüntülə',
+      createNewPost: 'Yeni Post Yarad',
+      imagePreview: 'Şəkil Önizləməsi',
+      closeModalHint: 'Bağlamaq üçün ESC basın və ya xaricə klik edin',
+      productImage: 'Məhsul Şəkli',
+      productImageRequired: 'Məhsul Şəkli',
+      productName: 'Məhsul Adı (İstəyə bağlı)',
+      productNameOptional: 'Məhsul Adı (İstəyə bağlı)',
+      productNamePlaceholder: 'Məsələn: iPhone 15 Pro',
+      adStyle: 'Reklam Stili',
+      adStyleRequired: 'Reklam Stili',
+      adStylePlaceholder: 'Seçim edin...',
+      aspectRatio: 'En-Boy Nisbəti',
+      aspectRatioRequired: 'En-Boy Nisbəti',
+      aspectRatioPlaceholder: 'Seçim edin...',
+      submit: 'Göndər',
+      processing: 'Hazırlanır...',
+      generating: 'Reklam şəkli yaradılır...',
+      pleaseWait: 'Zəhmət olmasa, gözləyin',
+      createdPosts: 'Yaradılmış Postlar',
+      createdPostsDesc: 'post uğurla yaradıldı',
+      createdAdImage: 'Yaradılmış Reklam Şəkli',
+      createdAdImageDesc: 'AI ilə yaradılmış professional reklam şəkli',
+      openImage: 'Şəkli Aç',
+      approveAndCreate: 'Təsdiqlə və Post Yarad',
+      analyzing: 'Analiz edilir...',
+      selectOption: 'Seçim edin...',
+      modern: 'Modern',
+      professional: 'Professional',
+      playful: 'Oyunçu',
+      elegant: 'Zərif',
+      minimalist: 'Minimalist',
+      luxury: 'Lüks',
+      casual: 'Gündəlik',
+      square: '1:1 (Kvadrat - 1080x1080)',
+      story: '9:16 (Story - 1080x1920)',
+      landscape: '16:9 (Landscape - 1920x1080)',
+      portrait: '4:5 (Portret - 1080x1350)',
+      facebookPost: '1.91:1 (Facebook Post - 1200x628)',
+      errorImageUpload: 'Şəkil yüklənə bilmədi',
+      errorLoginRequired: 'Giriş tələb olunur. Zəhmət olmasa, yenidən giriş edin.',
+      errorInvalidFile: 'Şəkil faylı düzgün deyil',
+      errorServerError: 'Server xətası. Zəhmət olmasa, bir az sonra yenidən cəhd edin.',
+      errorFileRequired: 'Şəkil faylı tələb olunur',
+      errorUrlRequired: 'Şəkil URL-i tələb olunur. Zəhmət olmasa, şəkil yükləyin.',
+      errorInvalidUrl: 'Şəkil URL-i düzgün formatda deyil: {url}',
+      errorImageLoad: 'Şəkil yüklənə bilmədi: {status} {statusText}',
+      errorWorkflowTimeout: 'Workflow çox uzun müddət aldı (5 dəqiqədən çox). Zəhmət olmasa, yenidən cəhd edin.',
+      errorWebhookConnection: 'Webhook-una qoşula bilmədi. Zəhmət olmasa, internet bağlantınızı yoxlayın.',
+      errorSelectAdStyle: 'Zəhmət olmasa, Ad Style və Aspect Ratio seçin',
+    },
+    logoGenerator: {
+      title: 'Loqo və Slogan Yaradıcısı',
+      description: 'Şirkətiniz üçün professional loqo və slogan yaradın',
+      back: 'Geri',
+      basicInfo: 'Əsas Məlumatlar',
+      basicInfoDesc: 'Şirkətiniz haqqında məlumat daxil edin',
+      companyName: 'Şirkət/Məhsul Adı *',
+      companyNamePlaceholder: 'məs: Timera, TechStart',
+      descriptionLabel: 'Təsvir *',
+      descriptionPlaceholder: 'Şirkətinizi və ya məhsulunuzu təsvir edin...',
+      descriptionHint: 'Daha ətraflı təsvir, daha yaxşı logo və slogan yaradacaq',
+      logoStyle: 'Logo Stili',
+      logoStyleDesc: 'Logo dizayn stilini seçin',
+      colorSelection: 'Rəng Seçimi',
+      colorSelectionDesc: 'Logo-nun əsas rəngini seçin',
+      selectedColor: 'Seçilmiş rəng:',
+      categories: 'Kateqoriyalar (Tags)',
+      categoriesDesc: 'Şirkətinizin aid olduğu sahələri seçin',
+      categoriesSelected: 'kateqoriya seçilib',
+      generateButton: 'Logo və Slogan Yarat',
+      generatingButton: 'Logo Yaradılır...',
+      createdLogo: 'Yaradılmış Logo',
+      createdSlogan: 'Yaradılmış Slogan',
+      saveToProfile: 'Şirkət Profilinə Əlavə Et',
+      saving: 'Əlavə Edilir...',
+      downloadLogo: 'Download Logo',
+      copySlogan: 'Copy Slogan',
+      sloganCopied: '✅ Slogan kopyalandı!',
+      sloganCopyFailed: 'Slogan kopyalanmadı',
+      logoDownloadFailed: 'Logo yüklənə bilmədi',
+      emptyState: 'Logo və slogan yaradıldıqdan sonra burada görünəcək',
+      errorCompanyNameRequired: 'Zəhmət olmasa şirkət adı və təsvirini daxil edin',
+      errorEmptyResponse: 'Boş response alındı',
+      errorLogoCreationFailed: 'Logo yaradıla bilmədi',
+      errorNoLogo: '⚠️ Logo yoxdur. Əvvəlcə logo yaradın.',
+      errorLogoLoadFailed: 'Logo yüklənə bilmədi',
+      errorTitle: 'Xəta',
+      successCreated: '✅ Logo və slogan uğurla yaradıldı!',
+      successSaved: '✅ Logo və slogan şirkət profilinə uğurla əlavə edildi!',
+      errorSaveFailed: 'Şirkət profilinə əlavə edilə bilmədi',
+      generatedLogoAlt: 'Yaradılmış Logo',
+      styleMinimalist: 'Minimalist',
+      styleMinimalistDesc: 'Sadə və təmiz',
+      styleElegant: 'Elegant',
+      styleElegantDesc: 'Zərif və incə',
+      styleModern: 'Modern',
+      styleModernDesc: 'Müasir və dinamik',
+      styleProfessional: 'Professional',
+      styleProfessionalDesc: 'Biznes üçün',
+      stylePlayful: 'Playful',
+      stylePlayfulDesc: 'Şən və rəngarəng',
+      colorBlue: 'Göy',
+      colorPurple: 'Bənövşəyi',
+      colorRed: 'Qırmızı',
+      colorGreen: 'Yaşıl',
+      colorOrange: 'Narıncı',
+      colorIndigo: 'İndigo',
+      colorBlack: 'Qara',
+      colorWhite: 'Ağ',
+      tagTech: 'Tech',
+      tagFinance: 'Finans',
+      tagHealth: 'Sağlamlıq',
+      tagEducation: 'Təhsil',
+      tagEcommerce: 'E-commerce',
+      tagService: 'Xidmət',
+      tagManufacturing: 'İstehsal',
+      tagRealEstate: 'Daşınmaz Əmlak',
+      tagMarketing: 'Marketing',
+      tagDesign: 'Dizayn',
+      tagKitchen: 'Mətbəx',
+      tagFashion: 'Moda',
+      tagSports: 'İdman',
+      tagTravel: 'Səyahət',
+      tagArt: 'İncəsənət',
+    },
+    hashtagGenerator: {
+      title: 'Hashtag Yaradıcısı',
+      description: 'Şirkətinizə uyğun hashtaglar yaradın',
+      headerTitle: '#️⃣ Hashtag Yaradıcısı',
+      headerDescription: 'Şirkət məlumatlarınıza və paylaşım məzmununuza uyğun hashtaglar yaradın',
+      contentSectionTitle: 'Paylaşım Məzmunu',
+      contentSectionDesc: 'Hashtaglar yaratmaq üçün paylaşım məzmununu daxil edin (istəyə bağlı)',
+      contentLabel: 'Məzmun',
+      contentPlaceholder: 'Məsələn: Yeni məhsulumuzu təqdim edirik! 🚀',
+      companyInfo: 'Şirkət Məlumatları:',
+      companyName: 'Şirkət:',
+      industry: 'Sənaye:',
+      business: 'Biznes:',
+      hashtagCount: 'Hashtag Sayı',
+      hashtagCountLabel: 'hashtag',
+      generateButton: 'Hashtaglar Yarat',
+      generatingButton: 'Hashtaglar Yaradılır...',
+      generatedHashtags: 'Yaradılmış Hashtaglar',
+      generatedHashtagsDesc: 'hashtag yaradıldı',
+      copyAll: 'Hamısını Kopyala',
+      copied: 'Kopyalandı',
+      allHashtags: 'Bütün Hashtaglar:',
+      copy: 'Kopyala',
+      tipsTitle: '💡 Məsləhətlər',
+      tip1: '• Paylaşım məzmununu daxil etməklə daha uyğun hashtaglar alacaqsınız',
+      tip2: '• Şirkət məlumatlarınız avtomatik istifadə olunur',
+      tip3: '• Hashtag sayını 15-25 arası saxlayın (optimal performans üçün)',
+      tip4: '• Populyar və niş hashtagların qarışığı ən yaxşı nəticə verir',
+      errorContentRequired: 'Zəhmət olmasa, paylaşım məzmunu və ya şirkət məlumatları daxil edin',
+      errorGenerationFailed: 'Hashtaglar yaradıla bilmədi. Zəhmət olmasa yenidən cəhd edin.',
+    },
+    captionOptimizer: {
+      title: 'Başlıq Optimizatoru',
+      description: 'Daha yaxşı təşviq üçün başlıqlarınızı təkmilləşdirin',
+      headerTitle: '📝 Başlıq Optimizatoru',
+      headerDescription: 'Daha yaxşı təşviq üçün başlıqlarınızı təkmilləşdirin',
+      captionSectionTitle: 'Başlıq / Caption',
+      captionSectionDesc: 'Optimallaşdırmaq istədiyiniz başlıq və ya caption-ı daxil edin',
+      originalCaptionLabel: 'Orijinal Başlıq',
+      captionPlaceholder: 'Məsələn: Yeni məhsulumuzu təqdim edirik!',
+      characters: 'simvol',
+      contentTypeLabel: 'Məzmun Növü',
+      contentTypePost: 'Paylaşım',
+      contentTypeTitle: 'Başlıq',
+      contentTypeDescription: 'Təsvir',
+      platformLabel: 'Platform',
+      platformGeneral: 'Ümumi',
+      platformInstagram: 'Instagram',
+      platformFacebook: 'Facebook',
+      platformLinkedIn: 'LinkedIn',
+      toneLabel: 'Ton',
+      toneProfessional: 'Professional',
+      toneCasual: 'Dostcasına',
+      toneCreative: 'Yaradıcı',
+      toneFriendly: 'Dostlu',
+      companyInfo: 'Şirkət Məlumatları:',
+      companyName: 'Şirkət:',
+      industry: 'Sənaye:',
+      preferredTone: 'Üstünlük Verilən Ton:',
+      optimizeButton: 'Optimallaşdır',
+      optimizingButton: 'Optimallaşdırılır...',
+      optimizedCaption: 'Optimallaşdırılmış Başlıq',
+      optimizedCaptionDesc: 'simvol dəyişiklik',
+      copy: 'Kopyala',
+      copied: 'Kopyalandı',
+      useOptimized: 'İstifadə Et',
+      original: 'Orijinal',
+      optimized: 'Optimallaşdırılmış',
+      tipsTitle: '💡 Məsləhətlər',
+      tip1: '• Platforma uyğun başlıq seçin (Instagram, Facebook, LinkedIn)',
+      tip2: '• Ton seçimi brendinizə uyğun olmalıdır',
+      tip3: '• Qısa və cəlbedici başlıqlar daha yaxşı performans göstərir',
+      tip4: '• Call-to-action əlavə etməyi unutmayın',
+      tip5: '• Müxtəlif variantları sınayın və ən yaxşısını seçin',
+      errorCaptionRequired: 'Zəhmət olmasa, başlıq və ya caption daxil edin',
+      errorOptimizationFailed: 'Başlıq optimallaşdırıla bilmədi. Zəhmət olmasa yenidən cəhd edin.',
     },
     socialAccounts: {
       title: 'Sosial Hesablar',
@@ -1505,6 +3172,27 @@ const translations: Record<Language, Translations> = {
       active: 'Aktiv',
       inactive: 'Qeyri-aktiv',
       disconnectConfirm: 'Bu hesabı ayırmaq istədiyinizdən əminsiniz?',
+      permissionsPurpose: 'Bu icazələr nə üçündür?',
+      permissionsPosting: 'Paylaşım: Facebook səhifələrinizə və Instagram hesabınıza məzmun paylaşmaq üçün',
+      permissionsAnalytics: 'Analitika: Paylaşımlarınızın performansını izləmək üçün',
+      permissionsMessages: 'Mesajlar: Müştəri mesajlarını idarə etmək üçün',
+      permissionsAds: 'Reklamlar: Reklam kampaniyalarını idarə etmək üçün',
+      permissionsFacebook: 'Paylaşım: Facebook səhifələrinizə və qruplara məzmun paylaşmaq üçün. Analitika: Paylaşımların performansını, çatdırılmasını və təşviq metrikalarını izləmək üçün. Mesajlar: Müştəri mesajlarını və söhbətləri idarə etmək üçün. Reklamlar: Facebook reklam kampaniyalarını idarə etmək üçün.',
+      permissionsLinkedIn: 'Paylaşım: LinkedIn şirkət səhifələrinizə və şəxsi profilə məzmun paylaşmaq üçün. Analitika: Paylaşımların performansını, baxış sayını və təşviq metrikalarını izləmək üçün. Mesajlaşma: Peşəkar mesajları və əlaqələri idarə etmək üçün.',
+      permissionsTikTok: 'Paylaşım: TikTok hesabınıza video paylaşmaq üçün. Analitika: Video performansını, baxış sayını və təşviq metrikalarını izləmək üçün.',
+      permissionsYouTube: 'Video Yükləmə: YouTube kanalınıza video yükləmək üçün. Analitika: Video performansını, baxış sayını, baxış müddətini və abunə metrikalarını izləmək üçün. Kanal İdarəetməsi: Kanal parametrlərinizi və məzmunu idarə etmək üçün.',
+      pageId: 'Səhifə ID',
+      instagramId: 'Instagram ID',
+      connectedAt: 'Qoşulub',
+      tokenStatus: 'Token Statusu',
+      tokenActive: 'Aktiv',
+      tokenExpired: 'Müddəti bitib',
+      disconnectWarning: 'Ayırdığınız zaman access token silinir və webhook-lar dayandırılır.',
+      platformDescriptionFacebook: 'Səhifələrə və qruplara paylaşım',
+      platformDescriptionInstagram: 'Şəkil və hekayə paylaşın',
+      platformDescriptionLinkedIn: 'Peşəkar şəbəkə və biznes paylaşımları',
+      platformDescriptionYouTube: 'Video paylaşımı və kanal idarəetməsi',
+      platformDescriptionTikTok: 'Qısa video paylaşımı',
     },
     analytics: {
       title: 'Analitika',
@@ -1553,6 +3241,19 @@ const translations: Record<Language, Translations> = {
       samplePost: 'Nümunə Paylaşım',
       select: 'Seç',
     },
+    companySetup: {
+      title: 'Quraşdırmanı Tamamlayın',
+      titleUpdate: 'Şirkət Profilini Yenilə',
+      description: 'Əla məzmun yaratmaq üçün bizə şirkətiniz haqqında məlumat verin',
+      descriptionUpdate: 'Daha yaxşı AI məzmunu üçün şirkət məlumatlarınızı yeniləyin',
+      whyNeededTitle: 'Bu Məlumat Niyə Lazımdır',
+      benefit1Title: 'Daha Yaxşı AI Məzmunu',
+      benefit1Desc: 'AI biznesinizə və auditoriyanıza uyğun məzmun yaradacaq',
+      benefit2Title: 'Hədəfli Mesajlar',
+      benefit2Desc: 'Paylaşımlar xüsusi sənayenizə və məqsədlərinizə uyğunlaşdırılacaq',
+      benefit3Title: 'Azərbaycan Dilində Məzmun',
+      benefit3Desc: 'Bütün məzmun mükəmməl Azərbaycan dilində yaradılacaq',
+    },
     templates: {
       title: 'Şablonlar',
       description: 'Tez paylaşım yaratmaq üçün məzmun şablonları',
@@ -1595,27 +3296,27 @@ const translations: Record<Language, Translations> = {
       tagline: '🚀 Будущее здесь с искусственным интеллектом',
       title: 'Искусственный интеллект',
       titleHighlight: 'Который понимает ваш бренд',
-      description: 'Timera.ai — это платформа управления социальными сетями на основе ИИ. Создание контента, планирование, дизайн и аналитика — все в одном месте, полностью автоматизировано.',
+      description: 'Timera.ai — это платформа управления социальными сетями на основе ИИ. Создание контента, планирование, дизайн и аналитика — все в одном месте, с вашего одобрения.',
       startFree: 'Начать бесплатно',
       howItWorksBtn: 'Как это работает?',
       stats24_7: 'ИИ-ассистент 24/7',
       stats10x: 'Контент в 10 раз быстрее',
-      stats100: '100% автоматизация',
+      stats100: 'ИИ-ассистент',
     },
     features: {
       title: 'Что делает Timera.ai?',
       subtitle: 'Новая эра управления социальными сетями с искусственным интеллектом',
       aiContentCreator: {
         title: 'Создатель контента на ИИ',
-        description: 'Текстовый и визуальный контент, адаптированный к вашему бренду, создается полностью автоматически. Вы можете редактировать любую часть.',
+        description: 'ИИ генерирует предложения текстового и визуального контента, адаптированного к вашему бренду. Вы проверяете, редактируете и одобряете перед публикацией.',
       },
       designVisual: {
         title: 'Дизайн и визуал',
-        description: 'ИИ создает дизайны и визуалы, соответствующие стилю вашего бренда. Логотип, цвета и тон автоматически анализируются.',
+        description: 'ИИ создает предложения дизайнов, соответствующие стилю вашего бренда. Логотип, цвета и тон анализируются. Вы одобряете итоговый дизайн.',
       },
       smartScheduling: {
         title: 'Умное планирование',
-        description: 'Время публикаций и стратегия настраиваются автоматически. Оптимальный выбор времени выполняется ИИ.',
+        description: 'ИИ рекомендует оптимальное время публикации и стратегию. Вы проверяете и планируете публикации.',
       },
       analytics: {
         title: 'Аналитика и отчеты',
@@ -1623,7 +3324,7 @@ const translations: Record<Language, Translations> = {
       },
       videoContent: {
         title: 'Видео контент',
-        description: 'Автоматические видео-посты, адаптированные к вашему бренду. Подготовка видео-контента полностью автоматизирована.',
+        description: 'ИИ-ассистент для создания видео-контента, адаптированного к вашему бренду. Вы проверяете и одобряете перед публикацией.',
       },
       secure: {
         title: 'Безопасно и законно',
@@ -1632,22 +3333,22 @@ const translations: Record<Language, Translations> = {
     },
     howItWorks: {
       title: 'Как это работает?',
-      subtitle: 'Автоматизируйте маркетинг в социальных сетях за 4 простых шага',
+      subtitle: 'Управляйте маркетингом в социальных сетях с помощью ИИ за 4 простых шага',
       step1: {
         title: 'Введите информацию',
-        description: 'Предоставьте информацию о вашем бренде, продукте и целях. ИИ изучает все.',
+        description: 'Предоставьте информацию о вашем бренде, продукте и целях. ИИ учится на ваших данных.',
       },
       step2: {
-        title: 'ИИ создает контент',
-        description: 'Темы постов, текст и визуальный контент готовятся автоматически.',
+        title: 'ИИ генерирует предложения',
+        description: 'ИИ генерирует предложения тем постов, текста и визуального контента для вашей проверки.',
       },
       step3: {
-        title: 'Одобрить и редактировать',
-        description: 'Отредактируйте любую часть и одобрите публикации.',
+        title: 'Проверьте и одобрите',
+        description: 'Вы проверяете все предложения, редактируете нужные части и одобряете публикации.',
       },
       step4: {
-        title: 'Автоматическая публикация',
-        description: 'Система публикует посты и анализирует результаты.',
+        title: 'Запланированная публикация',
+        description: 'После вашего одобрения система публикует посты в запланированное время и отслеживает результаты.',
       },
     },
     why: {
@@ -1684,11 +3385,11 @@ const translations: Record<Language, Translations> = {
       items: [
         {
           question: '🧠 Что делает Timera.ai и как это работает?',
-          answer: 'Timera.ai — это инструмент управления социальными сетями на основе искусственного интеллекта. Платформа автоматизирует создание постов, планирование, дизайн, подготовку видео-контента, аналитические отчеты и даже управление Meta Ads (рекламные кампании Facebook и Instagram). Просто введите информацию о своем бренде — ИИ сделает все остальное за вас.',
+          answer: 'Timera.ai — это инструмент управления социальными сетями с помощью ИИ. Платформа помогает с созданием постов, планированием, дизайном, подготовкой видео-контента, аналитическими отчетами и управлением Meta Ads (рекламные кампании Facebook и Instagram). Вы вводите информацию о бренде, ИИ генерирует предложения, а вы проверяете и одобряете все перед публикацией.',
         },
         {
           question: '✍️ ИИ создает контент полностью самостоятельно, или я могу его редактировать?',
-          answer: 'Timera.ai создает контент полностью автоматически — как текстовый, так и визуальный, и видео форматы. Однако пользователи могут редактировать и настраивать любую часть по своему желанию. Этот подход сочетает скорость ИИ с гибкостью человеческого творчества.',
+          answer: 'ИИ генерирует предложения контента — текстового, визуального и видео форматов. Пользователи должны проверить, отредактировать и одобрить весь контент перед публикацией. Никакой контент не публикуется без вашего явного одобрения. Этот подход сочетает скорость ИИ с человеческим контролем.',
         },
         {
           question: '🔒 Как Timera.ai защищает мои данные?',
@@ -1750,6 +3451,64 @@ const translations: Record<Language, Translations> = {
       company: 'Компания',
       register: 'Регистрация',
     },
+    auth: {
+      login: {
+        title: 'Войти в Timera',
+        description: 'Введите свой email и пароль для доступа к аккаунту',
+        emailLabel: 'Email',
+        emailPlaceholder: 'Введите ваш email адрес',
+        passwordLabel: 'Пароль',
+        passwordPlaceholder: 'Введите ваш пароль',
+        submitButton: 'Войти',
+        submittingButton: 'Вход...',
+        noAccount: 'Нет аккаунта?',
+        signUpLink: 'Зарегистрироваться',
+        errors: {
+          invalidEmail: 'Пожалуйста, введите правильный email адрес',
+          passwordRequired: 'Пароль обязателен',
+          wrongCredentials: 'Email или пароль неверны',
+          userNotFound: 'Пользователь с таким email адресом не найден',
+          accountDisabled: 'Ваш аккаунт отключен. Пожалуйста, свяжитесь с поддержкой',
+          networkError: 'Не удалось подключиться к серверу. Пожалуйста, проверьте интернет-соединение',
+        },
+      },
+      register: {
+        title: 'Создать аккаунт',
+        description: 'Начните работу с Timera',
+        firstNameLabel: 'Имя',
+        firstNamePlaceholder: 'Ваше имя',
+        lastNameLabel: 'Фамилия',
+        lastNamePlaceholder: 'Ваша фамилия',
+        emailLabel: 'Email',
+        emailPlaceholder: 'email@example.com',
+        companyNameLabel: 'Название компании (Необязательно)',
+        companyNamePlaceholder: 'Название вашей компании',
+        passwordLabel: 'Пароль',
+        passwordPlaceholder: 'Создайте пароль',
+        confirmPasswordLabel: 'Подтвердите пароль',
+        confirmPasswordPlaceholder: 'Повторно введите пароль',
+        passwordStrength: 'Надежность пароля:',
+        passwordStrengthWeak: 'Слабый',
+        passwordStrengthMedium: 'Средний',
+        passwordStrengthGood: 'Хороший',
+        passwordStrengthStrong: 'Сильный',
+        passwordHint: 'Совет: Используйте заглавные и строчные буквы, цифры и специальные символы',
+        passwordsMatch: 'Пароли совпадают',
+        submitButton: 'Зарегистрироваться',
+        submittingButton: 'Создание аккаунта...',
+        hasAccount: 'Уже есть аккаунт?',
+        signInLink: 'Войти',
+        errors: {
+          invalidEmail: 'Пожалуйста, введите правильный email адрес',
+          passwordMinLength: 'Пароль должен содержать не менее 8 символов',
+          firstNameRequired: 'Имя обязательно',
+          lastNameRequired: 'Фамилия обязательна',
+          passwordsMismatch: 'Пароли не совпадают',
+          emailExists: 'Этот email адрес уже используется',
+          registrationFailed: 'Регистрация не удалась. Пожалуйста, попробуйте снова',
+        },
+      },
+    },
     settings: {
       title: 'Настройки',
       description: 'Управляйте настройками аккаунта и конфигурацией',
@@ -1782,6 +3541,127 @@ const translations: Record<Language, Translations> = {
         noProfile: 'Профиль компании еще не создан',
         createProfile: 'Создать профиль компании',
         loading: 'Загрузка...',
+        setupTitle: 'Настройка профиля компании',
+        setupDescription: 'Помогите нам узнать ваш бизнес, чтобы создавать лучший контент ИИ',
+        basicInfo: 'Основная информация',
+        basicInfoDesc: 'Расскажите нам о вашей компании',
+        companyLogo: 'Логотип компании',
+        changeLogo: 'Изменить логотип',
+        uploadLogo: 'Загрузить логотип',
+        dragDropLogo: 'Перетащите логотип или нажмите для загрузки',
+        logoFileTypes: 'Рекомендуется PNG с прозрачностью. JPG или SVG (макс. 10 МБ)',
+        selectFile: 'Выбрать файл',
+        logoAnalysisHint: '💡 ИИ автоматически проанализирует ваш логотип и извлечет цвета бренда, стиль и другую информацию',
+        logoAnalyzing: 'ИИ анализирует логотип...',
+        location: 'Местоположение',
+        locationPlaceholder: 'Город, Страна',
+        companyNamePlaceholder: 'Название вашей компании',
+        selectIndustry: 'Выберите отрасль',
+        selectCompanySize: 'Выберите размер компании',
+        websitePlaceholder: 'https://вашакомпания.com',
+        validationCompanyNameRequired: 'Название компании обязательно',
+        validationIndustryRequired: 'Отрасль обязательна',
+        validationCompanySizeRequired: 'Размер компании обязателен',
+        validationUrlInvalid: 'Пожалуйста, введите действительный URL',
+        validationMinChars: 'Пожалуйста, предоставьте подробное описание (не менее 10 символов)',
+        validationToneRequired: 'Пожалуйста, выберите предпочтительный тон',
+        validationPostsMin: 'Минимум 1 пост',
+        validationPostsMax: 'Максимум 30 постов',
+        validationSloganMax: 'Слоган может быть максимум 200 символов',
+        successProfileCreated: 'Профиль компании успешно создан!',
+        successProfileUpdated: 'Профиль компании успешно обновлен!',
+        successProfileLogoCreated: 'Профиль компании и логотип успешно созданы!',
+        successProfileLogoUpdated: 'Профиль компании и логотип успешно обновлены!',
+        errorSaveFailed: 'Не удалось сохранить профиль компании. Пожалуйста, попробуйте снова.',
+        errorBrandAnalysisNotFound: 'Данные анализа бренда не найдены',
+        errorCompanyNameRequiredForSlogan: 'Название компании обязательно для создания слогана',
+        businessDescriptionTitle: 'Описание бизнеса',
+        businessDescriptionDesc: 'Помогите ИИ лучше понять ваш бизнес',
+        businessDescriptionLabel: 'Чем занимается ваша компания? *',
+        businessDescriptionPlaceholder: 'Подробно опишите ваш бизнес, продукты или услуги...',
+        targetAudienceLabel: 'Кто ваша целевая аудитория? *',
+        targetAudiencePlaceholder: 'Опишите ваших идеальных клиентов, их демографию, интересы и потребности...',
+        uniqueSellingPointsLabel: 'Что делает вашу компанию уникальной? *',
+        uniqueSellingPointsPlaceholder: 'Опишите ваши конкурентные преимущества, уникальные особенности или особые качества...',
+        socialMediaStrategyTitle: 'Стратегия социальных сетей',
+        socialMediaStrategyDesc: 'Определите ваши цели и предпочтения в социальных сетях',
+        socialMediaGoalsLabel: 'Каковы ваши цели в социальных сетях? *',
+        socialMediaGoalsPlaceholder: 'Например: Повысить узнаваемость бренда, привлечь потенциальных клиентов, связаться с клиентами, привлечь трафик на сайт...',
+        preferredToneLabel: 'Предпочтительный тон общения *',
+        selectTone: 'Выберите тон',
+        contentTopicsLabel: 'Темы контента',
+        contentTopicsPlaceholder: 'технологии, инновации, советы, новости',
+        contentTopicsHint: 'Разделяйте темы запятыми',
+        keywordsLabel: 'Важные ключевые слова',
+        keywordsPlaceholder: 'ИИ, автоматизация, эффективность, развитие',
+        keywordsHint: 'Разделяйте ключевые слова запятыми',
+        avoidTopicsLabel: 'Темы, которых следует избегать (Необязательно)',
+        avoidTopicsPlaceholder: 'политика, спорные темы, конкуренты',
+        avoidTopicsHint: 'Разделяйте темы запятыми',
+        aiGenerationSettingsTitle: 'Параметры создания ИИ',
+        aiGenerationSettingsDesc: 'Настройки, связанные с созданием контента ИИ',
+        postsToGenerateLabel: 'Сколько постов создавать каждый раз?',
+        postsToGenerateHint: 'ИИ создаст столько постов за один раз. Рекомендация: 10-15 считается оптимальным.',
+        previewTitle: 'Предпросмотр',
+        previewDesc: 'Эта информация будет использоваться для создания контента ИИ',
+        previewNotShown: 'Не показано',
+        previewNotSelected: 'Не выбрано',
+        previewCompany: 'Компания',
+        previewIndustry: 'Отрасль',
+        previewTone: 'Тон',
+        previewTopics: 'Темы',
+        brandAnalysisTitle: 'Анализ бренда ИИ',
+        brandingParamsTitle: 'Параметры брендинга',
+        brandingParamsDesc: 'Автоматически добавляйте логотип компании и слоган к изображениям, созданным ИИ',
+        automaticBrandingActive: 'Автоматический брендинг активен',
+        automaticBrandingDesc: 'Логотип и слоган будут автоматически добавлены ко всем новым изображениям, созданным ИИ',
+        brandingRequiresLogo: '⚠️ Для включения брендинга необходимо загрузить логотип. Загрузите логотип из раздела "Логотип компании" выше.',
+        sloganLabel: 'Слоган (Необязательно)',
+        sloganPlaceholder: 'Например: Transform Your Social Media',
+        sloganHint: 'Текст, который будет отображаться рядом с логотипом на изображениях',
+        sloganChars: 'символов',
+        brandingMode: 'Режим брендинга',
+        standard: 'Стандартный',
+        custom: 'Пользовательский',
+        standardBrandingParams: 'Стандартные параметры брендинга',
+        logoPosition: 'Позиция логотипа:',
+        sloganPosition: 'Позиция слогана:',
+        logoSize: 'Размер логотипа:',
+        gradient: 'Градиент:',
+        standardModeNote: '✨ Стандартный режим: Автоматические градиентные наложения будут добавлены для логотипа и слогана',
+        logoPositionLabel: 'Позиция логотипа',
+        logoPositionHint: 'Выберите позицию логотипа (с градиентным наложением)',
+        sloganPositionLabel: 'Позиция слогана',
+        sloganPositionHint: 'Слоган будет отображаться с градиентным наложением',
+        logoSizeLabel: 'Размер логотипа',
+        logoSizeSmall: 'Маленький (2%)',
+        logoSizeMedium: 'Средний (13%)',
+        logoSizeLarge: 'Большой (25%)',
+        sloganSizeLabel: 'Размер слогана',
+        sloganSizeSmall: 'Маленький (2%)',
+        sloganSizeMedium: 'Средний (4%)',
+        sloganSizeLarge: 'Большой (8%)',
+        gradientEnabled: 'Градиентное наложение',
+        gradientColor: 'Цвет градиента',
+        gradientHeight: 'Высота градиента',
+        gradientPosition: 'Позиция градиента',
+        gradientTop: 'Верх',
+        gradientBottom: 'Низ',
+        gradientBoth: 'Оба',
+        logoPositionTopLeft: 'Верхний левый',
+        logoPositionTopCenter: 'Верхний центр',
+        logoPositionTopRight: 'Верхний правый',
+        logoPositionBottomLeft: 'Нижний левый',
+        logoPositionBottomCenter: 'Нижний центр',
+        logoPositionBottomRight: 'Нижний правый',
+        sloganPositionTopCenter: 'Верхний центр',
+        sloganPositionBottomCenter: 'Нижний центр',
+        logoPositionStandard: 'Верхний центр (с градиентом)',
+        sloganPositionStandard: 'Нижний центр (с градиентом)',
+        logoSizeStandard: '13% от ширины изображения',
+        gradientStandard: 'Автоматический (Цвета бренда)',
+        aiSuggestion: 'Предложение ИИ',
+        aiGenerating: 'ИИ создает...',
       },
       account: {
         title: 'Настройки аккаунта',
@@ -1815,6 +3695,17 @@ const translations: Record<Language, Translations> = {
         termsOfServiceDesc: 'Правила и условия использования платформы',
         read: 'Читать',
       },
+      privacy: {
+        title: 'Конфиденциальность и хранение данных',
+        description: 'Управляйте тем, как хранятся и сохраняются ваши данные',
+        dataRetention: 'Политика хранения данных',
+        dataRetentionDesc: 'Настройте, как долго хранятся удаленные посты',
+        deletedPostsRetention: 'Хранение удаленных постов',
+        deletedPostsRetentionDesc: 'Отклоненные посты хранятся X дней или удаляются немедленно',
+        immediatelyRemoved: 'Немедленно удалено',
+        retainedForDays: 'Хранится {days} дней',
+        days: 'дней',
+      },
       dangerZone: {
         title: 'Опасная зона',
         description: 'Необратимые действия, влияющие на ваш аккаунт',
@@ -1837,10 +3728,14 @@ const translations: Record<Language, Translations> = {
       socialAccountsDesc: 'Подключенные платформы',
       analytics: 'Аналитика',
       analyticsDesc: 'Данные о производительности',
+      messages: 'Сообщения и контакты',
+      messagesDesc: 'Центр сообщений клиентов и входящих запросов',
       socialMediaAnalysis: 'Анализ социальных сетей',
       socialMediaAnalysisDesc: 'Анализ профиля и контента',
-      metaAds: 'Meta Ads',
-      metaAdsDesc: 'Рекламные кампании',
+      adsAnalytics: 'Аналитика Meta Ads',
+      adsAnalyticsDesc: 'Статистика кампаний',
+      metaAds: 'Менеджер Meta Ads',
+      metaAdsDesc: 'Управление кампаниями',
       brandVoice: 'Голос бренда',
       brandVoiceDesc: 'Настройки личности ИИ',
       templates: 'Шаблоны',
@@ -1933,6 +3828,68 @@ const translations: Record<Language, Translations> = {
       errorPublishInstagram: '❌ Публикация в Instagram не удалась',
       errorPublishLinkedIn: '❌ Публикация в LinkedIn не удалась',
       errorBranding: 'Брендинг не может быть применен',
+      publishResultTitle: 'Результат публикации',
+      publishResultPlatform: 'Платформа',
+      publishResultAccount: 'Целевой аккаунт',
+      publishResultStatus: 'Статус',
+      publishResultPostId: 'ID поста',
+      publishResultPostLink: 'Ссылка на пост',
+      publishResultSuccess: 'Успешно',
+      publishResultFailed: 'Не удалось',
+      publishRequiresApproval: 'Требуется одобрение',
+      publishRequiresApprovalTooltip: 'Этот пост должен быть одобрен перед публикацией',
+      reviewGeneratedPosts: 'Review Generated Posts',
+      reviewGeneratedPostsDesc: 'Review, edit and approve AI-generated content',
+      imagesGenerating: 'Images are being generated in the background and will load automatically',
+      bulkOperations: 'Bulk Operations',
+      selectedOf: 'selected of',
+      selectAll: 'Select All',
+      deselectAll: 'Deselect All',
+      postsSelected: 'posts selected',
+      approveSelected: 'Approve Selected',
+      approve: 'Approve',
+      rejectSelected: 'Reject Selected',
+      reject: 'Reject',
+      postNumber: 'Post',
+      characters: 'characters',
+      waiting: 'Waiting',
+      postImage: 'Post Image',
+      imageGenerating: 'Image is being generated...',
+      imageUploading: 'Image Uploading...',
+      upload: 'Upload',
+      uploadImage: 'Upload Image',
+      edit: 'Edit',
+      editPost: 'Edit Post',
+      postContent: 'Post Content',
+      description: 'Description',
+      hashtags: 'Hashtags',
+      saving: 'Saving...',
+      saveChanges: 'Save Changes',
+      designSaved: 'Design saved successfully!',
+      designSaveFailed: 'Failed to save design',
+      pleaseSelectAtLeastOne: 'Please select at least one post to approve.',
+      pleaseSelectAtLeastOneReject: 'Please select at least one post to reject.',
+      confirmApprove: 'posts will be approved?',
+      confirmReject: 'posts will be rejected?',
+      postsApproved: 'Posts could not be approved. Please try again.',
+      postsRejected: 'Posts could not be rejected. Please try again.',
+      postUpdateFailed: 'Post could not be updated. Please try again.',
+      imageUploadFailed: 'Image could not be uploaded. Please try again.',
+      companyProfileNotFound: 'Company profile not found. Please fill in company information first.',
+      companyLogoNotFound: 'Company logo not found. Please upload logo first.',
+      brandingDisabled: 'Branding is disabled. Enable it in settings.',
+      postNotFound: 'Post not found.',
+      noImageInPost: 'This post has no image.',
+      loginRequired: 'Login required. Please log in again.',
+      brandingApplied: 'Branding applied successfully! ✨',
+      brandingFailed: 'Branding could not be applied',
+      designEditor: 'Design Editor',
+      design: 'Design',
+      branded: 'Branded',
+      placeholder: 'Placeholder',
+      goToCalendar: 'Go to Calendar',
+      editPostTitle: 'Edit Post',
+      editPostDesc: 'Modify AI-generated content according to your needs',
     },
     share: {
       share: 'Поделиться',
@@ -1981,6 +3938,40 @@ const translations: Record<Language, Translations> = {
       noPosts: 'Нет запланированных постов',
       noPostsDesc: 'Создайте посты, чтобы увидеть их в календаре',
       untitled: 'Без названия',
+      scheduledTime: 'Запланированное время',
+      publishingTo: 'Публикация в',
+      willPublishAutomatically: 'Будет опубликовано автоматически',
+      recommendedTimeAI: 'Рекомендуемое время (ИИ)',
+      aiRecommended: 'Рекомендация ИИ',
+      userOverride: 'Вы можете изменить это время',
+      editPost: 'Редактировать пост',
+      editPostDesc: 'Измените содержимое, расписание и платформы публикации',
+      currentConnectedAccounts: 'Текущие подключенные аккаунты',
+      connected: 'Подключено',
+      notConnected: 'Не подключено',
+      connect: 'Подключить',
+      change: 'Изменить',
+      connectInstagramFirst: 'Сначала подключите Instagram',
+      connectFacebookFirst: 'Сначала подключите страницу Facebook',
+      connectPlatformFirst: 'Сначала подключите платформу',
+      connectFirst: 'Сначала подключите',
+      postingDestination: 'Посты будут опубликованы из ваших подключенных аккаунтов. Управляйте подключениями в разделе Социальные аккаунты.',
+      titleLabel: 'Заголовок',
+      titlePlaceholder: 'Заголовок поста...',
+      content: 'Содержимое',
+      contentPlaceholder: 'Напишите содержимое поста...',
+      characters: 'символов',
+      date: 'Дата',
+      time: 'Время',
+      platforms: 'Платформы',
+      selected: 'Выбрано',
+      platform: 'платформа',
+      status: 'Статус',
+      draft: 'Черновик',
+      scheduled: 'Запланировано',
+      published: 'Опубликовано',
+      preview: 'Предпросмотр',
+      noContent: 'Нет содержимого...',
     },
     aiContentGenerator: {
       title: 'Генератор контента на ИИ',
@@ -1990,6 +3981,7 @@ const translations: Record<Language, Translations> = {
     aiTools: {
       title: 'ИИ-инструменты',
       description: 'Используйте ИИ для создания лучшего контента в социальных сетях',
+      allTools: 'Все ИИ-инструменты',
       contentGenerator: 'Генератор контента',
       contentGeneratorDesc: 'Создавайте увлекательные посты с помощью ИИ',
       hashtagGenerator: 'Генератор хэштегов',
@@ -2008,7 +4000,7 @@ const translations: Record<Language, Translations> = {
       adCreativeGenerator: 'Генератор рекламных креативов',
       adCreativeGeneratorDesc: 'Создавайте профессиональные маркетинговые визуалы с помощью ИИ',
       videoGenerator: 'Генератор видео',
-      videoGeneratorDesc: 'Создавайте профессиональные видео с помощью ИИ, используя Kling Video',
+      videoGeneratorDesc: 'Создавайте профессиональные видео с помощью ИИ',
       promptPlaceholder: 'например, Запуск нашего нового продукта, отраслевые тренды, корпоративная культура...',
       generate: 'Создать контент',
       generating: 'Создание...',
@@ -2018,6 +4010,127 @@ const translations: Record<Language, Translations> = {
       saving: 'Сохранение...',
       saveToProfile: 'Сохранить в профиль компании',
       saved: 'Сохранено!',
+    },
+    productPost: {
+      title: 'Создатель постов о продуктах',
+      description: 'Загрузите изображение продукта, ИИ удалит фон, проанализирует его и создаст рекламные посты',
+      cardTitle: 'Генератор рекламных изображений продуктов',
+      cardDescription: 'Загрузите изображение продукта для создания профессиональной маркетинговой рекламы',
+      processingStep1: 'Шаг 1: Обработка изображения - Удаление фона...',
+      processingStep2: 'Шаг 2: Анализ продукта - Структурированный анализ...',
+      processingStep3: 'Шаг 3: Рекламный контент - Hook, Body и CTA...',
+      processingStep4: 'Шаг 4: Создание промпта ИИ...',
+      processingStep5: 'Шаг 5: Профессиональные изображения с Nano Banana...',
+      processingComplete: 'Посты завершены...',
+      processingStepUrl1: 'Шаг 1: Извлечение контента сайта...',
+      processingStepUrl2: 'Шаг 2: Анализ информации о продукте с помощью ИИ...',
+      processingStepUrl3: 'Шаг 3: Загрузка изображения продукта...',
+      processingStepUrl4: 'Шаг 4: Удаление фона...',
+      processingStepUrl5: 'Шаг 5: Профессиональные изображения с Nano Banana...',
+      errorImageUrlNotFound: 'URL изображения не найден',
+      successPostCreated: 'Пост успешно создан и добавлен в раздел posts/!',
+      errorPostCreationFailed: 'Не удалось создать пост',
+      successAdImageCreated: 'Рекламное изображение успешно создано',
+      workflowStep1: 'Рабочий процесс завершен',
+      workflowStep2: 'Рекламное изображение создано',
+      workflowStep3: '',
+      workflowStep4: '',
+      workflowStep5: '',
+      download: 'Скачать',
+      open: 'Открыть',
+      imageWillBeCreated: 'Изображение будет создано',
+      viewPosts: 'Просмотреть посты',
+      createNewPost: 'Создать новый пост',
+      imagePreview: 'Предварительный просмотр изображения',
+      closeModalHint: 'Нажмите ESC для закрытия или щелкните снаружи',
+      productImage: 'Изображение продукта',
+      productImageRequired: 'Изображение продукта',
+      productName: 'Название продукта (Необязательно)',
+      productNameOptional: 'Название продукта (Необязательно)',
+      productNamePlaceholder: 'Например: iPhone 15 Pro',
+      adStyle: 'Стиль рекламы',
+      adStyleRequired: 'Стиль рекламы',
+      adStylePlaceholder: 'Выберите опцию...',
+      aspectRatio: 'Соотношение сторон',
+      aspectRatioRequired: 'Соотношение сторон',
+      aspectRatioPlaceholder: 'Выберите опцию...',
+      submit: 'Отправить',
+      processing: 'Обработка...',
+      generating: 'Создание рекламного изображения...',
+      pleaseWait: 'Пожалуйста, подождите',
+      createdPosts: 'Созданные посты',
+      createdPostsDesc: 'пост(ов) успешно создано',
+      createdAdImage: 'Созданное рекламное изображение',
+      createdAdImageDesc: 'Профессиональное рекламное изображение, созданное с помощью ИИ',
+      openImage: 'Открыть изображение',
+      approveAndCreate: 'Одобрить и создать пост',
+      analyzing: 'Анализ...',
+      selectOption: 'Выберите опцию...',
+      modern: 'Современный',
+      professional: 'Профессиональный',
+      playful: 'Игривый',
+      elegant: 'Элегантный',
+      minimalist: 'Минималистичный',
+      luxury: 'Роскошный',
+      casual: 'Повседневный',
+      square: '1:1 (Квадрат - 1080x1080)',
+      story: '9:16 (История - 1080x1920)',
+      landscape: '16:9 (Альбомная - 1920x1080)',
+      portrait: '4:5 (Портрет - 1080x1350)',
+      facebookPost: '1.91:1 (Пост Facebook - 1200x628)',
+      errorImageUpload: 'Не удалось загрузить изображение',
+      errorLoginRequired: 'Требуется вход. Пожалуйста, войдите снова.',
+      errorInvalidFile: 'Неверный файл изображения',
+      errorServerError: 'Ошибка сервера. Пожалуйста, попробуйте позже.',
+      errorFileRequired: 'Требуется файл изображения',
+      errorUrlRequired: 'Требуется URL изображения. Пожалуйста, загрузите изображение.',
+      errorInvalidUrl: 'URL изображения не в правильном формате: {url}',
+      errorImageLoad: 'Не удалось загрузить изображение: {status} {statusText}',
+      errorWorkflowTimeout: 'Рабочий процесс занял слишком много времени (более 5 минут). Пожалуйста, попробуйте снова.',
+      errorWebhookConnection: 'Не удалось подключиться к webhook. Пожалуйста, проверьте подключение к интернету.',
+      errorSelectAdStyle: 'Пожалуйста, выберите стиль рекламы и соотношение сторон',
+    },
+    videoGenerator: {
+      title: 'Генератор видео на ИИ',
+      description: 'Создавайте профессиональные видео с помощью ИИ',
+      cardTitle: 'Создать видео',
+      cardDescription: 'Создавайте профессиональные видео из изображений с помощью ИИ',
+      methodLabel: 'Метод создания видео',
+      methodText: 'Видео из текста',
+      methodTextDesc: 'Напишите промпт, пусть видео будет создано',
+      methodImage: 'Видео из изображения',
+      methodImageDesc: 'Загрузите изображение, пусть оно станет движущимся видео',
+      promptLabel: 'ИИ Промпт *',
+      promptPlaceholder: 'например: Красивый закат над горами с летящими птицами, кинематографическое движение камеры, замедленная съемка',
+      promptDescription: 'Промпт будет обогащен профессиональной видеотехнологией на фоне',
+      imageUploadLabel: 'Загрузить изображение *',
+      parametersLabel: 'Параметры видео',
+      durationLabel: 'Длительность (секунды)',
+      fpsLabel: 'FPS (Кадров в секунду)',
+      widthLabel: 'Ширина (px)',
+      heightLabel: 'Высота (px)',
+      generateButton: 'Создать видео',
+      generatingButton: 'Создание видео...',
+      errorTitle: 'Произошла ошибка',
+      progressMessage: 'Создание видео... (30-60 секунд)',
+      progressStep1: '📝 Промпт',
+      progressStep2: '🎬 Видео',
+      progressStep3: '✨ Завершено',
+      resultTitle: 'Созданное видео',
+      resultVideoLabel: 'Созданное видео',
+      downloadButton: 'Скачать',
+      copyLinkButton: 'Копировать ссылку',
+      professionalPromptLabel: 'Профессиональный промпт:',
+      videoInfoLabel: 'Информация о видео:',
+      statusLabel: 'Статус:',
+      jobIdLabel: 'ID задачи:',
+      errorPromptRequired: 'Введите промпт',
+      errorImageRequired: 'Загрузите изображение для видео',
+      errorLoginRequired: 'Не вошли в систему. Пожалуйста, войдите снова.',
+      errorServerError: 'Ошибка сервера (500). Свяжитесь с разработчиком бэкенда.',
+      errorNetworkError: 'Ошибка сети. Не удается подключиться к серверу бэкенда.',
+      errorVideoGenerationFailed: 'Не удалось создать видео',
+      errorImageToVideo: 'Ошибка преобразования изображения в видео: {error}',
     },
     socialAccounts: {
       title: 'Социальные аккаунты',
@@ -2037,6 +4150,27 @@ const translations: Record<Language, Translations> = {
       active: 'Активен',
       inactive: 'Неактивен',
       disconnectConfirm: 'Вы уверены, что хотите отключить этот аккаунт?',
+      permissionsPurpose: 'Для чего нужны эти разрешения?',
+      permissionsPosting: 'Публикация: Для публикации контента на ваших страницах Facebook и в аккаунте Instagram',
+      permissionsAnalytics: 'Аналитика: Для отслеживания производительности ваших постов',
+      permissionsMessages: 'Сообщения: Для управления сообщениями и разговорами с клиентами',
+      permissionsAds: 'Реклама: Для управления рекламными кампаниями',
+      permissionsFacebook: 'Публикация: Для публикации контента на ваших страницах Facebook и в группах. Аналитика: Для отслеживания производительности постов, охвата и вовлеченности. Сообщения: Для управления сообщениями и разговорами с клиентами. Реклама: Для управления рекламными кампаниями Facebook.',
+      permissionsLinkedIn: 'Публикация: Для публикации контента на ваших страницах компании LinkedIn и личном профиле. Аналитика: Для отслеживания производительности постов, просмотров и метрик вовлеченности. Сообщения: Для управления профессиональными сообщениями и связями.',
+      permissionsTikTok: 'Публикация: Для публикации видео в вашем аккаунте TikTok. Аналитика: Для отслеживания производительности видео, просмотров и метрик вовлеченности.',
+      permissionsYouTube: 'Загрузка видео: Для загрузки видео на ваш канал YouTube. Аналитика: Для отслеживания производительности видео, просмотров, времени просмотра и метрик подписчиков. Управление каналом: Для управления настройками канала и контентом.',
+      pageId: 'ID страницы',
+      instagramId: 'ID Instagram',
+      connectedAt: 'Подключено',
+      tokenStatus: 'Статус токена',
+      tokenActive: 'Активен',
+      tokenExpired: 'Истек',
+      disconnectWarning: 'При отключении токен доступа будет удален, а вебхуки остановлены.',
+      platformDescriptionFacebook: 'Публикация на страницах и в группах',
+      platformDescriptionInstagram: 'Публикация фотографий и историй',
+      platformDescriptionLinkedIn: 'Профессиональная сеть и бизнес-публикации',
+      platformDescriptionYouTube: 'Публикация видео и управление каналом',
+      platformDescriptionTikTok: 'Публикация коротких видео',
     },
     analytics: {
       title: 'Аналитика',
@@ -2084,6 +4218,171 @@ const translations: Record<Language, Translations> = {
       usageCount: 'Количество использований',
       samplePost: 'Пример поста',
       select: 'Выбрать',
+    },
+    logoGenerator: {
+      title: 'Генератор логотипа и слогана',
+      description: 'Создавайте профессиональный логотип и слоган для вашей компании',
+      back: 'Назад',
+      basicInfo: 'Основная информация',
+      basicInfoDesc: 'Введите информацию о вашей компании',
+      companyName: 'Название компании/продукта *',
+      companyNamePlaceholder: 'например: Timera, TechStart',
+      descriptionLabel: 'Описание *',
+      descriptionPlaceholder: 'Опишите вашу компанию или продукт...',
+      descriptionHint: 'Более подробное описание создаст лучший логотип и слоган',
+      logoStyle: 'Стиль логотипа',
+      logoStyleDesc: 'Выберите стиль дизайна логотипа',
+      colorSelection: 'Выбор цвета',
+      colorSelectionDesc: 'Выберите основной цвет для логотипа',
+      selectedColor: 'Выбранный цвет:',
+      categories: 'Категории (Теги)',
+      categoriesDesc: 'Выберите отрасли, к которым относится ваша компания',
+      categoriesSelected: 'категорий выбрано',
+      generateButton: 'Создать логотип и слоган',
+      generatingButton: 'Создание логотипа...',
+      createdLogo: 'Созданный логотип',
+      createdSlogan: 'Созданный слоган',
+      saveToProfile: 'Добавить в профиль компании',
+      saving: 'Добавление...',
+      downloadLogo: 'Скачать логотип',
+      copySlogan: 'Копировать слоган',
+      sloganCopied: '✅ Слоган скопирован!',
+      sloganCopyFailed: 'Слоган не удалось скопировать',
+      logoDownloadFailed: 'Логотип не удалось скачать',
+      emptyState: 'Логотип и слоган появятся здесь после создания',
+      errorCompanyNameRequired: 'Пожалуйста, введите название компании и описание',
+      errorEmptyResponse: 'Получен пустой ответ',
+      errorLogoCreationFailed: 'Не удалось создать логотип',
+      errorNoLogo: '⚠️ Нет логотипа. Пожалуйста, сначала создайте логотип.',
+      errorLogoLoadFailed: 'Не удалось загрузить логотип',
+      errorTitle: 'Ошибка',
+      successCreated: '✅ Логотип и слоган успешно созданы!',
+      successSaved: '✅ Логотип и слоган успешно добавлены в профиль компании!',
+      errorSaveFailed: 'Не удалось добавить в профиль компании',
+      generatedLogoAlt: 'Созданный логотип',
+      styleMinimalist: 'Минималистичный',
+      styleMinimalistDesc: 'Простой и чистый',
+      styleElegant: 'Элегантный',
+      styleElegantDesc: 'Утонченный и деликатный',
+      styleModern: 'Современный',
+      styleModernDesc: 'Современный и динамичный',
+      styleProfessional: 'Профессиональный',
+      styleProfessionalDesc: 'Для бизнеса',
+      stylePlayful: 'Игривый',
+      stylePlayfulDesc: 'Веселый и красочный',
+      colorBlue: 'Синий',
+      colorPurple: 'Фиолетовый',
+      colorRed: 'Красный',
+      colorGreen: 'Зеленый',
+      colorOrange: 'Оранжевый',
+      colorIndigo: 'Индиго',
+      colorBlack: 'Черный',
+      colorWhite: 'Белый',
+      tagTech: 'Технологии',
+      tagFinance: 'Финансы',
+      tagHealth: 'Здоровье',
+      tagEducation: 'Образование',
+      tagEcommerce: 'Электронная коммерция',
+      tagService: 'Услуги',
+      tagManufacturing: 'Производство',
+      tagRealEstate: 'Недвижимость',
+      tagMarketing: 'Маркетинг',
+      tagDesign: 'Дизайн',
+      tagKitchen: 'Кухня',
+      tagFashion: 'Мода',
+      tagSports: 'Спорт',
+      tagTravel: 'Путешествия',
+      tagArt: 'Искусство',
+    },
+    hashtagGenerator: {
+      title: 'Генератор хэштегов',
+      description: 'Создавайте хэштеги, подходящие для вашей компании',
+      headerTitle: '#️⃣ Генератор хэштегов',
+      headerDescription: 'Создавайте хэштеги, подходящие для информации о вашей компании и содержания поста',
+      contentSectionTitle: 'Содержание поста',
+      contentSectionDesc: 'Введите содержание поста для создания хэштегов (необязательно)',
+      contentLabel: 'Содержание',
+      contentPlaceholder: 'Например: Представляем наш новый продукт! 🚀',
+      companyInfo: 'Информация о компании:',
+      companyName: 'Компания:',
+      industry: 'Отрасль:',
+      business: 'Бизнес:',
+      hashtagCount: 'Количество хэштегов',
+      hashtagCountLabel: 'хэштегов',
+      generateButton: 'Создать хэштеги',
+      generatingButton: 'Создание хэштегов...',
+      generatedHashtags: 'Созданные хэштеги',
+      generatedHashtagsDesc: 'хэштегов создано',
+      copyAll: 'Копировать все',
+      copied: 'Скопировано',
+      allHashtags: 'Все хэштеги:',
+      copy: 'Копировать',
+      tipsTitle: '💡 Советы',
+      tip1: '• Ввод содержания поста даст вам более релевантные хэштеги',
+      tip2: '• Информация о вашей компании используется автоматически',
+      tip3: '• Держите количество хэштегов между 15-25 (для оптимальной производительности)',
+      tip4: '• Смесь популярных и нишевых хэштегов дает лучшие результаты',
+      errorContentRequired: 'Пожалуйста, введите содержание поста или информацию о компании',
+      errorGenerationFailed: 'Не удалось создать хэштеги. Пожалуйста, попробуйте снова.',
+    },
+    captionOptimizer: {
+      title: 'Оптимизатор подписей',
+      description: 'Оптимизируйте свои подписи для лучшего вовлечения',
+      headerTitle: '📝 Оптимизатор подписей',
+      headerDescription: 'Оптимизируйте свои подписи для лучшего вовлечения',
+      captionSectionTitle: 'Подпись / Заголовок',
+      captionSectionDesc: 'Введите подпись или заголовок, который вы хотите оптимизировать',
+      originalCaptionLabel: 'Оригинальная подпись',
+      captionPlaceholder: 'Например: Представляем наш новый продукт!',
+      characters: 'символов',
+      contentTypeLabel: 'Тип контента',
+      contentTypePost: 'Пост',
+      contentTypeTitle: 'Заголовок',
+      contentTypeDescription: 'Описание',
+      platformLabel: 'Платформа',
+      platformGeneral: 'Общее',
+      platformInstagram: 'Instagram',
+      platformFacebook: 'Facebook',
+      platformLinkedIn: 'LinkedIn',
+      toneLabel: 'Тон',
+      toneProfessional: 'Профессиональный',
+      toneCasual: 'Неформальный',
+      toneCreative: 'Креативный',
+      toneFriendly: 'Дружелюбный',
+      companyInfo: 'Информация о компании:',
+      companyName: 'Компания:',
+      industry: 'Отрасль:',
+      preferredTone: 'Предпочтительный тон:',
+      optimizeButton: 'Оптимизировать',
+      optimizingButton: 'Оптимизация...',
+      optimizedCaption: 'Оптимизированная подпись',
+      optimizedCaptionDesc: 'символов (изменение)',
+      copy: 'Копировать',
+      copied: 'Скопировано',
+      useOptimized: 'Использовать',
+      original: 'Оригинал',
+      optimized: 'Оптимизировано',
+      tipsTitle: '💡 Советы',
+      tip1: '• Выбирайте подписи, подходящие для платформы (Instagram, Facebook, LinkedIn)',
+      tip2: '• Выбор тона должен соответствовать вашему бренду',
+      tip3: '• Короткие и увлекательные подписи работают лучше',
+      tip4: '• Не забудьте добавить призыв к действию',
+      tip5: '• Попробуйте разные варианты и выберите лучший',
+      errorCaptionRequired: 'Пожалуйста, введите подпись или заголовок',
+      errorOptimizationFailed: 'Не удалось оптимизировать подпись. Пожалуйста, попробуйте снова.',
+    },
+    companySetup: {
+      title: 'Завершить настройку',
+      titleUpdate: 'Обновить профиль компании',
+      description: 'Расскажите нам о вашей компании, чтобы создавать отличный контент',
+      descriptionUpdate: 'Обновите информацию о вашей компании для лучшего контента ИИ',
+      whyNeededTitle: 'Зачем нужна эта информация',
+      benefit1Title: 'Лучший контент ИИ',
+      benefit1Desc: 'ИИ будет создавать контент, адаптированный к вашему бизнесу и аудитории',
+      benefit2Title: 'Целевые сообщения',
+      benefit2Desc: 'Посты будут настроены под вашу отрасль и цели',
+      benefit3Title: 'Контент на вашем языке',
+      benefit3Desc: 'Весь контент будет создан на идеальном языке',
     },
     templates: {
       title: 'Шаблоны',

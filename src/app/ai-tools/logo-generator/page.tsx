@@ -14,34 +14,36 @@ import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { waskAIAPI, authAPI } from '@/lib/api';
 import { Loader2, Download, Copy, CheckCircle2, Sparkles, ArrowLeft, Palette } from 'lucide-react';
-
-const LOGO_STYLES = [
-  { value: 'minimalist', label: 'Minimalist', icon: '○', description: 'Sadə və təmiz' },
-  { value: 'elegant', label: 'Elegant', icon: '◇', description: 'Zərif və incə' },
-  { value: 'modern', label: 'Modern', icon: '▢', description: 'Müasir və dinamik' },
-  { value: 'professional', label: 'Professional', icon: '◼', description: 'Biznes üçün' },
-  { value: 'playful', label: 'Playful', icon: '◆', description: 'Şən və rəngarəng' },
-];
-
-const COLOR_OPTIONS = [
-  { value: '#3B82F6', label: 'Göy', hex: '#3B82F6' },
-  { value: '#8B5CF6', label: 'Bənövşəyi', hex: '#8B5CF6' },
-  { value: '#EF4444', label: 'Qırmızı', hex: '#EF4444' },
-  { value: '#10B981', label: 'Yaşıl', hex: '#10B981' },
-  { value: '#F59E0B', label: 'Narıncı', hex: '#F59E0B' },
-  { value: '#6366F1', label: 'İndigo', hex: '#6366F1' },
-  { value: '#000000', label: 'Qara', hex: '#000000' },
-  { value: '#FFFFFF', label: 'Ağ', hex: '#FFFFFF', border: true },
-];
-
-const TAG_OPTIONS = [
-  'Tech', 'Finans', 'Sağlamlıq', 'Təhsil', 'E-commerce',
-  'Xidmət', 'İstehsal', 'Daşınmaz Əmlak', 'Marketing', 'Dizayn',
-  'Mətbəx', 'Moda', 'İdman', 'Səyahət', 'İncəsənət'
-];
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function LogoGeneratorPage() {
   const router = useRouter();
+  const t = useTranslation();
+
+  const LOGO_STYLES = [
+    { value: 'minimalist', label: t.logoGenerator.styleMinimalist, icon: '○', description: t.logoGenerator.styleMinimalistDesc },
+    { value: 'elegant', label: t.logoGenerator.styleElegant, icon: '◇', description: t.logoGenerator.styleElegantDesc },
+    { value: 'modern', label: t.logoGenerator.styleModern, icon: '▢', description: t.logoGenerator.styleModernDesc },
+    { value: 'professional', label: t.logoGenerator.styleProfessional, icon: '◼', description: t.logoGenerator.styleProfessionalDesc },
+    { value: 'playful', label: t.logoGenerator.stylePlayful, icon: '◆', description: t.logoGenerator.stylePlayfulDesc },
+  ];
+
+  const COLOR_OPTIONS = [
+    { value: '#3B82F6', label: t.logoGenerator.colorBlue, hex: '#3B82F6' },
+    { value: '#8B5CF6', label: t.logoGenerator.colorPurple, hex: '#8B5CF6' },
+    { value: '#EF4444', label: t.logoGenerator.colorRed, hex: '#EF4444' },
+    { value: '#10B981', label: t.logoGenerator.colorGreen, hex: '#10B981' },
+    { value: '#F59E0B', label: t.logoGenerator.colorOrange, hex: '#F59E0B' },
+    { value: '#6366F1', label: t.logoGenerator.colorIndigo, hex: '#6366F1' },
+    { value: '#000000', label: t.logoGenerator.colorBlack, hex: '#000000' },
+    { value: '#FFFFFF', label: t.logoGenerator.colorWhite, hex: '#FFFFFF', border: true },
+  ];
+
+  const TAG_OPTIONS = [
+    t.logoGenerator.tagTech, t.logoGenerator.tagFinance, t.logoGenerator.tagHealth, t.logoGenerator.tagEducation, t.logoGenerator.tagEcommerce,
+    t.logoGenerator.tagService, t.logoGenerator.tagManufacturing, t.logoGenerator.tagRealEstate, t.logoGenerator.tagMarketing, t.logoGenerator.tagDesign,
+    t.logoGenerator.tagKitchen, t.logoGenerator.tagFashion, t.logoGenerator.tagSports, t.logoGenerator.tagTravel, t.logoGenerator.tagArt
+  ];
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('minimalist');
@@ -62,7 +64,7 @@ export default function LogoGeneratorPage() {
 
   const handleGenerate = async () => {
     if (!productName.trim() || !productDescription.trim()) {
-      alert('Zəhmət olmasa şirkət adı və təsvirini daxil edin');
+      alert(t.logoGenerator.errorCompanyNameRequired);
       return;
     }
 
@@ -86,14 +88,14 @@ export default function LogoGeneratorPage() {
       console.log('📥 Response:', response.data);
       
       if (!response.data) {
-        throw new Error('Boş response alındı');
+        throw new Error(t.logoGenerator.errorEmptyResponse);
       }
       
       const logoUrl = response.data.logo_url || response.data.logo || null;
       const slogan = response.data.slogan || null;
       
       if (!logoUrl) {
-        throw new Error('Logo yaradıla bilmədi');
+        throw new Error(t.logoGenerator.errorLogoCreationFailed);
       }
       
       setGeneratedLogo(logoUrl);
@@ -101,11 +103,11 @@ export default function LogoGeneratorPage() {
         setGeneratedSlogan(slogan.trim());
       }
       
-      console.log('✅ Logo və slogan uğurla yaradıldı!');
+      console.log('✅', t.logoGenerator.successCreated);
       
     } catch (error: any) {
       console.error('❌ Error:', error);
-      alert(`❌ Xəta: ${error.response?.data?.error || error.message || 'Logo yaradıla bilmədi'}`);
+      alert(`❌ ${t.logoGenerator.errorTitle}: ${error.response?.data?.error || error.message || t.logoGenerator.errorLogoCreationFailed}`);
     } finally {
       setIsGenerating(false);
     }
@@ -113,18 +115,18 @@ export default function LogoGeneratorPage() {
 
   const handleSaveToCompanyProfile = async () => {
     if (!generatedLogo) {
-      alert('⚠️ Logo yoxdur. Əvvəlcə logo yaradın.');
+      alert(t.logoGenerator.errorNoLogo);
       return;
     }
 
     setIsSavingToProfile(true);
     try {
-      console.log('📥 Logo yüklənir:', generatedLogo);
+      console.log('📥', t.logoGenerator.saving, ':', generatedLogo);
       
       // Download logo image
       const logoResponse = await fetch(generatedLogo);
       if (!logoResponse.ok) {
-        throw new Error(`Logo yüklənə bilmədi: ${logoResponse.statusText}`);
+        throw new Error(`${t.logoGenerator.errorLogoLoadFailed}: ${logoResponse.statusText}`);
       }
       
       const logoBlob = await logoResponse.blob();
@@ -168,7 +170,7 @@ export default function LogoGeneratorPage() {
       console.log('   Has slogan:', formData.has('slogan'));
 
       await authAPI.updateCompanyProfile(formData);
-      alert('✅ Logo və slogan şirkət profilinə uğurla əlavə edildi!');
+      alert(t.logoGenerator.successSaved);
       
     } catch (error: any) {
       console.error('❌ Error:', error);
@@ -184,9 +186,9 @@ export default function LogoGeneratorPage() {
                             ? JSON.stringify(error.response?.data)
                             : error.response?.data) ||
                           error.message ||
-                          'Şirkət profilinə əlavə edilə bilmədi';
+                          t.logoGenerator.errorSaveFailed;
       
-      alert(`❌ Xəta: ${errorMessage}`);
+      alert(`❌ ${t.logoGenerator.errorTitle}: ${errorMessage}`);
     } finally {
       setIsSavingToProfile(false);
     }
@@ -194,15 +196,15 @@ export default function LogoGeneratorPage() {
 
   return (
     <DashboardLayout 
-      title="Logo & Slogan Generator"
-      description="Şirkətiniz üçün professional logo və slogan yaradın"
+      title={t.logoGenerator.title}
+      description={t.logoGenerator.description}
     >
       <div className="space-y-6">
         {/* Back Button */}
         <Link href="/ai-tools">
           <Button variant="ghost" className="mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Geri
+            {t.logoGenerator.back}
           </Button>
         </Link>
 
@@ -212,33 +214,33 @@ export default function LogoGeneratorPage() {
             {/* Basic Info */}
             <Card>
               <CardHeader>
-                <CardTitle>Əsas Məlumatlar</CardTitle>
+                <CardTitle>{t.logoGenerator.basicInfo}</CardTitle>
                 <CardDescription>
-                  Şirkətiniz haqqında məlumat daxil edin
+                  {t.logoGenerator.basicInfoDesc}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="productName">Şirkət/Məhsul Adı *</Label>
+                  <Label htmlFor="productName">{t.logoGenerator.companyName}</Label>
                   <Input
                     id="productName"
-                    placeholder="məs: Timera, TechStart"
+                    placeholder={t.logoGenerator.companyNamePlaceholder}
                     value={productName}
                     onChange={(e) => setProductName(e.target.value)}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="productDescription">Təsvir *</Label>
+                  <Label htmlFor="productDescription">{t.logoGenerator.descriptionLabel}</Label>
                   <Textarea
                     id="productDescription"
-                    placeholder="Şirkətinizi və ya məhsulunuzu təsvir edin..."
+                    placeholder={t.logoGenerator.descriptionPlaceholder}
                     value={productDescription}
                     onChange={(e) => setProductDescription(e.target.value)}
                     rows={4}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Daha ətraflı təsvir, daha yaxşı logo və slogan yaradacaq
+                    {t.logoGenerator.descriptionHint}
                   </p>
                 </div>
               </CardContent>
@@ -247,9 +249,9 @@ export default function LogoGeneratorPage() {
             {/* Logo Style */}
             <Card>
               <CardHeader>
-                <CardTitle>Logo Stili</CardTitle>
+                <CardTitle>{t.logoGenerator.logoStyle}</CardTitle>
                 <CardDescription>
-                  Logo dizayn stilini seçin
+                  {t.logoGenerator.logoStyleDesc}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -280,10 +282,10 @@ export default function LogoGeneratorPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Palette className="w-5 h-5" />
-                  Rəng Seçimi
+                  {t.logoGenerator.colorSelection}
                 </CardTitle>
                 <CardDescription>
-                  Logo-nun əsas rəngini seçin
+                  {t.logoGenerator.colorSelectionDesc}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -309,7 +311,7 @@ export default function LogoGeneratorPage() {
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground mt-3">
-                  Seçilmiş rəng: <span className="font-semibold" style={{ color: selectedColor }}>
+                  {t.logoGenerator.selectedColor} <span className="font-semibold" style={{ color: selectedColor }}>
                     {COLOR_OPTIONS.find(c => c.value === selectedColor)?.label}
                   </span>
                 </p>
@@ -319,9 +321,9 @@ export default function LogoGeneratorPage() {
             {/* Tags */}
             <Card>
               <CardHeader>
-                <CardTitle>Kateqoriyalar (Tags)</CardTitle>
+                <CardTitle>{t.logoGenerator.categories}</CardTitle>
                 <CardDescription>
-                  Şirkətinizin aid olduğu sahələri seçin
+                  {t.logoGenerator.categoriesDesc}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -342,7 +344,7 @@ export default function LogoGeneratorPage() {
                 </div>
                 {selectedTags.length > 0 && (
                   <p className="text-xs text-muted-foreground mt-3">
-                    {selectedTags.length} kateqoriya seçilib
+                    {selectedTags.length} {t.logoGenerator.categoriesSelected}
                   </p>
                 )}
               </CardContent>
@@ -358,12 +360,12 @@ export default function LogoGeneratorPage() {
               {isGenerating ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Logo Yaradılır...
+                  {t.logoGenerator.generatingButton}
                 </>
               ) : (
                 <>
                   <Sparkles className="w-5 h-5 mr-2" />
-                  Logo və Slogan Yarat
+                  {t.logoGenerator.generateButton}
                 </>
               )}
             </Button>
@@ -375,13 +377,13 @@ export default function LogoGeneratorPage() {
               <>
                 <Card>
                   <CardHeader>
-                    <CardTitle>Yaradılmış Logo</CardTitle>
+                    <CardTitle>{t.logoGenerator.createdLogo}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center justify-center p-6 bg-white rounded-lg border-2 border-border shadow-sm min-h-[200px]">
                       <img 
                         src={generatedLogo} 
-                        alt="Generated Logo"
+                        alt={t.logoGenerator.generatedLogoAlt}
                         className="max-w-full max-h-64 object-contain"
                         onError={(e) => {
                           console.error('❌ Logo failed to load');
@@ -394,7 +396,7 @@ export default function LogoGeneratorPage() {
                 {generatedSlogan && (
                   <Card>
                     <CardHeader>
-                      <CardTitle>Yaradılmış Slogan</CardTitle>
+                      <CardTitle>{t.logoGenerator.createdSlogan}</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 rounded-lg border-2 border-primary/20">
@@ -415,12 +417,12 @@ export default function LogoGeneratorPage() {
                     {isSavingToProfile ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Əlavə Edilir...
+                        {t.logoGenerator.saving}
                       </>
                     ) : (
                       <>
                         <CheckCircle2 className="w-4 h-4 mr-2" />
-                        Şirkət Profilinə Əlavə Et
+                        {t.logoGenerator.saveToProfile}
                       </>
                     )}
                   </Button>
@@ -444,13 +446,13 @@ export default function LogoGeneratorPage() {
                             window.URL.revokeObjectURL(url);
                           } catch (err) {
                             console.error('Failed to download:', err);
-                            alert('Logo yüklənə bilmədi');
+                            alert(t.logoGenerator.logoDownloadFailed);
                           }
                         }
                       }}
                     >
                       <Download className="w-4 h-4 mr-2" />
-                      Download Logo
+                      {t.logoGenerator.downloadLogo}
                     </Button>
                     {generatedSlogan && (
                       <Button
@@ -459,15 +461,15 @@ export default function LogoGeneratorPage() {
                         onClick={async () => {
                           try {
                             await navigator.clipboard.writeText(generatedSlogan);
-                            alert('✅ Slogan kopyalandı!');
+                            alert(t.logoGenerator.sloganCopied);
                           } catch (err) {
                             console.error('Failed to copy:', err);
-                            alert('Slogan kopyalanmadı');
+                            alert(t.logoGenerator.sloganCopyFailed);
                           }
                         }}
                       >
                         <Copy className="w-4 h-4 mr-2" />
-                        Copy Slogan
+                        {t.logoGenerator.copySlogan}
                       </Button>
                     )}
                   </div>
@@ -478,7 +480,7 @@ export default function LogoGeneratorPage() {
                 <CardContent className="flex items-center justify-center min-h-[400px]">
                   <div className="text-center text-muted-foreground">
                     <Sparkles className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg">Logo və slogan yaradıldıqdan sonra burada görünəcək</p>
+                    <p className="text-lg">{t.logoGenerator.emptyState}</p>
                   </div>
                 </CardContent>
               </Card>

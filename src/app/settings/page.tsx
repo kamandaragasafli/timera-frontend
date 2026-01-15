@@ -357,6 +357,66 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
+        {/* Privacy & Data Retention */}
+        <Card>
+          <CardHeader>
+            <CardTitle>{t.settings.privacy.title}</CardTitle>
+            <CardDescription>
+              {t.settings.privacy.description}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium">{t.settings.privacy.dataRetention}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {t.settings.privacy.dataRetentionDesc}
+                  </p>
+                </div>
+              </div>
+              
+              <Separator />
+              
+              <div className="space-y-3">
+                <div>
+                  <h4 className="font-medium text-sm mb-2">{t.settings.privacy.deletedPostsRetention}</h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {t.settings.privacy.deletedPostsRetentionDesc}
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <input 
+                        type="radio" 
+                        id="immediately" 
+                        name="retention" 
+                        value="immediately" 
+                        defaultChecked
+                        className="w-4 h-4"
+                      />
+                      <Label htmlFor="immediately" className="text-sm font-normal cursor-pointer">
+                        {t.settings.privacy.immediatelyRemoved}
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input 
+                        type="radio" 
+                        id="retained" 
+                        name="retention" 
+                        value="retained" 
+                        className="w-4 h-4"
+                      />
+                      <Label htmlFor="retained" className="text-sm font-normal cursor-pointer">
+                        {t.settings.privacy.retainedForDays.replace('{days}', '30')}
+                      </Label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Legal */}
         <Card>
           <CardHeader>

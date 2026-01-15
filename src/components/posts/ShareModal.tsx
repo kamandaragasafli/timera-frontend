@@ -13,7 +13,7 @@ import { Facebook, Instagram, CheckCircle2, Download, Copy, Settings } from 'luc
 import { useTranslation } from '@/hooks/useTranslation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { postsAPI, socialAccountsAPI } from '@/lib/api';
+import { postsAPI, socialAccountsAPI, API_BASE_URL } from '@/lib/api';
 
 // LinkedIn Icon Component
 const LinkedInIcon = ({ className }: { className?: string }) => (
@@ -69,8 +69,12 @@ interface Post {
   content: string;
   hashtags?: string[];
   image_url?: string;
+  image_url_absolute?: string;
   custom_image?: string;
+  custom_image_url?: string;
   design_url?: string;
+  design_url_absolute?: string;
+  design_thumbnail_absolute?: string;
 }
 
 interface ShareModalProps {
@@ -130,7 +134,7 @@ const isMobile = () => {
 };
 
 const prepareShareContent = (post: Post) => {
-  const baseUrl = window.location.origin;
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
   const postUrl = `${baseUrl}/posts/${post.id}`;
   
   let shareText = post.title || '';
@@ -141,7 +145,32 @@ const prepareShareContent = (post: Post) => {
     shareText += '\n\n' + post.hashtags.join(' ');
   }
   
-  const imageUrl = post.image_url || post.custom_image || post.design_url;
+  // Get image URL - prefer absolute URLs from backend, fallback to relative
+  // Priority: absolute URLs first, then relative URLs
+  let imageUrl = post.design_url_absolute || 
+                 post.custom_image_url || 
+                 post.image_url_absolute || 
+                 post.design_thumbnail_absolute ||
+                 post.design_url || 
+                 post.custom_image || 
+                 post.image_url;
+  
+  // Convert relative URLs to absolute URLs for production
+  if (imageUrl && !imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+    // Remove /api suffix from API_BASE_URL for media URLs
+    const mediaBaseUrl = API_BASE_URL.replace(/\/api$/, '');
+    // Ensure imageUrl starts with /
+    if (!imageUrl.startsWith('/')) {
+      imageUrl = '/' + imageUrl;
+    }
+    imageUrl = `${mediaBaseUrl}${imageUrl}`;
+  }
+  
+  // If image is from external source (like ideogram.ai), use proxy to avoid CORS
+  if (imageUrl && (imageUrl.includes('ideogram.ai') || imageUrl.includes('external'))) {
+    const mediaBaseUrl = API_BASE_URL.replace(/\/api$/, '');
+    imageUrl = `${mediaBaseUrl}/api/posts/proxy-image/?url=${encodeURIComponent(imageUrl)}`;
+  }
   
   return {
     url: postUrl,
@@ -154,7 +183,23 @@ const prepareShareContent = (post: Post) => {
 
 const downloadImage = async (imageUrl: string) => {
   try {
-    const response = await fetch(imageUrl);
+    // Ensure imageUrl is absolute
+    let absoluteImageUrl = imageUrl;
+    if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+      const mediaBaseUrl = API_BASE_URL.replace(/\/api$/, '');
+      absoluteImageUrl = `${mediaBaseUrl}${imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl}`;
+    }
+    
+    // Use fetch with credentials for CORS
+    const response = await fetch(absoluteImageUrl, {
+      mode: 'cors',
+      credentials: 'omit',
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+    }
+    
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -167,14 +212,42 @@ const downloadImage = async (imageUrl: string) => {
     return true;
   } catch (error) {
     console.error('Failed to download image:', error);
+    // Fallback: try opening image in new tab
+    try {
+      window.open(imageUrl, '_blank');
+    } catch (fallbackError) {
+      console.error('Fallback also failed:', fallbackError);
+    }
     return false;
   }
 };
 
 const copyText = async (text: string) => {
   try {
-    await navigator.clipboard.writeText(text);
-    return true;
+    // Modern clipboard API (requires HTTPS in production)
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+    
+    // Fallback for older browsers or HTTP
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      return successful;
+    } catch (err) {
+      document.body.removeChild(textArea);
+      throw err;
+    }
   } catch (error) {
     console.error('Failed to copy text:', error);
     return false;
@@ -205,11 +278,27 @@ const shareToInstagram = async (post: Post, type: 'feed' | 'stories', onTextCopi
       let imageFile: File | null = null;
       if (content.imageUrl) {
         try {
-          const imageResponse = await fetch(content.imageUrl);
+          // Ensure absolute URL and handle CORS
+          let absoluteImageUrl = content.imageUrl;
+          if (!absoluteImageUrl.startsWith('http://') && !absoluteImageUrl.startsWith('https://')) {
+            const mediaBaseUrl = API_BASE_URL.replace(/\/api$/, '');
+            absoluteImageUrl = `${mediaBaseUrl}${absoluteImageUrl.startsWith('/') ? absoluteImageUrl : '/' + absoluteImageUrl}`;
+          }
+          
+          const imageResponse = await fetch(absoluteImageUrl, {
+            mode: 'cors',
+            credentials: 'omit',
+          });
+          
+          if (!imageResponse.ok) {
+            throw new Error(`Failed to fetch image: ${imageResponse.status}`);
+          }
+          
           const imageBlob = await imageResponse.blob();
-          imageFile = new File([imageBlob], 'post-image.jpg', { type: 'image/jpeg' });
+          imageFile = new File([imageBlob], 'post-image.jpg', { type: imageBlob.type || 'image/jpeg' });
         } catch (error) {
-          console.error('Failed to fetch image:', error);
+          console.error('Failed to fetch image for Web Share API:', error);
+          // Continue without image - text is already copied
         }
       }
       

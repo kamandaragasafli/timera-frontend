@@ -5,8 +5,8 @@ export default function LoginPage() {
 }
 
 export const metadata = {
-  title: 'Giriş - Timera',
-  description: 'Timera hesabınıza daxil olun',
+  title: 'Sign In - Timera',
+  description: 'Sign in to your Timera account',
 };
 
 
