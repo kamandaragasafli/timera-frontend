@@ -35,7 +35,7 @@ const companyProfileSchema = z.object({
   // Branding fields
   slogan: z.string().max(200, 'Slogan maksimum 200 simvol ola bilər').optional(),
   slogan_size_percent: z.number().min(2).max(8).optional(),
-  branding_enabled: z.boolean().optional(),
+  branding_enabled: z.boolean().optional().default(true),
   logo_position: z.enum(['top-center', 'top-left', 'top-right', 'bottom-center', 'bottom-left', 'bottom-right']).optional(),
   slogan_position: z.enum(['top-center', 'bottom-center']).optional(),
   logo_size_percent: z.number().min(2).max(25).optional(),
@@ -86,6 +86,9 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
     getValues
   } = useForm<CompanyProfileFormData>({
     resolver: zodResolver(companyProfileSchema),
+    defaultValues: {
+      branding_enabled: true, // Default value
+    },
   });
   
   // Debug validation errors
@@ -124,6 +127,9 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
       // Load branding settings
       if (existingProfile.branding_enabled !== undefined) {
         setBrandingEnabled(existingProfile.branding_enabled);
+        setValue('branding_enabled', existingProfile.branding_enabled);
+      } else {
+        setValue('branding_enabled', true); // Default value
       }
       if (existingProfile.branding_mode) {
         setBrandingMode(existingProfile.branding_mode);
@@ -679,14 +685,26 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
       <form onSubmit={handleSubmit(
         (data) => {
           console.log('✅ Form validation passed, submitting...');
+          console.log('📋 Form data before submit:', data);
           onSubmit(data);
         },
         (errors) => {
-          console.error('❌ Form validation failed:', errors);
+          console.error('❌ Form validation failed');
+          console.error('❌ Errors object:', errors);
           console.error('❌ Error fields:', Object.keys(errors));
-          Object.entries(errors).forEach(([field, error]: [string, any]) => {
-            console.error(`  - ${field}:`, error?.message || error);
-          });
+          console.error('❌ Form values:', getValues());
+          
+          if (Object.keys(errors).length === 0) {
+            console.warn('⚠️ No error fields found, but validation failed. Checking form state...');
+            console.log('📋 Current form values:', getValues());
+            console.log('📋 Form state:', { errors, isValid: Object.keys(errors).length === 0 });
+          } else {
+            Object.entries(errors).forEach(([field, error]: [string, any]) => {
+              console.error(`  - ${field}:`, error?.message || error);
+              console.error(`    Type:`, typeof error);
+              console.error(`    Full error:`, error);
+            });
+          }
         }
       )} className="space-y-8">
         {/* Basic Information */}
@@ -1452,6 +1470,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                 onCheckedChange={(checked) => {
                   console.log('🔘 Branding toggle clicked:', checked);
                   setBrandingEnabled(checked);
+                  setValue('branding_enabled', checked, { shouldValidate: true });
                 }}
                 disabled={isLoading}
               />

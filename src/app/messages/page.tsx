@@ -447,6 +447,26 @@ export default function MessagesPage() {
       }
     >
       <div className="flex flex-col min-h-[calc(100vh-140px)] gap-4">
+        {/* Coming Soon Banner - Timera V2 */}
+        <Card className="border-2 border-dashed bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-center gap-3">
+              <div className="text-2xl">💬</div>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                    Coming Soon - Timera V2
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Enhanced messages & inbox management is coming in Timera V2
+                </p>
+              </div>
+              <div className="text-2xl">📨</div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Channel Selector & Stats */}
         <Card>
           <CardHeader className="space-y-3 pb-3">

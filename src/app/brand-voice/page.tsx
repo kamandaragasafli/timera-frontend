@@ -70,9 +70,30 @@ export default function BrandVoicePage() {
       title={t.brandVoice.title}
       description={t.brandVoice.description}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Brand Voices List */}
-        <div className="lg:col-span-2 space-y-6">
+      <div className="space-y-6">
+        {/* Coming Soon Banner - Timera V2 */}
+        <Card className="border-2 border-dashed bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-center gap-3">
+              <div className="text-2xl">🎨</div>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                    Coming Soon - Timera V2
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Enhanced brand voice management is coming in Timera V2
+                </p>
+              </div>
+              <div className="text-2xl">✨</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Brand Voices List */}
+          <div className="lg:col-span-2 space-y-6">
           {/* Action Bar */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -294,6 +315,7 @@ export default function BrandVoicePage() {
               </div>
             </CardContent>
           </Card>
+          </div>
         </div>
       </div>
     </DashboardLayout>

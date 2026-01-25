@@ -144,7 +144,7 @@ export function Sidebar({ className }: SidebarProps) {
       <div className="flex items-center justify-between p-4 border-b border-border">
         {!collapsed && (
           <div className="flex items-center space-x-2">
-            <div className="text-2xl">🚀</div>
+            <div className="text-2xl">🚀</div> 
             <h1 className="text-xl font-bold text-foreground">Timera</h1>
           </div>
         )}

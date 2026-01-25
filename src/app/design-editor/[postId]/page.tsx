@@ -87,6 +87,26 @@ export default function DesignEditorPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Coming Soon Banner - Timera V2 */}
+      <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 border-b-2 border-dashed">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-center gap-3">
+            <div className="text-2xl">🎨</div>
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                  Coming Soon - Timera V2
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Enhanced design editor is coming in Timera V2
+              </p>
+            </div>
+            <div className="text-2xl">✨</div>
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="bg-white border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
