@@ -657,5 +657,103 @@ export const metaAnalyticsAPI = {
     api.get('/meta-analytics/realtime/', { params: { account_id: accountId } }),
 };
 
+// Meta Permissions API endpoints - Bütün Meta Business Suite icazələri
+export const metaPermissionsAPI = {
+  // ==================== FACEBOOK PAGES ====================
+  // İcazə: pages_show_list
+  getFacebookPages: () => api.get('/posts/meta/pages/'),
+  
+  // İcazə: pages_manage_posts
+  publishToFacebookPage: (data: {
+    page_id: string;
+    message: string;
+    image_url?: string;
+  }) => api.post('/posts/meta/pages/publish/', data),
+  
+  // İcazə: pages_read_engagement
+  getPageEngagement: (pageId: string, params?: {
+    period?: 'day' | 'week' | 'days_28';
+    since?: string; // YYYY-MM-DD
+    until?: string; // YYYY-MM-DD
+  }) => api.get(`/posts/meta/pages/${pageId}/engagement/`, { params }),
+  
+  getPagePostsInsights: (pageId: string, params?: {
+    limit?: number;
+  }) => api.get(`/posts/meta/pages/${pageId}/posts-insights/`, { params }),
+  
+  // ==================== INSTAGRAM ====================
+  // İcazə: instagram_basic
+  getInstagramAccount: (params?: {
+    account_id?: string;
+  }) => api.get('/posts/meta/instagram/account/', { params }),
+  
+  getInstagramMedia: (params: {
+    account_id: string;
+    limit?: number;
+  }) => api.get('/posts/meta/instagram/media/', { params }),
+  
+  // İcazə: instagram_content_publish
+  publishToInstagram: (data: {
+    account_id: string;
+    image_url: string;
+    caption: string;
+  }) => api.post('/posts/meta/instagram/publish/', data),
+  
+  // İcazə: instagram_manage_messages, instagram_business_manage_messages
+  getInstagramConversations: (params: {
+    account_id: string;
+    limit?: number;
+  }) => api.get('/posts/meta/instagram/conversations/', { params }),
+  
+  getInstagramMessages: (conversationId: string, params?: {
+    limit?: number;
+  }) => api.get(`/posts/meta/instagram/conversations/${conversationId}/messages/`, { params }),
+  
+  sendInstagramMessage: (data: {
+    account_id: string;
+    recipient_id: string;
+    message: string;
+  }) => api.post('/posts/meta/instagram/messages/send/', data),
+  
+  // ==================== BUSINESS MANAGEMENT ====================
+  // İcazə: business_management
+  getBusinessAccounts: () => api.get('/posts/meta/business/accounts/'),
+  
+  // ==================== ADS ====================
+  // İcazə: ads_read
+  getAdAccounts: () => api.get('/posts/meta/ads/accounts/'),
+  
+  getCampaigns: (adAccountId: string, params?: {
+    limit?: number;
+  }) => api.get(`/posts/meta/ads/accounts/${adAccountId}/campaigns/`, { params }),
+  
+  getCampaignInsights: (campaignId: string, params?: {
+    date_preset?: string; // 'last_7d', 'last_30d', etc.
+  }) => api.get(`/posts/meta/ads/campaigns/${campaignId}/insights/`, { params }),
+  
+  // İcazə: ads_management
+  createCampaign: (data: {
+    ad_account_id: string;
+    name: string;
+    objective: string; // 'REACH', 'TRAFFIC', 'CONVERSIONS', etc.
+    status?: 'PAUSED' | 'ACTIVE';
+    daily_budget?: number; // in cents
+    lifetime_budget?: number; // in cents
+  }) => api.post('/posts/meta/ads/campaigns/create/', data),
+  
+  updateCampaign: (campaignId: string, data: {
+    status?: 'PAUSED' | 'ACTIVE';
+    name?: string;
+    daily_budget?: number;
+  }) => api.put(`/posts/meta/ads/campaigns/${campaignId}/update/`, data),
+  
+  // ==================== COMPREHENSIVE TEST ====================
+  testAllPermissions: (data?: {
+    page_id?: string;
+    instagram_account_id?: string;
+    ad_account_id?: string;
+  }) => api.post('/posts/meta/test-permissions/', data || {}),
+};
+
 export default api;
 

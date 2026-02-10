@@ -21,7 +21,7 @@ const companyProfileSchema = z.object({
   company_name: z.string().min(1, 'Şirkət adı tələb olunur'),
   industry: z.string().min(1, 'Sənaye tələb olunur'),
   company_size: z.string().min(1, 'Şirkət ölçüsü tələb olunur'),
-  website: z.string().url('Zəhmət olmasa düzgün URL daxil edin').optional().or(z.literal('')),
+  website: z.union([z.string().url('Zəhmət olmasa düzgün URL daxil edin'), z.literal('')]).optional(),
   location: z.string().optional(),
   business_description: z.string().min(10, 'Zəhmət olmasa ətraflı biznes təsviri verin (ən azı 10 simvol)'),
   target_audience: z.string().min(10, 'Zəhmət olmasa hədəf auditoriyanızı təsvir edin (ən azı 10 simvol)'),
@@ -33,9 +33,10 @@ const companyProfileSchema = z.object({
   avoid_topics: z.string().optional(),
   posts_to_generate: z.number().min(1, 'Minimum 1 paylaşım').max(30, 'Maksimum 30 paylaşım').optional(),
   // Branding fields
-  slogan: z.string().max(200, 'Slogan maksimum 200 simvol ola bilər').optional(),
+  slogan: z.union([z.string().max(200, 'Slogan maksimum 200 simvol ola bilər'), z.literal('')]).optional(),
+  slogan_enabled: z.boolean().default(true),
   slogan_size_percent: z.number().min(2).max(8).optional(),
-  branding_enabled: z.boolean().optional().default(true),
+  branding_enabled: z.boolean().default(true),
   logo_position: z.enum(['top-center', 'top-left', 'top-right', 'bottom-center', 'bottom-left', 'bottom-right']).optional(),
   slogan_position: z.enum(['top-center', 'bottom-center']).optional(),
   logo_size_percent: z.number().min(2).max(25).optional(),
@@ -85,9 +86,11 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
     watch,
     getValues
   } = useForm<CompanyProfileFormData>({
+    // @ts-expect-error - Zod resolver type mismatch with react-hook-form
     resolver: zodResolver(companyProfileSchema),
     defaultValues: {
       branding_enabled: true, // Default value
+      slogan_enabled: true, // Default value
     },
   });
   
@@ -684,26 +687,18 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
 
       <form onSubmit={handleSubmit(
         (data) => {
-          console.log('✅ Form validation passed, submitting...');
-          console.log('📋 Form data before submit:', data);
-          onSubmit(data);
+          onSubmit(data as unknown as CompanyProfileFormData);
         },
         (errors) => {
-          console.error('❌ Form validation failed');
-          console.error('❌ Errors object:', errors);
-          console.error('❌ Error fields:', Object.keys(errors));
-          console.error('❌ Form values:', getValues());
-          
-          if (Object.keys(errors).length === 0) {
-            console.warn('⚠️ No error fields found, but validation failed. Checking form state...');
-            console.log('📋 Current form values:', getValues());
-            console.log('📋 Form state:', { errors, isValid: Object.keys(errors).length === 0 });
-          } else {
+          // Only show errors if there are actual validation errors
+          const errorKeys = Object.keys(errors);
+          if (errorKeys.length > 0) {
+            const errorMessages: string[] = [];
             Object.entries(errors).forEach(([field, error]: [string, any]) => {
-              console.error(`  - ${field}:`, error?.message || error);
-              console.error(`    Type:`, typeof error);
-              console.error(`    Full error:`, error);
+              const message = error?.message || `Field ${field} is invalid`;
+              errorMessages.push(message);
             });
+            setError(errorMessages.join(', '));
           }
         }
       )} className="space-y-8">
@@ -1487,16 +1482,25 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                   </Alert>
                 )}
 
-                {/* Slogan Input */}
+                {/* Slogan Input (Branding - with on/off toggle) */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="slogan">{t.settings.companyProfile.sloganLabel}</Label>
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="slogan">{t.settings.companyProfile.sloganLabel}</Label>
+                      <Switch
+                        checked={watch('slogan_enabled') ?? true}
+                        onCheckedChange={(checked) => setValue('slogan_enabled', checked)}
+                      />
+                      <span className="text-xs text-muted-foreground">
+                        {watch('slogan_enabled') ? t.settings.companyProfile.sloganEnabledOn : t.settings.companyProfile.sloganEnabledOff}
+                      </span>
+                    </div>
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
                       onClick={generateSlogan}
-                      disabled={aiLoading['slogan'] || !getValues('company_name')}
+                      disabled={!watch('slogan_enabled') || aiLoading['slogan'] || !getValues('company_name')}
                       className="text-xs"
                     >
                       {aiLoading['slogan'] ? (
@@ -1511,11 +1515,12 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
                     placeholder={t.settings.companyProfile.sloganPlaceholder}
                     maxLength={200}
                     {...register('slogan')}
+                    disabled={!watch('slogan_enabled')}
                     className={errors.slogan ? 'border-red-500' : ''}
                   />
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-muted-foreground">
-                      {t.settings.companyProfile.sloganHint}
+                      {watch('slogan_enabled') ? t.settings.companyProfile.sloganEnabledDesc : t.settings.companyProfile.sloganEnabledDesc.replace('görünəcək', 'görünməyəcək')}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {watch('slogan')?.length || 0}/200 {t.settings.companyProfile.sloganChars}
@@ -1727,7 +1732,7 @@ export default function CompanyProfileForm({ onComplete, existingProfile }: Comp
           </CardContent>
         </Card>
 
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center pb-8 pt-4">
           <Button
             type="submit"
             size="lg"
