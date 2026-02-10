@@ -165,7 +165,12 @@ export const authAPI = {
     // FormData will be handled by interceptor (Content-Type removed)
     return api.patch('/auth/company-profile/', data);
   },
-  createCompanyProfile: (data: any) => api.post('/auth/company-profile/', data),
+  // Note: Backend uses get_or_create, so PATCH works for both create and update
+  createCompanyProfile: (data: any) => {
+    // Use PATCH instead of POST since backend's CompanyProfileView uses get_or_create
+    // FormData will be handled by interceptor (Content-Type removed)
+    return api.patch('/auth/company-profile/', data);
+  },
   
   // Statistics
   getStats: () => api.get('/auth/stats/'),
