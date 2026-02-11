@@ -33,6 +33,7 @@ import {
   RotateCw,
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { socialAccountsAPI, metaPermissionsAPI } from '@/lib/api';
 
 type Platform = 'facebook' | 'instagram';
 type Status = 'unread' | 'pending' | 'replied' | 'archived';
@@ -44,6 +45,12 @@ interface ConnectedAccount {
   name: string;
   username?: string;
   isWebhookActive: boolean;
+  page_id?: string;
+  ig_account_id?: string;
+  settings?: {
+    page_id?: string;
+    ig_account_id?: string;
+  };
 }
 
 interface Conversation {
@@ -154,15 +161,50 @@ export default function MessagesPage() {
   const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
   const [messageSending, setMessageSending] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
+  const [allConnectedAccounts, setAllConnectedAccounts] = useState<ConnectedAccount[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [loadingConversations, setLoadingConversations] = useState(false);
   const { language } = useLanguage();
 
   const isEng = language === 'eng';
   const isRus = language === 'rus';
 
+  // Load connected accounts
+  useEffect(() => {
+    loadConnectedAccounts();
+  }, []);
+
+  const loadConnectedAccounts = async () => {
+    try {
+      const response = await socialAccountsAPI.getAccounts();
+      const accounts = response.data.results || response.data || [];
+      const metaAccounts: ConnectedAccount[] = accounts
+        .filter((acc: any) => (acc.platform === 'facebook' || acc.platform === 'instagram') && acc.is_active)
+        .map((acc: any) => ({
+          id: acc.id,
+          platform: acc.platform as Platform,
+          name: acc.display_name || acc.platform_username || acc.platform,
+          username: acc.platform_username,
+          isWebhookActive: true, // Assume active if connected
+          page_id: acc.settings?.page_id,
+          ig_account_id: acc.settings?.ig_account_id,
+          settings: acc.settings,
+        }));
+      setAllConnectedAccounts(metaAccounts);
+    } catch (error) {
+      console.error('Failed to load connected accounts:', error);
+    }
+  };
+
   // Get connected accounts for selected platform
   const connectedAccounts = useMemo(
-    () => demoMode ? demoAccounts.filter((acc) => acc.platform === selectedPlatform) : [],
-    [selectedPlatform, demoMode]
+    () => {
+      if (demoMode) {
+        return demoAccounts.filter((acc) => acc.platform === selectedPlatform);
+      }
+      return allConnectedAccounts.filter((acc) => acc.platform === selectedPlatform);
+    },
+    [selectedPlatform, demoMode, allConnectedAccounts]
   );
 
   // Auto-select first account when platform changes
@@ -174,10 +216,108 @@ export default function MessagesPage() {
 
   const selectedAccount = connectedAccounts.find((acc) => acc.id === selectedAccountId);
 
+  // Load conversations when account is selected
+  useEffect(() => {
+    if (selectedAccountId && selectedAccount && !demoMode) {
+      loadConversations();
+    } else if (demoMode) {
+      setConversations(generateDemoConversations(language));
+    } else {
+      setConversations([]);
+    }
+  }, [selectedAccountId, selectedAccount, demoMode, language]);
+
+  // Auto-refresh conversations every 15 seconds
+  useEffect(() => {
+    if (!selectedAccountId || !selectedAccount || demoMode) return;
+
+    const interval = setInterval(() => {
+      loadConversations();
+    }, 15000); // 15 seconds
+
+    return () => clearInterval(interval);
+  }, [selectedAccountId, selectedAccount, demoMode]);
+
+  // Auto-refresh messages when conversation is selected
+  useEffect(() => {
+    if (!selectedConversationId || !selectedAccount || demoMode) return;
+
+    const interval = setInterval(() => {
+      loadMessages();
+    }, 10000); // 10 seconds
+
+    return () => clearInterval(interval);
+  }, [selectedConversationId, selectedAccount, demoMode]);
+
+  const loadConversations = async (silent = false) => {
+    if (!selectedAccount) return;
+    
+    if (!silent) {
+      setLoadingConversations(true);
+    }
+    try {
+      if (selectedPlatform === 'instagram' && selectedAccount.ig_account_id) {
+        const response = await metaPermissionsAPI.getInstagramConversations({
+          account_id: selectedAccount.ig_account_id,
+          limit: 50,
+        });
+        if (response.data.success) {
+          const convs = response.data.conversations.map((conv: any) => {
+            const participants = conv.participants?.data || [];
+            const sender = participants.find((p: any) => p.id !== selectedAccount.ig_account_id) || participants[0];
+            return {
+              id: conv.id,
+              senderName: sender?.username || sender?.name || 'Unknown',
+              preview: conv.snippet || '',
+              platform: 'instagram' as Platform,
+              accountId: selectedAccountId,
+              unreadCount: conv.unread_count || 0,
+              lastMessageTime: new Date(conv.updated_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+              status: (conv.unread_count > 0 ? 'unread' : 'replied') as Status,
+              hasAttachment: false,
+            };
+          });
+          setConversations(convs);
+        }
+      } else if (selectedPlatform === 'facebook' && selectedAccount.page_id) {
+        const response = await metaPermissionsAPI.getFacebookConversations({
+          page_id: selectedAccount.page_id,
+          limit: 50,
+        });
+        if (response.data.success) {
+          const convs = response.data.conversations.map((conv: any) => {
+            const participants = conv.participants?.data || [];
+            const sender = participants.find((p: any) => p.id !== selectedAccount.page_id) || participants[0];
+            return {
+              id: conv.id,
+              senderName: sender?.name || 'Unknown',
+              preview: conv.snippet || '',
+              platform: 'facebook' as Platform,
+              accountId: selectedAccountId,
+              unreadCount: conv.unread_count || 0,
+              lastMessageTime: new Date(conv.updated_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+              status: (conv.unread_count > 0 ? 'unread' : 'replied') as Status,
+              hasAttachment: false,
+            };
+          });
+          setConversations(convs);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load conversations:', error);
+      if (!silent) {
+        setConversations([]);
+      }
+    } finally {
+      if (!silent) {
+        setLoadingConversations(false);
+      }
+    }
+  };
+
   const allConversations = useMemo(() => {
-    if (!demoMode) return [];
-    return generateDemoConversations(language);
-  }, [language, demoMode]);
+    return conversations;
+  }, [conversations]);
   
   // Filter and sort conversations
   const filteredConversations = useMemo(() => {
@@ -210,9 +350,11 @@ export default function MessagesPage() {
 
   const [messages, setMessages] = useState<Message[]>([]);
 
-  // Update messages when demo mode changes
+  // Load messages when conversation is selected
   useEffect(() => {
-    if (demoMode) {
+    if (selectedConversationId && !demoMode && selectedAccount) {
+      loadMessages();
+    } else if (demoMode && selectedConversationId) {
       const demoMessages: Message[] = language === 'eng' 
         ? [
             {
@@ -269,25 +411,67 @@ export default function MessagesPage() {
       setMessages(demoMessages);
     } else {
       setMessages([]);
-      setSelectedConversationId(null);
     }
-  }, [demoMode, language]);
+  }, [selectedConversationId, demoMode, language, selectedAccount]);
+
+  const loadMessages = async (silent = false) => {
+    if (!selectedConversationId || !selectedAccount) return;
+    
+    try {
+      if (selectedPlatform === 'instagram') {
+        const response = await metaPermissionsAPI.getInstagramMessages(selectedConversationId, { limit: 50 });
+        if (response.data.success) {
+          const msgs = response.data.messages.map((msg: any) => ({
+            id: msg.id,
+            fromMe: msg.from?.id === selectedAccount.ig_account_id,
+            text: msg.message || '',
+            time: new Date(msg.created_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+            hasAttachment: !!msg.attachments,
+            messageStatus: 'sent' as MessageStatus,
+          }));
+          setMessages(msgs.reverse()); // Reverse to show oldest first
+        }
+      } else if (selectedPlatform === 'facebook') {
+        const response = await metaPermissionsAPI.getFacebookMessages(selectedConversationId, { limit: 50 });
+        if (response.data.success) {
+          const msgs = response.data.messages.map((msg: any) => ({
+            id: msg.id,
+            fromMe: msg.from?.id === selectedAccount.page_id,
+            text: msg.message || '',
+            time: new Date(msg.created_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+            hasAttachment: !!msg.attachments,
+            messageStatus: 'sent' as MessageStatus,
+          }));
+          setMessages(msgs.reverse()); // Reverse to show oldest first
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load messages:', error);
+      if (!silent) {
+        setMessages([]);
+      }
+    }
+  };
 
   const handleSync = async () => {
     setIsSyncing(true);
     try {
-      // await messagesAPI.syncConversations();
-      setTimeout(() => {
-        setIsSyncing(false);
-        setLastSyncTime(new Date());
-      }, 800);
+      if (selectedAccountId && selectedAccount && !demoMode) {
+        await loadConversations();
+        if (selectedConversationId) {
+          await loadMessages();
+        }
+      }
+      setLastSyncTime(new Date());
     } catch (e) {
+      console.error('Sync failed:', e);
+    } finally {
       setIsSyncing(false);
     }
   };
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !selectedConversationId) return;
+    if (!newMessage.trim() || !selectedConversationId || !selectedAccount) return;
     
     setMessageSending(true);
     const tempMessage: Message = {
@@ -300,21 +484,85 @@ export default function MessagesPage() {
     };
 
     setMessages((prev) => [...prev, tempMessage]);
+    const messageText = newMessage;
     setNewMessage('');
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Update message status to sent
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === tempMessage.id ? { ...msg, messageStatus: 'sent' as MessageStatus } : msg
-        )
-      );
+      if (demoMode) {
+        // Simulate API call for demo
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === tempMessage.id ? { ...msg, messageStatus: 'sent' as MessageStatus } : msg
+          )
+        );
+      } else {
+        // Real API call
+        const selectedConv = conversations.find(c => c.id === selectedConversationId);
+        if (selectedPlatform === 'instagram' && selectedAccount.ig_account_id && selectedConv) {
+          // Get conversation details to find recipient
+          try {
+            const convResponse = await metaPermissionsAPI.getInstagramConversations({
+              account_id: selectedAccount.ig_account_id,
+              limit: 100,
+            });
+            const conv = convResponse.data.conversations?.find((c: any) => c.id === selectedConversationId);
+            // Find recipient - participant that is not the account itself
+            const participants = conv?.participants?.data || [];
+            const recipientId = participants.find((p: any) => p.id !== selectedAccount.ig_account_id)?.id;
+            
+            if (recipientId) {
+              await metaPermissionsAPI.sendInstagramMessage({
+                account_id: selectedAccount.ig_account_id,
+                recipient_id: recipientId,
+                message: messageText,
+              });
+              // Reload messages after sending
+              setTimeout(() => loadMessages(), 500);
+            } else {
+              throw new Error('Recipient ID not found');
+            }
+          } catch (err) {
+            console.error('Failed to send Instagram message:', err);
+            throw err;
+          }
+        } else if (selectedPlatform === 'facebook' && selectedAccount.page_id && selectedConv) {
+          // Get conversation details to find recipient
+          try {
+            const convResponse = await metaPermissionsAPI.getFacebookConversations({
+              page_id: selectedAccount.page_id,
+              limit: 100,
+            });
+            const conv = convResponse.data.conversations?.find((c: any) => c.id === selectedConversationId);
+            // Find recipient - participant that is not the page itself
+            const participants = conv?.participants?.data || [];
+            const recipientId = participants.find((p: any) => p.id !== selectedAccount.page_id)?.id;
+            
+            if (recipientId) {
+              await metaPermissionsAPI.sendFacebookMessage({
+                page_id: selectedAccount.page_id,
+                recipient_id: recipientId,
+                message: messageText,
+              });
+              // Reload messages after sending
+              setTimeout(() => loadMessages(), 500);
+            } else {
+              throw new Error('Recipient ID not found');
+            }
+          } catch (err) {
+            console.error('Failed to send Facebook message:', err);
+            throw err;
+          }
+        }
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === tempMessage.id ? { ...msg, messageStatus: 'sent' as MessageStatus } : msg
+          )
+        );
+      }
       setMessageSending(false);
     } catch (error) {
-      // Update message status to failed
+      console.error('Failed to send message:', error);
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === tempMessage.id ? { ...msg, messageStatus: 'failed' as MessageStatus } : msg
@@ -447,26 +695,6 @@ export default function MessagesPage() {
       }
     >
       <div className="flex flex-col min-h-[calc(100vh-140px)] gap-4">
-        {/* Coming Soon Banner - Timera V2 */}
-        <Card className="border-2 border-dashed bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-center gap-3">
-              <div className="text-2xl">💬</div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                    Coming Soon - Timera V2
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Enhanced messages & inbox management is coming in Timera V2
-                </p>
-              </div>
-              <div className="text-2xl">📨</div>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Channel Selector & Stats */}
         <Card>
           <CardHeader className="space-y-3 pb-3">
@@ -727,7 +955,16 @@ export default function MessagesPage() {
 
             <CardContent className="flex-1 p-0">
               <div className="h-full overflow-y-auto">
-                {filteredConversations.length === 0 ? (
+                {loadingConversations ? (
+                  <div className="py-8 text-center text-xs text-muted-foreground">
+                    <Loader2 className="w-4 h-4 animate-spin mx-auto mb-2" />
+                    {isEng
+                      ? "Loading conversations..."
+                      : isRus
+                      ? "Загрузка диалогов..."
+                      : "Dialoqlar yüklənir..."}
+                  </div>
+                ) : filteredConversations.length === 0 ? (
                   <div className="py-8 text-center text-xs text-muted-foreground">
                     {isEng
                       ? "No conversations found."
