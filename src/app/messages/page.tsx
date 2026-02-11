@@ -47,6 +47,7 @@ interface ConnectedAccount {
   isWebhookActive: boolean;
   page_id?: string;
   ig_account_id?: string;
+  platform_user_id?: string;
   settings?: {
     page_id?: string;
     ig_account_id?: string;
@@ -187,7 +188,9 @@ export default function MessagesPage() {
           username: acc.platform_username,
           isWebhookActive: true, // Assume active if connected
           page_id: acc.settings?.page_id,
-          ig_account_id: acc.settings?.ig_account_id,
+          // Use ig_account_id from settings, or fallback to platform_user_id (for Instagram)
+          ig_account_id: acc.settings?.ig_account_id || (acc.platform === 'instagram' ? acc.platform_user_id : undefined),
+          platform_user_id: acc.platform_user_id,
           settings: acc.settings,
         }));
       setAllConnectedAccounts(metaAccounts);
@@ -257,11 +260,13 @@ export default function MessagesPage() {
     }
     try {
       if (selectedPlatform === 'instagram' && selectedAccount.ig_account_id) {
+        console.log('🔍 Fetching Instagram conversations for account:', selectedAccount.ig_account_id);
         const response = await metaPermissionsAPI.getInstagramConversations({
           account_id: selectedAccount.ig_account_id,
           limit: 50,
         });
         if (response.data.success) {
+          console.log('✅ Instagram conversations fetched:', response.data.conversations.length);
           const convs = response.data.conversations.map((conv: any) => {
             const participants = conv.participants?.data || [];
             const sender = participants.find((p: any) => p.id !== selectedAccount.ig_account_id) || participants[0];
@@ -278,13 +283,17 @@ export default function MessagesPage() {
             };
           });
           setConversations(convs);
+        } else {
+          console.log('❌ Instagram conversations fetch failed:', response.data);
         }
       } else if (selectedPlatform === 'facebook' && selectedAccount.page_id) {
+        console.log('🔍 Fetching Facebook conversations for page:', selectedAccount.page_id);
         const response = await metaPermissionsAPI.getFacebookConversations({
           page_id: selectedAccount.page_id,
           limit: 50,
         });
         if (response.data.success) {
+          console.log('✅ Facebook conversations fetched:', response.data.conversations.length);
           const convs = response.data.conversations.map((conv: any) => {
             const participants = conv.participants?.data || [];
             const sender = participants.find((p: any) => p.id !== selectedAccount.page_id) || participants[0];
@@ -301,7 +310,11 @@ export default function MessagesPage() {
             };
           });
           setConversations(convs);
+        } else {
+          console.log('❌ Facebook conversations fetch failed:', response.data);
         }
+      } else {
+        console.log('⚠️ No page_id or ig_account_id for selected account');
       }
     } catch (error) {
       console.error('Failed to load conversations:', error);
